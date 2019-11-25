@@ -15,7 +15,7 @@ def set_bot():
 # Run webhook
 def webhook(event, context):
     logger.info("Event: {}".format(event))
-    
+
     bot = set_bot()
     if event.get("httpMethod") == "POST" and event.get("body"):
         logger.info("Message received")
@@ -34,10 +34,11 @@ def webhook(event, context):
 # Set webhook
 def set_webhook(event, context):
     logger.info(f"Event: {event}")
-    
+
     bot = set_bot()
     url = f"""https://{event.get("headers").get("Host")}/{event.get("requestContext").get("stage")}/"""
     webhook = bot.set_webhook(url)
+
     if webhook:
         return OK_RESPONSE
 
