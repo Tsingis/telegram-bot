@@ -302,14 +302,6 @@ def create_bracket():
         # Open blank playoff bracket
         im_bracket = Image.open("static/NHL logos/playoffs.png")
 
-        # bracket.pop("I", None)
-        # bracket.pop("J", None)
-        # bracket.pop("K", None)
-        # bracket.pop("L", None)
-        # bracket.pop("M", None)
-        # bracket.pop("N", None)
-        # bracket.pop("O", None)
-
         # Locations for logos in bracket
         # Round 1
         bracket["A"]["location"] = [(1175, 50), (1175, 185)]
@@ -368,8 +360,6 @@ def create_bracket():
         file.name = filename
         im_bracket.save(file, "PNG")
         file.seek(0)
-        # test = Image.open(file)
-        # test.save(f"{filename}")
         return file
     except Exception:
         return None
