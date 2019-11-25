@@ -1,4 +1,4 @@
-service: telegram-bot-test
+service: telegram-bot-prod
 
 provider:
   name: aws
@@ -7,7 +7,7 @@ provider:
   memorySize: 256
   timeout: 15
   environment:
-    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN_TEST}
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     FMI_API: ${env:FMI_API}
     GOOGLE_API: ${env:GOOGLE_API}
     CSE_ID: ${env:CSE_ID}
