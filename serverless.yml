@@ -1,0 +1,40 @@
+service: telegram-bot-test
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: eu-west-1
+  memorySize: 256
+  timeout: 15
+  environment:
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN_TEST}
+    FMI_API: ${env:FMI_API}
+    GOOGLE_API: ${env:GOOGLE_API}
+    CSE_ID: ${env:CSE_ID}
+
+functions:
+  webhook:
+    handler: handler.webhook
+    events:
+      - http: POST /
+
+  set_webhook:
+    handler: handler.set_webhook
+    events:
+      - http: POST /set_webhook
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
+package:
+  exclude:
+    - node_modules/**
+    - venv/**
+    - .vscode/**
+    - package.json
+    - package-lock.json
+    - requirements.txt
