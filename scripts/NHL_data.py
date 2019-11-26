@@ -395,13 +395,13 @@ def get_player_contract(player_name):
 
         # Get length, cap hit and total salary of current contract
         contract_info = {
-            "Length": len(data) - 1,
+            "Length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
             "Cap hit": data["CAP HIT"][season_mask].values[0],
             "Total salary": data["TOTAL SALARY"][season_mask].values[0],
         }
 
         # Format info
-        player_contract = (f"""Contract: {contract_info["Length"]} years | """
+        player_contract = (f"""Contract: Year: {contract_info["Length"]} | """
                            f"""Cap hit: {contract_info["Cap hit"]} | """
                            f"""Total: {contract_info["Total salary"]}""")
         return url, player_contract
