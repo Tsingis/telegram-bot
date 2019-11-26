@@ -391,7 +391,7 @@ def get_player_contract(player_name):
         }
 
         # Format info
-        player_contract = (f"""Contract: Year: {contract_info["Length"]} | """
+        player_contract = (f"""Year: {contract_info["Length"]} | """
                            f"""Cap hit: {contract_info["Cap hit"]} | """
                            f"""Total: {contract_info["Total salary"]}""")
         return url, player_contract

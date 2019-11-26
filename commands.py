@@ -131,7 +131,7 @@ def command_response(text, bot, chat_id):
             url = f"""https://www.nhl.com/player/{player_name.replace(" ", "-")}-{player_id}"""
             msg = stats + f"\n[Details]({url})"
             if (player_contract is not None):
-                msg = msg + "\n" + player_contract + f"\n[Details]({contract_url})"
+                msg = msg + "\nContract:\n" + player_contract + f"\n[Details]({contract_url})"
         else:
             msg = "Not available"
         send_message(msg, chat_id, bot)
