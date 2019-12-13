@@ -2,6 +2,8 @@ import logging
 import json
 
 
+# TODO Better logging and utilizing CloudWatch
+
 # Set up logging
 logger = logging.getLogger()
 if logger.handlers:
