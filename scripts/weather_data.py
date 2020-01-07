@@ -1,11 +1,9 @@
 import xml.etree.ElementTree as ET
 import urllib.request as request
 import datetime as dt
-import pandas as pd
+import json
 import os
 import re
-
-from scripts.common_helper import set_soup
 
 
 fmi_apikey = os.environ["FMI_API"]
@@ -24,38 +22,26 @@ def parse_keynames(series):
             for item in series]
 
 
-# Finds specific stations for given location
-def get_stations(location):
-    url = "https://ilmatieteenlaitos.fi/havaintoasemat"
-    soup = set_soup(url)
-    try:
-        # Find table of current contract
-        table = soup.find("table", {"id": "station-list-table"})
-        data = pd.read_html(table.prettify(), flavor="bs4", header=0)[0]
+# Finds specific station for given location
+def get_station(location):
+    # Load stations
+    with open("static/weather_stations.json", "r", encoding="utf-8") as file:
+        stations = json.load(file)
 
-        # Filter ny given location and type of station
-        location_mask = data["Nimi"].str.startswith(location.capitalize())
-        type_mask = data["Ryhmät"].str.contains("Sää")
-
-        # Get filtered station ids
-        stations = data["FMISID"][location_mask & type_mask].values.tolist()
-        if (not stations):
-            return None
-        else:
-            return stations
-    except Exception:
-        return None
+    # Look for station in given location
+    if (location.capitalize() in stations):
+        return stations[location.capitalize()]
 
 
 # Data for given weather station
-def get_data(stations):
+def get_data(station):
     # Get current time - 20 minutes to always get the latest observation
     start = (dt.datetime.utcnow() - dt.timedelta(minutes=20)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Define url
     url = (f"http://data.fmi.fi/fmi-apikey/{fmi_apikey}"
            f"/wfs?request=getFeature&storedquery_id=fmi::observations::"
-           f"weather::timevaluepair&fmisid={stations[0]}&starttime={start}")
+           f"weather::timevaluepair&fmisid={station}&starttime={start}")
 
     # Get data
     try:
@@ -67,19 +53,16 @@ def get_data(stations):
             # Data model: MeasurementTimeseries
             tag = "{http://www.opengis.net/waterml/2.0}MeasurementTimeseries"
 
-            # Choose latest values
-            timevalues = [parse_timeseries(series) for series in tree.iter(tag=tag)]
-
-            # Remove this station from list and get data for next station if no data
-            if (not timevalues):
-                stations.pop(0)
-                return get_data(stations)
-
-            # Complete data
+            # Keys
             # keys = parse_keynames(tree.iter(tag=tag))[:-1]  # original keys
             keys = ["Temp", "Wind", "Gust", "Wind dir", "Hum", "Temp dew",
                     "Rain int", "Rain", "Snow", "Pres", "Vis", "Cloud"]
+
+            # Choose latest values
+            timevalues = [parse_timeseries(series) for series in tree.iter(tag=tag)]
             values = [value[-1][1] for value in timevalues]
+
+            # Complete data
             data = dict(zip(keys, values))
 
             # Replace negative snow value with NaN
