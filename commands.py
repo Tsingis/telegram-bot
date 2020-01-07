@@ -149,9 +149,9 @@ def command_response(text, bot, chat_id):
     if (text and text.startswith("/weather")):
         location = text.split("/weather")[-1].strip()
         url = f"https://ilmatieteenlaitos.fi/saa/{location.lower()}"
-        stations = weather_data.get_stations(location)
-        if (stations is not None):
-            info = weather_data.get_data(stations)
+        station = weather_data.get_station(location)
+        if (station is not None):
+            info = weather_data.get_data(station)
             if (info is not None):
                 msg = (f"*Weather for {location.capitalize()}:*\n" + "\n".join(info) + f"\n[Details]({url})")
             else:
