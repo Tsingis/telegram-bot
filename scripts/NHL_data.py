@@ -224,7 +224,7 @@ def get_player_stats(player_name):
             goalie_stats = (f"""GP: {stats["games"]} | """
                             f"""W: {stats["wins"]} | """
                             f"""Sv: {stats["saves"]} | """
-                            f"""Sv%: {stats["savePercentage"]*100} | """
+                            f"""Sv%: {round(stats["savePercentage"]*100, 2)} | """
                             f"""GA: {stats["goalsAgainst"]} | """
                             f"""GAA: {stats["goalAgainstAverage"]} | """
                             f"""SO: {stats["shutouts"]}""")
@@ -234,7 +234,7 @@ def get_player_stats(player_name):
                             f"""G: {stats["goals"]} | """
                             f"""A: {stats["assists"]} | """
                             f"""P: {stats["points"]} | """
-                            f"""Sh%: {stats["shotPct"]} | """
+                            f"""Sh%: {round(stats["shotPct"], 2)} | """
                             f"""+/-: {stats["plusMinus"]} | """
                             f"""TOI/G: {stats["timeOnIcePerGame"]}""")
             return skater_stats
