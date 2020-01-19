@@ -139,16 +139,13 @@ def command_response(text, bot, chat_id):
     # Weather info by location
     if (text and text.startswith("/weather")):
         location = text.split("/weather")[-1].strip()
-        url = f"https://ilmatieteenlaitos.fi/saa/{location.lower()}"
-        station = weather_data.get_station(location)
-        if (station is not None):
-            info = weather_data.get_data(station)
-            if (info is not None):
-                msg = (f"*Weather for {location.capitalize()}:*\n" + "\n".join(info) + f"\n[Details]({url})")
-            else:
-                msg = "Station not available"
+        info = weather_data.get_data(location)
+        if (info is not None):
+            msg = (f"*Weather for {location.capitalize()}:*\n\n" +
+                   "\n".join([f"{key}: {value}" for (key, value) in info.items()]) +
+                   "\n\n *Powered by Dark Sky*")
         else:
-            msg = "Invalid location"
+            msg = "Not available"
         send_message(msg, chat_id, bot)
 
     # Random Google search image by keyword

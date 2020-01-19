@@ -3,11 +3,13 @@ beautifulsoup4
 cachetools
 certifi
 cffi
+chardet
 cryptography
 future
 google-api-python-client
 google-auth
 google-auth-httplib2
+googlemaps
 html5lib
 httplib2
 idna
@@ -20,9 +22,11 @@ pycparser
 python-dateutil
 python-telegram-bot
 pytz
+requests
 rsa
 six
 soupsieve
 tornado
 uritemplate
+urllib3
 webencodings

@@ -9,6 +9,7 @@ provider:
   environment:
     TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN_TEST}
     GOOGLE_API: ${env:GOOGLE_API}
+    DARKSKY_API: ${env:DARKSKY_API}
     CSE_ID: ${env:CSE_ID}
 
 functions:
