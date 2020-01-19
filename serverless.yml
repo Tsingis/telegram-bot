@@ -8,7 +8,6 @@ provider:
   timeout: 15
   environment:
     TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN_TEST}
-    FMI_API: ${env:FMI_API}
     GOOGLE_API: ${env:GOOGLE_API}
     CSE_ID: ${env:CSE_ID}
 
