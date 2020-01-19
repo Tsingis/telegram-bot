@@ -2,11 +2,7 @@ import xml.etree.ElementTree as ET
 import urllib.request as request
 import datetime as dt
 import json
-import os
 import re
-
-
-fmi_apikey = os.environ["FMI_API"]
 
 
 # Parses times and values from XML for timevaluepair format
@@ -39,8 +35,7 @@ def get_data(station):
     start = (dt.datetime.utcnow() - dt.timedelta(minutes=20)).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Define url
-    url = (f"http://data.fmi.fi/fmi-apikey/{fmi_apikey}"
-           f"/wfs?request=getFeature&storedquery_id=fmi::observations::"
+    url = (f"https://opendata.fmi.fi/wfs?request=getFeature&storedquery_id=fmi::observations::"
            f"weather::timevaluepair&fmisid={station}&starttime={start}")
 
     # Get data

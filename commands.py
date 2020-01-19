@@ -1,5 +1,5 @@
 from logger import logger, OK_RESPONSE, ERROR_RESPONSE
-from scripts import F1_data, NHL_data, WC3_data, weather_data, image_search
+from scripts import F1_data, NHL_data, weather_data, image_search
 
 
 def send_message(msg, chat_id, bot):
@@ -27,7 +27,7 @@ def command_response(text, bot, chat_id):
         f1_cmds = ["/f1info", "/f1results", "/f1standings"]
         nhl_cmds = ["/nhlinfo", "/nhlresults", "/nhlstandings",
                     "/nhlfinns", "/nhlplayoffs", "/nhlplayer <player name>"]
-        other_cmds = ["/wc3info", "/weather <location>", "/search <keyword>"]
+        other_cmds = ["/weather <location>", "/search <keyword>"]
 
         msg = ("*F1 commands:*\n" + "\n".join(f1_cmds) + "\n"
                + "*NHL commands:*\n" + "\n".join(nhl_cmds) + "\n"
@@ -132,15 +132,6 @@ def command_response(text, bot, chat_id):
             msg = stats + f"\n[Details]({url})"
             if (player_contract is not None):
                 msg = msg + "\nContract:\n" + player_contract + f"\n[Details]({contract_url})"
-        else:
-            msg = "Not available"
-        send_message(msg, chat_id, bot)
-
-    # Warcraft 3 upcoming events
-    if (text == "/wc3info"):
-        events_info = WC3_data.get_events()
-        if (events_info is not None):
-            msg = "*Upcoming events:*\n" + "\n".join(events_info)
         else:
             msg = "Not available"
         send_message(msg, chat_id, bot)
