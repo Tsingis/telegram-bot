@@ -1,5 +1,5 @@
 from logger import logger, OK_RESPONSE, ERROR_RESPONSE
-from scripts import F1_data, NHL_data, WC3_data, weather_data, image_search
+from scripts import F1_data, NHL_data, weather_data, image_search
 
 
 def send_message(msg, chat_id, bot):
