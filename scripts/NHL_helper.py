@@ -1,13 +1,12 @@
-import urllib.request as request
+import requests
 import datetime as dt
-import json
 
 
 # Get JSON formatted data from given url
 def get_data(url):
-    req = request.urlopen(url)
-    if req.getcode() == 200:
-        return json.loads(req.read().decode())
+    res = requests.get(url)
+    if res.status_code == 200:
+        return res.json()
     else:
         return None
 
