@@ -1,23 +1,30 @@
-from apiclient.discovery import build
 import os
+import requests
 from random import choice
 
 
 # Set Google Developer API and CSE ID
-google_apikey = os.environ["GOOGLE_API"]
-cse_id = os.environ["CSE_ID"]
-
-# Set up CSE (Custom Search Engine)
-service = build("customsearch", "v1", developerKey=google_apikey)
+GOOGLE_API_KEY = os.environ["GOOGLE_API"]
+CSE_ID = os.environ["CSE_ID"]
 
 
 # Search image url with given keyword
 def search_image(keyword):
-    # Search image results with CSE
-    results = service.cse().list(q=keyword, cx=cse_id, searchType="image").execute()
+    url = "https://www.googleapis.com/customsearch/v1"
+    params = {
+        "key": GOOGLE_API_KEY,
+        "cx": CSE_ID,
+        "searchType": "image",
+        "lr": "lang_fi",
+        "q": keyword
+    }
+    try:
+        res = requests.get(url=url, params=params)
+        data = res.json()
 
-    # If images exist return random choice from list of urls
-    if "items" in results:
-        return choice([result["link"] for result in results["items"]])
-    else:
+        if "items" in data:
+            return choice([result["link"] for result in data["items"]])
+            # return [result["link"] for result in data["items"]][0]
+
+    except Exception:
         return None
