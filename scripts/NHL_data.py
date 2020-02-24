@@ -226,7 +226,7 @@ def get_player_stats(player_name):
                             f"""Sv: {stats["saves"]} | """
                             f"""Sv%: {round(stats["savePercentage"]*100, 2)} | """
                             f"""GA: {stats["goalsAgainst"]} | """
-                            f"""GAA: {stats["goalAgainstAverage"]} | """
+                            f"""GAA: {round(stats["goalAgainstAverage"], 2)} | """
                             f"""SO: {stats["shutouts"]}""")
             return goalie_stats
         else:
