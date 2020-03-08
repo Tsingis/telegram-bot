@@ -117,18 +117,16 @@ def get_standings():
     # Format results (team - points) in two columns, eastern and western with
     # their respective divisions and wild card spots and contenders
     def format_results(leaders, wilds):
-        east = (["Eastern:"] + [leaders[0]["name"]] + leaders[0]["data"]
+        east = (["EAST"] + [leaders[0]["name"]] + leaders[0]["data"]
                 + [leaders[1]["name"]] + leaders[1]["data"]
-                + ["Wild Card:"] + wilds[0]["data"][:2]
-                + ["Contender:"] + wilds[0]["data"][2:])
+                + ["Wild Card"] + wilds[0]["data"])
 
-        west = (["Western:"] + [leaders[2]["name"]] + leaders[2]["data"]
+        west = (["WEST"] + [leaders[2]["name"]] + leaders[2]["data"]
                 + [leaders[3]["name"]] + leaders[3]["data"]
-                + ["Wild Card:"] + wilds[1]["data"][:2]
-                + ["Contender:"] + wilds[1]["data"][2:])
+                + ["Wild Card"] + wilds[1]["data"])
 
         # Make first column 20 chars wide for slightly better formatting
-        west = list(map(lambda x: x.ljust(20, " "), west))
+        west = list(map(lambda x: x.ljust(23, " "), west))
         return ["".join(result) for result in zip(west, east)]
 
     try:

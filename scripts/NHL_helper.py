@@ -100,7 +100,7 @@ def get_division_leaders():
         leaders = [
             {
                 "name": div["name"],
-                "data": [f"""  {teams[team["team"]["name"]]} - {str(team["points"])}""" for team in div["data"][:3]]
+                "data": [f"""  {teams[team["team"]["name"]]} - {str(team["points"])}/{str(team["gamesPlayed"])}""" for team in div["data"][:3]]
             }
             for div in divs
         ]
@@ -115,11 +115,11 @@ def get_wildcards():
     teams = get_teams()
     try:
         data = get_data(url)["records"]
-        # Get top two wildcards from each conference
+        # Get top five wildcards from each conference
         wilds = [
             {
                 "conf": conf["conference"]["name"],
-                "data": [f"""{teams[wild["team"]["name"]]} - {str(wild["points"])}""" for wild in conf["teamRecords"][:4]]
+                "data": [f"""  {teams[wild["team"]["name"]]} - {str(wild["points"])}/{str(wild["gamesPlayed"])}""" for wild in conf["teamRecords"][:5]]
             }
             for conf in data
         ]
