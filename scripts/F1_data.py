@@ -1,10 +1,9 @@
 import datetime as dt
-
 from scripts.common_helper import set_soup, timezone_difference
 
 
-base_url = "https://www.formula1.com"
-current_date = dt.datetime.utcnow()
+BASE_URL = "https://www.formula1.com"
+CURRENT_DATE = dt.datetime.utcnow()
 
 
 # Find table
@@ -33,11 +32,10 @@ def convert_time(time, offset):
 # Find circuit image
 def get_circuit(country):
     circuit_name = country.replace(" ", "_")
-    url = f"{base_url}/en/racing/{current_date.year}/{circuit_name}.html#circuit"
+    url = f"{BASE_URL}/en/racing/{CURRENT_DATE.year}/{circuit_name}.html#circuit"
     soup = set_soup(url)
 
-    # Get race data
-    data = soup.find_all("picture", {"class": "f1-external-link--no-image"})[-1]
+    data = soup.find("div", {"class": "f1-race-hub--schedule-circuit-map"})
 
     # Get circuit image url from data
     return data.find("img", {"class": "lazy"})["data-src"]
@@ -46,7 +44,7 @@ def get_circuit(country):
 # Finds the current race
 def get_race():
     try:
-        soup = set_soup(base_url)
+        soup = set_soup(BASE_URL)
 
         # Get info of all races
         races = soup.find_all("article", {"class": "race"})
@@ -58,7 +56,7 @@ def get_race():
         dates = [dt.datetime.strptime(date, "%d %b %Y") for date in dates]
 
         # Get race number of the next race. +1 to adjust indexing
-        race_number = len([value for value in dates if value < current_date and value < dates[-1]]) + 1
+        race_number = len([value for value in dates if value < CURRENT_DATE and value < dates[-1]]) + 1
 
         return race_number, len(races)
     except Exception:
@@ -68,13 +66,13 @@ def get_race():
 # Gets top3 drivers from the latest race and url for more details
 def get_results():
     # Find results table
-    results_url = f"{base_url}/en/results.html/{current_date.year}/races.html"
+    results_url = f"{BASE_URL}/en/results.html/{CURRENT_DATE.year}/races.html"
     try:
         results_table = find_table(results_url)
 
         # Find race url
         race_results_href = results_table.find_all("a")[-1]["href"]
-        race_results_url = base_url + race_results_href
+        race_results_url = BASE_URL + race_results_href
 
         # Find top 3 drivers
         race_table = find_table(race_results_url)
@@ -99,7 +97,7 @@ def get_results():
 # Gets top5 drivers from overall standings and url for more details
 def get_standings():
     # Find standings table
-    standings_url = f"{base_url}/en/results.html/{current_date.year}/drivers.html"
+    standings_url = f"{BASE_URL}/en/results.html/{CURRENT_DATE.year}/drivers.html"
     try:
         table = find_table(standings_url)
 
@@ -124,7 +122,7 @@ def get_standings():
 
 # Gets info for the next race
 def get_upcoming():
-    soup = set_soup(base_url)
+    soup = set_soup(BASE_URL)
     try:
         # Get race number
         race_number, _ = get_race()
