@@ -3,13 +3,13 @@
 **Current features:**
 
 - F1 results, standings and upcoming race
-- NHL results, standings, upcoming matches, playoffs bracket, Finnish player stats after each round and player's season stats
+- NHL results, standings, upcoming matches, playoffs bracket, players' stats after each round by nationality and player's season stats
 - Weather info with given location by using Google Geocoding and Dark Sky API
 - Random picture with Google Custom Search Engine by keyword for giggles
 
 **How it works:**
 
-![alt text](https://i.imgur.com/HxHDptq.png)
+![alt text](https://i.imgur.com/kysFaF1.png)
 
 
 **More info:**
