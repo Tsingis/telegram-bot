@@ -1,5 +1,14 @@
 from logger import logger, OK_RESPONSE, ERROR_RESPONSE
-from scripts import F1_data, NHL_data, weather_data, image_search
+from scripts.formulaone import FormulaOne
+from scripts.imagesearch import ImageSearch
+from scripts.weathersearch import WeatherSearch
+from scripts.nhladvanced import NHLAdvanced
+
+
+f1 = FormulaOne()
+img = ImageSearch()
+weather = WeatherSearch()
+nhl = NHLAdvanced()
 
 
 def send_message(msg, chat_id, bot):
@@ -26,7 +35,8 @@ def command_response(text, bot, chat_id):
     if (text == "/bot"):
         f1_cmds = ["/f1info", "/f1results", "/f1standings"]
         nhl_cmds = ["/nhlinfo", "/nhlresults", "/nhlstandings",
-                    "/nhlfinns", "/nhlplayoffs", "/nhlplayer <player name>"]
+                    "/nhlplayers <nationality>", "/nhlplayerinfo <player name>",
+                    "/nhlplayoffs"]
         other_cmds = ["/weather <location>", "/search <keyword>"]
 
         msg = ("*F1 commands:*\n" + "\n".join(f1_cmds) + "\n"
@@ -36,43 +46,39 @@ def command_response(text, bot, chat_id):
 
     # F1 latest race results
     if (text == "/f1results"):
-        url, results = F1_data.get_results()
-        if (url is not None and results is not None):
-            race = url.split("/")[-2].replace("-", " ").title()
-            msg = f"*Results for {race}:*\n" + "\n".join(results) + f"\n[Details]({url})"
+        results = f1.get_results()
+        if (results is not None):
+            msg = f1.format_results(results)
         else:
-            msg = "Not available"
+            msg = "Results not available"
         send_message(msg, chat_id, bot)
 
     # F1 standings
     if (text == "/f1standings"):
-        race_number, max_races = F1_data.get_race()
-        url, standings = F1_data.get_standings()
-        if (standings is not None and race_number is not None):
-            msg = (f"*Standings: {(race_number - 1 if race_number < max_races else race_number)}/{max_races}*\n"
-                   + "\n".join(standings) + f"\n[Details]({url})")
+        standings = f1.get_standings()
+        if (standings is not None):
+            msg = f1.format_standings(standings)
         else:
-            msg = "Not available"
+            msg = "Standings not available"
         send_message(msg, chat_id, bot)
 
     # # F1 upcoming race
     if (text == "/f1info"):
-        info, circuit_img = F1_data.get_upcoming()
-        race_number, max_races = F1_data.get_race()
-        if (info is not None and circuit_img is not None and race_number is not None):
-            msg = (f"*Upcoming race: {race_number}/{max_races}*\n"
-                   + info["grandprix"] + "\n"
-                   + info["weekend"] + " in " + info["country"] + "\n"
-                   + "Qualifying at " + info["qualifying"] + "\n"
-                   + "Race at " + info["race"])
-            send_photo(photo=circuit_img, caption=msg, chat_id=chat_id, bot=bot)
+        info = f1.get_upcoming()
+        if (info is not None):
+            circuit_img = f1.get_circuit(info["country"])
+            msg = f1.format_upcoming(info)
+            if (circuit_img is not None):
+                send_photo(photo=circuit_img, caption=msg, chat_id=chat_id, bot=bot)
+            else:
+                send_message(msg, chat_id, bot)
         else:
-            send_message(msg="Not available", chat_id=chat_id, bot=bot)
+            send_message(msg="Race info not availabe", chat_id=chat_id, bot=bot)
 
     # NHL latest match results
     if (text == "/nhlresults"):
         url = "https://www.livetulokset.com/jaakiekko/"
-        results = NHL_data.get_results()
+        results = nhl.get_results()
         if (results is not None):
             msg = "*Results:*\n" + "\n".join(results) + f"\n[Details]({url})"
         else:
@@ -82,16 +88,16 @@ def command_response(text, bot, chat_id):
     # NHL standings by division
     if (text == "/nhlstandings"):
         url = "https://www.nhl.com/standings/"
-        standings = NHL_data.get_standings()
+        standings = nhl.get_standings()
         if (standings is not None):
             msg = "\n".join(standings) + f"\n[Details]({url})"
         else:
-            msg = "Not available"
+            msg = "Standings not available"
         send_message(msg, chat_id, bot)
 
     # NHL upcoming matches
     if (text == "/nhlinfo"):
-        info = NHL_data.get_upcoming()
+        info = nhl.get_upcoming()
         if (info is not None):
             msg = "*Upcoming matches:*\n" + "\n".join(info)
         else:
@@ -100,59 +106,51 @@ def command_response(text, bot, chat_id):
 
     # NHL playoff bracket
     if (text == "/nhlplayoffs"):
-        bracket_img = NHL_data.create_bracket()
+        bracket_img = nhl.create_bracket()
         if (bracket_img is not None):
             send_photo(photo=bracket_img, caption="", chat_id=chat_id, bot=bot)
         else:
-            send_message(msg="Not available", chat_id=chat_id, bot=bot)
+            send_message(msg="Playoff bracket not available", chat_id=chat_id, bot=bot)
 
     # NHL stats for Finnish players from latest matches
-    if (text == "/nhlfinns"):
-        skaters, goalies = NHL_data.get_finns()
-        if (skaters is not None or goalies is not None):
-            if (len(skaters) > 0 and len(goalies) > 0):
-                msg = "*Skaters:*\n" + "\n".join(skaters) + "\n" + "*Goalies:*\n" + "\n".join(goalies)
-            elif (len(goalies) == 0 and len(skaters) > 0):
-                msg = "*Skaters:*\n" + "\n".join(skaters)
-            elif (len(skaters) == 0 and len(goalies) > 0):
-                msg = "*Goalies:*\n" + "\n".join(goalies)
+    if (text and text.startswith("/nhlplayers")):
+        nationality = text.split("/nhlplayers")[-1].strip().upper()
+        stats = nhl.get_players_stats()
+        if (stats is not None):
+            if (not nationality):
+                msg = nhl.format_players_stats(stats)
             else:
-                msg = "No Finnish players yesterday"
+                msg = nhl.format_players_stats(stats, nationality)
         else:
-            msg = "Not available"
-        send_message(msg, chat_id, bot)
+            msg = "Players stats not available"
+            send_message(msg, chat_id, bot)
 
     # NHL player stats by player name
-    if (text and text.startswith("/nhlplayer")):
-        player_name = text.split("/nhlplayer")[-1].strip().lower()
-        player_id, stats = NHL_data.get_player_stats(player_name)
-        contract_url, player_contract = NHL_data.get_player_contract(player_name)
-        if (stats is not None and player_id is not None):
-            url = f"""https://www.nhl.com/player/{player_name.replace(" ", "-")}-{player_id}"""
-            msg = stats + f"\n[Details]({url})"
-            if (player_contract is not None):
-                msg = msg + "\nContract:\n" + player_contract + f"\n[Details]({contract_url})"
+    if (text and text.startswith("/nhlplayerinfo")):
+        player_name = text.split("/nhlplayerinfo")[-1].strip().lower()
+        stats = nhl.get_player_season_stats(player_name)
+        contract = nhl.get_player_contract(player_name)
+        if (stats is not None):
+            msg = nhl.format_player_info(player_name, stats, contract)
         else:
-            msg = "Not available"
+            msg = "Player info not available"
         send_message(msg, chat_id, bot)
 
     # Weather info by location
     if (text and text.startswith("/weather")):
         location = text.split("/weather")[-1].strip()
-        info = weather_data.get_data(location)
+        info = weather.get_data(location)
         if (info is not None):
-            msg = (f"*Weather for {location.capitalize()}:*\n\n" +
-                   "\n".join([f"{key}: {value}" for (key, value) in info.items()]) +
-                   "\n\n *Powered by Dark Sky*")
+            msg = weather.format_info(info, location)
         else:
-            msg = "Not available"
+            msg = "Weather data not available"
         send_message(msg, chat_id, bot)
 
     # Random Google search image by keyword
     if (text and text.startswith("/search")):
-        keyword = text.split("/search")[-1]
-        photo = image_search.search_image(keyword)
-        if (photo is not None):
-            send_photo(photo=photo, caption="", chat_id=chat_id, bot=bot)
+        keyword = text.split("/search")[-1].strip()
+        image = img.search_random_image(keyword)
+        if (image is not None):
+            send_photo(photo=image, caption="", chat_id=chat_id, bot=bot)
         else:
-            send_message(msg="No results", chat_id=chat_id, bot=bot)
+            send_message(msg="No search results", chat_id=chat_id, bot=bot)
