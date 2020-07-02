@@ -16,10 +16,9 @@ def set_soup(url, target_encoding="latin-1"):
 
 
 # Gets hour difference between UTC and local timezone
-def get_timezone_difference():
-    datetime = dt.datetime.utcnow()
-    if (dt.datetime(2020, 3, 29, 3) < datetime < dt.datetime(2020, 10, 25, 4)
-        or dt.datetime(2021, 3, 28, 3) < datetime < dt.datetime(2021, 10, 31, 4)):
+def get_timezone_difference(date=dt.datetime.utcnow()):
+    if (dt.datetime(2020, 3, 29, 3) < date < dt.datetime(2020, 10, 25, 4)
+        or dt.datetime(2021, 3, 28, 3) < date < dt.datetime(2021, 10, 31, 4)):
         hours = 3
     else:
         hours = 2

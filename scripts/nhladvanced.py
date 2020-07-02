@@ -3,7 +3,7 @@ import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from scripts.nhlbasic import NHLBasic
-from scripts.common import set_soup
+from scripts.common import set_soup, get_timezone_difference
 
 
 class NHLAdvanced(NHLBasic):
@@ -15,21 +15,6 @@ class NHLAdvanced(NHLBasic):
     # Get match results from the latest round
     def get_results(self):
         date = (self.date - dt.timedelta(days=1)).strftime("%Y-%m-%d")
-
-        def format_results(home, away, period):
-            # If period is other than OT, SO, Not started or Live use empty string
-            if (period != "OT" and period != "SO" and period != "Not started" and period != "Live"):
-                period = ""
-
-            # Replace team names with abbreviations
-            if (home["name"] in self.teams):
-                home["name"] = self.teams[home["name"]]
-            if (away["name"] in self.teams):
-                away["name"] = self.teams[away["name"]]
-
-            # Format results in format such as "ANA 5 - 4 TBL OT"
-            return f"""{home["name"]} {home["goals"]} - {away["goals"]} {away["name"]} {period}"""
-
         try:
             game_ids = self.get_game_ids(date)
             games = [self.get_games_linescore(game_id) for game_id in game_ids]
@@ -59,110 +44,145 @@ class NHLAdvanced(NHLBasic):
                 for team in games
             ]
 
-            return [format_results(home_teams[n], away_teams[n], periods[n]).strip() for n in range(len(periods))]
+            return {
+                "home_teams": home_teams,
+                "away_teams": away_teams,
+                "periods": periods
+            }
         except Exception as ex:
             print("Error getting results: " + str(ex))
             return None
 
+    def format_results(self, data):
+        results = []
+        for n, period in enumerate(data["periods"]):
+            home = data["home_teams"][n]
+            away = data["away_teams"][n]
+
+            # If period is other than OT, SO, Not started or Live use empty string
+            if (period != "OT" and period != "SO" and period != "Not started" and period != "Live"):
+                period = ""
+
+            # Replace team names with abbreviations
+            if (home["name"] in self.teams):
+                home["name"] = self.teams[home["name"]]
+            if (away["name"] in self.teams):
+                away["name"] = self.teams[away["name"]]
+
+            # Format results in format such as "ANA 5 - 4 TBL OT"
+            results.append(f"""{home["name"]} {home["goals"]} - {away["goals"]} {away["name"]} {period}""".strip())
+
+        return "\n".join(results)
+
     # Get upcoming matches and times
     def get_upcoming(self):
         date = self.date.strftime("%Y-%m-%d")
+        try:
+            data = self.get_data(self.BASE_URL + f"/schedule?date={date}")
+            games_data = data["dates"][0]["games"]
 
-        def format_schedule(home, away, time):
+            times = [time["gameDate"] for time in games_data]
+            home_teams = [team["teams"]["home"]["team"]["name"] for team in games_data]
+            away_teams = [team["teams"]["away"]["team"]["name"] for team in games_data]
+
+            return {
+                "home_teams": home_teams,
+                "away_teams": away_teams,
+                "times": times
+            }
+        except Exception as ex:
+            print("Error getting upcoming matches: " + str(ex))
+            return None
+
+    def format_upcoming(self, data):
+        results = []
+        for n, time in enumerate(data["times"]):
+            home = data["home_teams"][n]
+            away = data["away_teams"][n]
+
+            # Format times to HH:MM
+            date = dt.datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ")
+            time = dt.datetime.strftime(date + dt.timedelta(hours=get_timezone_difference(date)), "%H:%M")
+
             # Replace team names with abbreviations
             if home in self.teams:
                 home = self.teams[home]
             if away in self.teams:
                 away = self.teams[away]
+
             # Format results in format such as "ANA - TBL at 19:00"
-            return f"""{home} - {away} at {time}"""
+            results.append(f"""{home} - {away} at {time}""")
 
-        # Convert match date to time in HH:MM format
-        def date_to_time(date):
-            date = dt.datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ")
-            # Some poor man timezone handling
-            if (dt.datetime(2020, 3, 29, 3) < date < dt.datetime(2020, 10, 25, 4)
-                or dt.datetime(2019, 3, 31, 3) < date < dt.datetime(2019, 10, 27, 4)):
-                hours = 3
-            else:
-                hours = 2
-            date = date + dt.timedelta(hours=hours)
-            return f"{date.hour:d}:{date.minute:02d}"
-
-        try:
-            data = self.get_data(self.BASE_URL + f"/schedule?date={date}")
-            games_data = data["dates"][0]["games"]
-
-            # Extract dates
-            times = [date_to_time(time["gameDate"]) for time in games_data]
-
-            home_teams = [team["teams"]["home"]["team"]["name"] for team in games_data]
-            away_teams = [team["teams"]["away"]["team"]["name"] for team in games_data]
-
-            return [format_schedule(home_teams[n], away_teams[n], times[n]) for n in range(len(times))]
-        except Exception as ex:
-            print("Error getting upcoming matches: " + str(ex))
-            return None
+        return "\n".join(results)
 
     # Get current standings in Wild Card format
     def get_standings(self):
-        # Format results (team - points) in two columns, eastern and western with
-        # their respective divisions and wild card spots and contenders
-        def format_results(leaders, wilds):
-            east = (["EAST"] + [leaders[0]["name"]] + leaders[0]["data"]
-                    + [leaders[1]["name"]] + leaders[1]["data"]
-                    + ["Wild Card"] + wilds[0]["data"])
-
-            west = (["WEST"] + [leaders[2]["name"]] + leaders[2]["data"]
-                    + [leaders[3]["name"]] + leaders[3]["data"]
-                    + ["Wild Card"] + wilds[1]["data"])
-
-            # Make first column 20 chars wide for slightly better formatting
-            west = list(map(lambda x: x.ljust(23, " "), west))
-            return ["".join(result) for result in zip(west, east)]
-
         try:
-            return format_results(self.get_division_leaders(), self.get_wildcards())
+            return {
+                "division_leaders": self.get_division_leaders(),
+                "wildcards": self.get_wildcards()
+            }
         except Exception as ex:
             print("Error getting standings: " + str(ex))
             return None
 
-    # Get Finnish player statistics from the latest round
-    def get_finns(self):
+    def format_standings(self, data):
+        leaders = data["division_leaders"]
+        wilds = data["wildcards"]
+        east = ([leaders[0]["name"]] + leaders[0]["data"]
+                + [leaders[1]["name"]] + leaders[1]["data"]
+                + ["Wild Card"] + wilds[0]["data"])
+
+        west = ([leaders[2]["name"]] + leaders[2]["data"]
+                + [leaders[3]["name"]] + leaders[3]["data"]
+                + ["Wild Card"] + wilds[1]["data"])
+
+        # Make first column n chars wide for slightly better formatting
+        west = list(map(lambda x: x.ljust(23, " "), west))
+        results = ["".join(result) for result in zip(west, east)]
+        return "\n".join(results)
+
+    # Get layer statistics from the latest round with nationality
+    def get_players_stats(self):
         date = (self.date - dt.timedelta(days=1)).strftime("%Y-%m-%d")
-
-        # Extract last name, stats and team name for each Finnish player
-        def extract_finns(side):
-            players_side = [player["teams"][side]["players"] for player in games]
-
-            players_stats = [
-                [
-                    (value["person"]["lastName"], value["stats"], value["person"]["currentTeam"]["name"])
-                    for key, value in players_side[n].items() if key.startswith("ID")
-                    and "nationality" in value["person"]  # if nationality key exists
-                    and value["person"]["nationality"] == "FIN"  # if player is Finnish
-                    and value["stats"]  # if player was in line-up
-                ]
-                for n in range(len(players_side))
-            ]
-
-            # Remove empty elements
-            players_stats = [elem for elem in players_stats if elem]
-
-            # Flatten player stats list
-            return [elem for sublist in players_stats for elem in sublist]
-
         try:
             game_ids = self.get_game_ids(date)
             games = [self.get_games_boxscore(game_id) for game_id in game_ids]
 
-            finns = extract_finns("away") + extract_finns("home")
+            player_ids = []
+            for game in games:
+                player_ids.append(game["teams"]["away"]["players"])
+                player_ids.append(game["teams"]["home"]["players"])
 
+            # Data for each player
+            players_data = [elem for player in player_ids for elem in [value for key, value in player.items() if key.startswith("ID")]]
+
+            players = []
+            for player in players_data:
+                if ("nationality" in player["person"] and player["stats"]):
+                    players.append({
+                        "firstName": player["person"]["firstName"],
+                        "lastName": player["person"]["lastName"],
+                        "nationality": player["person"]["nationality"],
+                        "team": player["person"]["currentTeam"]["name"],
+                        "stats": player["stats"]
+                    })
+
+            return players
+        except Exception as ex:
+            print("Error getting players stats: " + str(ex))
+            return None
+
+    def format_players_stats(self, data, nationality="FIN"):
+
+        players = [player for player in data if player["nationality"] == nationality]
+
+        if (len(players) > 0):
             # Skaters stats in format: last name (team) | goals+assists | TOI: MM:SS
-            skaters = [player for player in finns if "skaterStats" in player[1]]
+            skaters = [player for player in players if "skaterStats" in player["stats"]]
             skaters_stats = [
-                (f"""{player[0]} ({self.teams[player[2]]}) | {str(player[1]["skaterStats"]["goals"])}"""
-                 f"""+{str(player[1]["skaterStats"]["assists"])} | TOI: {player[1]["skaterStats"]["timeOnIce"]}""")
+                (f"""{player["lastName"]} ({self.teams[player["team"]]}) | {str(player["stats"]["skaterStats"]["goals"])}"""
+                    f"""+{str(player["stats"]["skaterStats"]["assists"])} | TOI: {player["stats"]["skaterStats"]["timeOnIce"]}""")
                 for player in skaters
             ]
 
@@ -178,10 +198,10 @@ class NHLAdvanced(NHLBasic):
             )
 
             # Goalies stats in format: last name (team) | saves/shots | TOI: MM:SS
-            goalies = [player for player in finns if "goalieStats" in player[1]]
+            goalies = [player for player in players if "goalieStats" in player["stats"]]
             goalies_stats = [
-                (f"""{player[0]} ({self.teams[player[2]]}) | {str(player[1]["goalieStats"]["saves"])}"""
-                 f"""/{str(player[1]["goalieStats"]["shots"])} | TOI: {player[1]["goalieStats"]["timeOnIce"]}""")
+                (f"""{player["lastName"]} ({self.teams[player["team"]]}) | {str(player["stats"]["goalieStats"]["saves"])}"""
+                    f"""/{str(player["stats"]["goalieStats"]["shots"])} | TOI: {player["stats"]["goalieStats"]["timeOnIce"]}""")
                 for player in goalies
             ]
 
@@ -196,77 +216,120 @@ class NHLAdvanced(NHLBasic):
                 reverse=True
             )
 
-            return skaters_stats, goalies_stats
-        except Exception as ex:
-            print("Error getting Finnish players: " + str(ex))
-            return None, None
+            skater_header = "*Skaters:*\n"
+            goalie_header = "*Goalies:*\n"
+            if (len(goalies_stats) == 0 and len(skaters_stats) > 0):
+                return skater_header + "\n".join(skaters_stats)
+            elif (len(skaters_stats) == 0 and len(goalies_stats) > 0):
+                return goalie_header + "\n".join(goalies_stats)
+            else:
+                return skater_header + "\n".join(skaters_stats) + "\n" + goalie_header + "\n".join(goalies_stats)
+        else:
+            return f"Players not found for {nationality}"
 
     # Extract player stats with given name
-    def get_player_stats(self, player_name):
-
-        # Capitalize player first name and last name
-        player_name = player_name.lower().strip()
-
-        # Extract and format specific stats for player (goalie or skater)
-        def format_stats(stats, player_position):
-            # Check if player is goalie
-            if (player_position == "Goalie"):
-                goalie_stats = (f"""GP: {stats["games"]} | """
-                                f"""W: {stats["wins"]} | """
-                                f"""Sv: {stats["saves"]} | """
-                                f"""Sv%: {round(stats["savePercentage"]*100, 2)} | """
-                                f"""GA: {stats["goalsAgainst"]} | """
-                                f"""GAA: {round(stats["goalAgainstAverage"], 2)} | """
-                                f"""SO: {stats["shutouts"]}""")
-                return goalie_stats
-            else:
-                skater_stats = (f"""GP: {stats["games"]} | """
-                                f"""G: {stats["goals"]} | """
-                                f"""A: {stats["assists"]} | """
-                                f"""P: {stats["points"]} | """
-                                f"""Sh%: {round(stats["shotPct"], 2)} | """
-                                f"""+/-: {stats["plusMinus"]} | """
-                                f"""TOI/G: {stats["timeOnIcePerGame"]}""")
-                return skater_stats
-
+    def get_player_season_stats(self, player_name):
+        player_name = player_name.title().strip()
         try:
             team_ids = self.get_team_ids()
-            rosters = [self.get_rosters(id) for id in team_ids]
-            players = [elem for sublist in rosters for elem in sublist]
-            player_id = [player[1] for player in players if player[0] == player_name][0]
-
-            # Extract team and position for given player
-            data = self.get_data(self.BASE_URL + f"/people/{player_id}/")
-            player_team = self.teams[data["people"][0]["currentTeam"]["name"]]
-            player_position = data["people"][0]["primaryPosition"]["name"]
-            player_number = data["people"][0]["primaryNumber"]
+            rosters = [self.get_roster(id) for id in team_ids]
+            players = [player for roster in rosters for player in roster]
+            player_id = next(player["id"] for player in players if player["name"] == player_name)
+            player = self.get_data(self.BASE_URL + f"/people/{player_id}/")
 
             # Extract all stats for given player
-            data = self.get_data(self.BASE_URL + f"/people/{player_id}/stats?stats=statsSingleSeason&season={self.season}")
-            stats = data["stats"][0]["splits"][0]["stat"]
+            player_season_data = self.get_data(self.BASE_URL + f"/people/{player_id}/stats?stats=statsSingleSeason&season={self.season}")
+            stats = player_season_data["stats"][0]["splits"][0]["stat"]
 
-            player_info = f"{player_position} #{player_number} for {player_team}\n"
-            player_stats = player_info + format_stats(stats, player_position)
             return {
                 "id": player_id,
-                "data": player_stats
+                "name": player_name,
+                "team": self.teams[player["people"][0]["currentTeam"]["name"]],
+                "position": player["people"][0]["primaryPosition"]["name"],
+                "number": player["people"][0]["primaryNumber"],
+                "stats": stats
             }
         except Exception as ex:
             print("Error getting player stats: " + str(ex))
-            return None, None
+            return None
+
+    def format_player_season_stats(self, data):
+        header = f"""{data["position"]} #{data["number"]} for {data["team"]}\n"""
+        if (data["position"] == "Goalie"):
+            goalie = (f"""GP: {data["stats"]["games"]} | """
+                      f"""W: {data["stats"]["wins"]} | """
+                      f"""W: {data["stats"]["wins"]} | """
+                      f"""Sv: {data["stats"]["saves"]} | """
+                      f"""Sv%: {round(data["stats"]["savePercentage"]*100, 2)} | """
+                      f"""GA: {data["stats"]["goalsAgainst"]} | """
+                      f"""GAA: {round(data["stats"]["goalAgainstAverage"], 2)} | """
+                      f"""SO: {data["stats"]["shutouts"]}""")
+            return header + goalie
+        else:
+            skater = (f"""GP: {data["stats"]["games"]} | """
+                      f"""G: {data["stats"]["goals"]} | """
+                      f"""A: {data["stats"]["assists"]} | """
+                      f"""P: {data["stats"]["points"]} | """
+                      f"""Sh%: {round(data["stats"]["shotPct"], 2)} | """
+                      f"""+/-: {data["stats"]["plusMinus"]} | """
+                      f"""TOI/G: {data["stats"]["timeOnIcePerGame"]}""")
+            return header + skater
+
+    # Get player contract info for current season
+    def get_player_contract(self, player_name):
+        player_name = player_name.replace(" ", "-").replace("\'", "").lower()
+        url = f"https://www.capfriendly.com/players/{player_name}"
+        try:
+            soup = set_soup(url, target_encoding="utf-8")
+
+            # Find table of current contract
+            table = soup.find("table", {"class": "cntrct fixed tbl"})
+
+            # Put data into dataframe
+            data = pd.read_html(table.prettify(), flavor="bs4", header=0)[0]
+
+            # Alter season column format
+            data["SEASON"] = data["SEASON"].apply(lambda x: x.replace("-", "20"))
+
+            # Filter for current season
+            season_mask = data["SEASON"] == self.season
+
+            # Get length, cap hit and total salary of current contract
+            contract = {
+                "length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
+                "cap_hit": data["CAP HIT"][season_mask].values[0],
+                "total_salary": data["TOTAL SALARY"][season_mask].values[0],
+            }
+            return {
+                "contract": contract,
+                "url": url
+            }
+        except Exception as ex:
+            print("Error getting player contract: " + str(ex))
+            return None
+
+    def format_player_contract(self, data):
+        return (f"""Year: {data["contract"]["length"]} | """
+                f"""Cap hit: {data["contract"]["cap_hit"]} | """
+                f"""Total: {data["contract"]["total_salary"]}""")
+
+    def format_player_info(self, name, stats, contract):
+        url = f"""https://www.nhl.com/player/{name.replace(" ", "-")}-{stats["id"]}"""
+        result = self.format_player_season_stats(stats) + f"\n[Details]({url})"
+        if (contract is not None):
+            result = result + "\nContract:\n" + self.format_player_contract(contract) + f"""\n[Details]({contract["url"]})"""
+        return result
 
     # Creates playoff bracket for current season
     def create_bracket(self):
-
         def get_series_data(series):
-            series = {
+            return {
                 "matchup": (self.teams[series["matchupTeams"][0]["team"]["name"]], self.teams[series["matchupTeams"][1]["team"]["name"]]),
                 "status": series["currentGame"]["seriesSummary"]["seriesStatusShort"]
                 # "top": (series["matchupTeams"][0]["seed"]["isTop"], series["matchupTeams"][1]["seed"]["isTop"])
                 # "ranks": (series["matchupTeams"][0]["seed"]["rank"], series["matchupTeams"][1]["seed"]["rank"]),
                 # "record": (series["matchupTeams"][0]["seriesRecord"]["wins"], series["matchupTeams"][0]["seriesRecord"]["losses"])
             }
-            return series
 
         def insert_team_to_bracket(team, location):
             im_team = Image.open(f"static/NHL logos/{team}.gif")
@@ -363,48 +426,3 @@ class NHLAdvanced(NHLBasic):
         except Exception as ex:
             print("Error getting playoff bracket: " + str(ex))
             return None
-
-    # Get player contract info for current season
-    def get_player_contract(self, player_name):
-        player_name = player_name.replace(" ", "-").replace("\'", "").lower()
-        url = f"https://www.capfriendly.com/players/{player_name}"
-        try:
-            soup = set_soup(url, target_encoding="utf-8")
-
-            # Find table of current contract
-            table = soup.find("table", {"class": "cntrct fixed tbl"})
-
-            # Put data into dataframe
-            data = pd.read_html(table.prettify(), flavor="bs4", header=0)[0]
-
-            # Alter season column format
-            data["SEASON"] = data["SEASON"].apply(lambda x: x.replace("-", "20"))
-
-            # Filter for current season
-            season_mask = data["SEASON"] == self.season
-
-            # Get length, cap hit and total salary of current contract
-            contract_info = {
-                "Length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
-                "Cap hit": data["CAP HIT"][season_mask].values[0],
-                "Total salary": data["TOTAL SALARY"][season_mask].values[0],
-            }
-
-            # Format info
-            player_contract = (f"""Year: {contract_info["Length"]} | """
-                               f"""Cap hit: {contract_info["Cap hit"]} | """
-                               f"""Total: {contract_info["Total salary"]}""")
-            return {
-                "data": player_contract,
-                "url": url
-            }
-        except Exception as ex:
-            print("Error getting player contract: " + str(ex))
-            return None
-
-    def format_player_info(self, name, stats, contract):
-        url = f"""https://www.nhl.com/player/{name.replace(" ", "-")}-{stats["id"]}"""
-        msg = stats["data"] + f"\n[Details]({url})"
-        if (contract is not None):
-            msg = msg + "\nContract:\n" + contract["data"] + f"""\n[Details]({contract["url"]})"""
-        return msg

@@ -33,8 +33,7 @@ class NHLBasic:
     def get_teams(self):
         try:
             data = self.get_data(self.BASE_URL + "/teams")
-            teams_data = data["teams"]
-            return {team["name"]: team["abbreviation"] for team in teams_data}
+            return {team["name"]: team["abbreviation"] for team in data["teams"]}
         except Exception as ex:
             print("Error getting teams: " + str(ex))
             return None
@@ -43,8 +42,7 @@ class NHLBasic:
     def get_game_ids(self, date):
         try:
             data = self.get_data(self.BASE_URL + f"/schedule?date={date}")
-            games_data = data["dates"][0]["games"]
-            return [game["link"].split("/")[-3] for game in games_data]
+            return [game["link"].split("/")[-3] for game in data["dates"][0]["games"]]
         except Exception as ex:
             print("Error getting game ids: " + str(ex))
             return None
@@ -69,18 +67,19 @@ class NHLBasic:
     def get_team_ids(self):
         try:
             data = self.get_data(self.BASE_URL + "/teams")
-            teams_data = data["teams"]
-            return [team["id"] for team in teams_data]
+            return [team["id"] for team in data["teams"]]
         except Exception as ex:
             print("Error getting team ids: " + str(ex))
             return None
 
     # Get rosters with teamID
-    def get_rosters(self, team_id):
+    def get_roster(self, team_id):
         try:
             data = self.get_data(self.BASE_URL + f"/teams/{team_id}/roster")
-            roster = data["roster"]
-            return [(player["person"]["fullName"].lower(), player["person"]["id"]) for player in roster]
+            return [{
+                "id": player["person"]["id"],
+                "name": player["person"]["fullName"]
+            } for player in data["roster"]]
         except Exception as ex:
             print("Error getting rosters: " + str(ex))
             return None

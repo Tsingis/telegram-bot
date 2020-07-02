@@ -35,7 +35,8 @@ def command_response(text, bot, chat_id):
     if (text == "/bot"):
         f1_cmds = ["/f1info", "/f1results", "/f1standings"]
         nhl_cmds = ["/nhlinfo", "/nhlresults", "/nhlstandings",
-                    "/nhlfinns", "/nhlplayoffs", "/nhlplayer <player name>"]
+                    "/nhlplayers <nationality>", "/nhlplayerinfo <player name>",
+                    "/nhlplayoffs"]
         other_cmds = ["/weather <location>", "/search <keyword>"]
 
         msg = ("*F1 commands:*\n" + "\n".join(f1_cmds) + "\n"
@@ -49,7 +50,7 @@ def command_response(text, bot, chat_id):
         if (results is not None):
             msg = f1.format_results(results)
         else:
-            msg = "Not available"
+            msg = "Results not available"
         send_message(msg, chat_id, bot)
 
     # F1 standings
@@ -58,7 +59,7 @@ def command_response(text, bot, chat_id):
         if (standings is not None):
             msg = f1.format_standings(standings)
         else:
-            msg = "Not available"
+            msg = "Standings not available"
         send_message(msg, chat_id, bot)
 
     # # F1 upcoming race
@@ -72,7 +73,7 @@ def command_response(text, bot, chat_id):
             else:
                 send_message(msg, chat_id, bot)
         else:
-            send_message(msg="Not available", chat_id=chat_id, bot=bot)
+            send_message(msg="Race info not availabe", chat_id=chat_id, bot=bot)
 
     # NHL latest match results
     if (text == "/nhlresults"):
@@ -91,7 +92,7 @@ def command_response(text, bot, chat_id):
         if (standings is not None):
             msg = "\n".join(standings) + f"\n[Details]({url})"
         else:
-            msg = "Not available"
+            msg = "Standings not available"
         send_message(msg, chat_id, bot)
 
     # NHL upcoming matches
@@ -109,33 +110,30 @@ def command_response(text, bot, chat_id):
         if (bracket_img is not None):
             send_photo(photo=bracket_img, caption="", chat_id=chat_id, bot=bot)
         else:
-            send_message(msg="Not available", chat_id=chat_id, bot=bot)
+            send_message(msg="Playoff bracket not available", chat_id=chat_id, bot=bot)
 
     # NHL stats for Finnish players from latest matches
-    if (text == "/nhlfinns"):
-        skaters, goalies = nhl.get_finns()
-        if (skaters is not None or goalies is not None):
-            if (len(skaters) > 0 and len(goalies) > 0):
-                msg = "*Skaters:*\n" + "\n".join(skaters) + "\n" + "*Goalies:*\n" + "\n".join(goalies)
-            elif (len(goalies) == 0 and len(skaters) > 0):
-                msg = "*Skaters:*\n" + "\n".join(skaters)
-            elif (len(skaters) == 0 and len(goalies) > 0):
-                msg = "*Goalies:*\n" + "\n".join(goalies)
+    if (text and text.startswith("/nhlplayers")):
+        nationality = text.split("/nhlplayers")[-1].strip().upper()
+        stats = nhl.get_players_stats()
+        if (stats is not None):
+            if (not nationality):
+                msg = nhl.format_players_stats(stats)
             else:
-                msg = "No Finnish players yesterday"
+                msg = nhl.format_players_stats(stats, nationality)
         else:
-            msg = "Not available"
-        send_message(msg, chat_id, bot)
+            msg = "Players stats not available"
+            send_message(msg, chat_id, bot)
 
     # NHL player stats by player name
-    if (text and text.startswith("/nhlplayer")):
-        player_name = text.split("/nhlplayer")[-1].strip().lower()
-        stats = nhl.get_player_stats(player_name)
+    if (text and text.startswith("/nhlplayerinfo")):
+        player_name = text.split("/nhlplayerinfo")[-1].strip().lower()
+        stats = nhl.get_player_season_stats(player_name)
         contract = nhl.get_player_contract(player_name)
         if (stats is not None):
             msg = nhl.format_player_info(player_name, stats, contract)
         else:
-            msg = "Not available"
+            msg = "Player info not available"
         send_message(msg, chat_id, bot)
 
     # Weather info by location
@@ -145,7 +143,7 @@ def command_response(text, bot, chat_id):
         if (info is not None):
             msg = weather.format_info(info, location)
         else:
-            msg = "Not available"
+            msg = "Weather data not available"
         send_message(msg, chat_id, bot)
 
     # Random Google search image by keyword
@@ -155,4 +153,4 @@ def command_response(text, bot, chat_id):
         if (image is not None):
             send_photo(photo=image, caption="", chat_id=chat_id, bot=bot)
         else:
-            send_message(msg="No results", chat_id=chat_id, bot=bot)
+            send_message(msg="No search results", chat_id=chat_id, bot=bot)
