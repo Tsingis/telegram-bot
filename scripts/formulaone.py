@@ -134,7 +134,7 @@ class FormulaOne:
         details = f"\n[Details]({url})"
 
         if (race_number is not None or max_races is not None):
-            header = header + f" {race_number}/{max_races}"
+            header = header + f" {(race_number - 1 if race_number < max_races else race_number)}/{max_races}"
 
         formatted_standings = [f"""{result["position"]}. {result["name"]} - {result["points"]}""" for result in data["standings"]]
 
