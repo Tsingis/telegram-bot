@@ -42,7 +42,7 @@ class FormulaOne:
             return None
 
     # Gets top drivers from overall standings and url for more details. Default top 5
-    def get_standings(self, amount=5):
+    def get_driver_standings(self, amount=5):
         # Find standings table
         standings_url = f"{self.BASE_URL}/en/results.html/{self.date.year}/drivers.html"
         try:
@@ -67,7 +67,37 @@ class FormulaOne:
                 "url": standings_url
             }
         except Exception as ex:
-            print("Error getting standings: " + str(ex))
+            print("Error getting driver standings: " + str(ex))
+            return None
+
+    # Gets top teams from overall standings and url for more details. Default top 5
+    def get_team_standings(self, amount=5):
+        # Find standings table
+        standings_url = f"{self.BASE_URL}/en/results.html/{self.date.year}/team.html"
+        try:
+            table = self._find_table(standings_url)
+
+            # Get teams
+            teams = table.find_all("tr")[1:amount + 1]
+
+            # Get position, name and points for each team
+            standings = []
+            for team in teams:
+                row = [col.text.strip() for col in team.find_all("td")]
+                team_name_parts = row[2].split(" ")
+                team_standing = {
+                    "name": " ".join(team_name_parts[:2]) if len(team_name_parts) > 2 else team_name_parts[0],
+                    "position": row[1],
+                    "points": row[-2]
+                }
+                standings.append(team_standing)
+
+            return {
+                "standings": standings,
+                "url": standings_url
+            }
+        except Exception as ex:
+            print("Error getting team standings: " + str(ex))
             return None
 
     # Gets info for the upcoming race

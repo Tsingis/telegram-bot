@@ -33,7 +33,7 @@ def send_photo(photo, caption, chat_id, bot):
 def command_response(text, bot, chat_id):
     # Available bot commands
     if (text == "/bot"):
-        f1_cmds = ["/f1info", "/f1results", "/f1standings"]
+        f1_cmds = ["/f1info", "/f1results", "/f1standings <driver/team>"]
         nhl_cmds = ["/nhlinfo", "/nhlresults", "/nhlstandings",
                     "/nhlplayers <nationality>", "/nhlplayerinfo <player name>",
                     "/nhlplayoffs"]
@@ -54,8 +54,13 @@ def command_response(text, bot, chat_id):
         send_message(msg, chat_id, bot)
 
     # F1 standings
-    if (text == "/f1standings"):
-        standings = f1.get_standings()
+    if (text and text.startswith("/f1standings")):
+        parameter = text.split("/f1standings")[-1].strip().upper()
+        if (parameter == "TEAM"):
+            standings = f1.get_team_standings(10)
+        else:
+            standings = f1.get_driver_standings(10)
+
         if (standings is not None):
             msg = f1.format_standings(standings)
         else:
