@@ -118,9 +118,10 @@ class NHLAdvanced(NHLBasic):
     # Get current standings in Wild Card format
     def get_standings(self):
         try:
+            date = self.date.strftime("%Y-%m-%d")
             return {
-                "division_leaders": self.get_division_leaders(),
-                "wildcards": self.get_wildcards()
+                "division_leaders": self.get_division_leaders(date),
+                "wildcards": self.get_wildcards(date)
             }
         except Exception as ex:
             print("Error getting standings: " + str(ex))
@@ -129,20 +130,26 @@ class NHLAdvanced(NHLBasic):
     def format_standings(self, data):
         leaders = data["division_leaders"]
         wilds = data["wildcards"]
-        east = ([leaders[0]["name"]] + leaders[0]["data"]
-                + [leaders[1]["name"]] + leaders[1]["data"]
-                + ["Wild Card"] + wilds[0]["data"])
 
-        west = ([leaders[2]["name"]] + leaders[2]["data"]
-                + [leaders[3]["name"]] + leaders[3]["data"]
-                + ["Wild Card"] + wilds[1]["data"])
+        def format_team_info(data, type, value):
+            return next(
+                [f"""   {team["name"]} - {team["points"]}/{team["games"]}""".ljust(20, " ")
+                 for team in item["teams"]]
+                for item in data if item[type] == value)
 
-        # Make first column n chars wide for slightly better formatting
-        west = list(map(lambda x: x.ljust(23, " "), west))
-        results = ["".join(result) for result in zip(west, east)]
-        return "\n".join(results)
+        west = (["*Central*".ljust(25, " ")] + format_team_info(leaders, "division", "Central") +
+                ["*Pacific*".ljust(25, " ")] + format_team_info(leaders, "division", "Pacific"))
 
-    # Get layer statistics from the latest round with nationality
+        east = (["*Metropolitan*"] + format_team_info(leaders, "division", "Metropolitan") +
+                ["*Atlantic*"] + format_team_info(leaders, "division", "Atlantic"))
+
+        if (len(wilds) > 0):
+            west = west + ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", "Western")
+            east = east + ["*Wild Card*"] + format_team_info(wilds, "conference", "Eastern")
+
+        return "\n".join([w + e for w, e in zip(west, east)])
+
+    # Get player statistics from the latest round with nationality
     def get_players_stats(self):
         date = (self.date - dt.timedelta(days=1)).strftime("%Y-%m-%d")
         try:

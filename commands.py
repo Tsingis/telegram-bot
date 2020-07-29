@@ -85,7 +85,7 @@ def command_response(text, bot, chat_id):
         url = "https://www.livetulokset.com/jaakiekko/"
         results = nhl.get_results()
         if (results is not None):
-            msg = "*Results:*\n" + "\n".join(results) + f"\n[Details]({url})"
+            msg = f"*Results:*\n{nhl.format_results(results)}\n[Details]({url})"
         else:
             msg = "No matches yesterday"
         send_message(msg, chat_id, bot)
@@ -95,7 +95,7 @@ def command_response(text, bot, chat_id):
         url = "https://www.nhl.com/standings/"
         standings = nhl.get_standings()
         if (standings is not None):
-            msg = "\n".join(standings) + f"\n[Details]({url})"
+            msg = nhl.format_standings(standings) + f"\n[Details]({url})"
         else:
             msg = "Standings not available"
         send_message(msg, chat_id, bot)
@@ -104,7 +104,7 @@ def command_response(text, bot, chat_id):
     if (text == "/nhlinfo"):
         info = nhl.get_upcoming()
         if (info is not None):
-            msg = "*Upcoming matches:*\n" + "\n".join(info)
+            msg = f"*Upcoming matches:*\n{nhl.format_upcoming(info)}"
         else:
             msg = "No upcoming games tomorrow"
         send_message(msg, chat_id, bot)
