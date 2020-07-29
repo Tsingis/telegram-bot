@@ -128,7 +128,7 @@ def command_response(text, bot, chat_id):
                 msg = nhl.format_players_stats(stats, nationality)
         else:
             msg = "Players stats not available"
-            send_message(msg, chat_id, bot)
+        send_message(msg, chat_id, bot)
 
     # NHL player stats by player name
     if (text and text.startswith("/nhlplayerinfo")):
