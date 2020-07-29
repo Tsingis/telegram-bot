@@ -85,43 +85,52 @@ class NHLBasic:
             return None
 
     # Get division leaders
-    def get_division_leaders(self):
+    def get_division_leaders(self, date, amount=3):
         try:
             teams = self.get_teams()
-            data = self.get_data(self.BASE_URL + "/standings/byDivision")
+            data = self.get_data(self.BASE_URL + f"/standings/byDivision?date={date}")
             # Get divisions
             divs = [
                 {
-                    "name": div["division"]["name"], "data": div["teamRecords"]
+                    "division": div["division"]["name"],
+                    "data": div["teamRecords"]
                 }
                 for div in data["records"]
             ]
-            # Get name and points for top 3 teams in each division
-            leaders = [
-                {
-                    "name": div["name"],
-                    "data": [f"""  {teams[team["team"]["name"]]} - {str(team["points"])}/{str(team["gamesPlayed"])}""" for team in div["data"][:3]]
-                }
-                for div in divs
-            ]
+            # Get top three leaders on default from each division
+            leaders = [{
+                "division": div["division"],
+                "teams": [
+                    {
+                        "name": teams[team["team"]["name"]],
+                        "points": str(team["points"]),
+                        "games": str(team["gamesPlayed"])
+                    }
+                    for team in div["data"][:amount]
+                ]}
+                for div in divs]
             return leaders
         except Exception as ex:
             print("Error getting division leaders: " + str(ex))
             return None
 
     # Get wildcards
-    def get_wildcards(self):
+    def get_wildcards(self, date, amount=5):
         try:
             teams = self.get_teams()
-            data = self.get_data(self.BASE_URL + "/standings/wildCard")
-            # Get top five wildcards from each conference
-            wilds = [
-                {
-                    "conf": conf["conference"]["name"],
-                    "data": [f"""  {teams[wild["team"]["name"]]} - {str(wild["points"])}/{str(wild["gamesPlayed"])}""" for wild in conf["teamRecords"][:5]]
-                }
-                for conf in data["records"]
-            ]
+            data = self.get_data(self.BASE_URL + f"/standings/wildCard?date={date}")
+            # Get top five wildcards on default from each conference
+            wilds = [{
+                "conference": conf["conference"]["name"],
+                "teams": [
+                    {
+                        "name": teams[wild["team"]["name"]],
+                        "points": str(wild["points"]),
+                        "games": str(wild["gamesPlayed"])
+                    }
+                    for wild in conf["teamRecords"][:amount]
+                ]}
+                for conf in data["records"]]
             return wilds
         except Exception as ex:
             print("Error getting wildcards: " + str(ex))
