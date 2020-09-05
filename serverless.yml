@@ -14,12 +14,12 @@ provider:
 
 functions:
   webhook:
-    handler: src.handler.webhook
+    handler: src/handler.webhook
     events:
       - http: POST /
 
   set_webhook:
-    handler: src.handler.set_webhook
+    handler: src/handler.set_webhook
     events:
       - http: POST /set_webhook
 
