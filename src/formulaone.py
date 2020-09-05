@@ -1,5 +1,5 @@
 import datetime as dt
-from scripts.common import set_soup, convert_time_to_localtime
+from .common import set_soup, convert_time_to_localtime
 
 
 class FormulaOne:

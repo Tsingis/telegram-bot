@@ -33,7 +33,6 @@ custom:
 package:
   exclude:
     - node_modules/**
-    - venv/**
     - .vscode/**
     - package.json
     - package-lock.json

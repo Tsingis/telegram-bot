@@ -1,33 +1,14 @@
-from logger import logger, OK_RESPONSE, ERROR_RESPONSE
-from scripts.formulaone import FormulaOne
-from scripts.imagesearch import ImageSearch
-from scripts.weathersearch import WeatherSearch
-from scripts.nhladvanced import NHLAdvanced
+from .logger import logger, OK_RESPONSE, ERROR_RESPONSE
+from .formulaone import FormulaOne
+from .imagesearch import ImageSearch
+from .weathersearch import WeatherSearch
+from .nhladvanced import NHLAdvanced
 
 
 f1 = FormulaOne()
 img = ImageSearch()
 weather = WeatherSearch()
 nhl = NHLAdvanced()
-
-
-def send_message(msg, chat_id, bot):
-    try:
-        bot.sendMessage(chat_id=chat_id, text=msg, parse_mode="Markdown",
-                        disable_web_page_preview=True)
-        logger.info("Message sent")
-        return OK_RESPONSE
-    except Exception:
-        return ERROR_RESPONSE
-
-
-def send_photo(photo, caption, chat_id, bot):
-    try:
-        bot.sendPhoto(chat_id=chat_id, photo=photo, caption=caption, parse_mode="Markdown")
-        logger.info("Photo sent")
-        return OK_RESPONSE
-    except Exception:
-        return ERROR_RESPONSE
 
 
 def command_response(text, bot, chat_id):
@@ -42,7 +23,7 @@ def command_response(text, bot, chat_id):
         msg = ("*F1 commands:*\n" + "\n".join(f1_cmds) + "\n"
                + "*NHL commands:*\n" + "\n".join(nhl_cmds) + "\n"
                + "*Other commands:*\n" + "\n".join(other_cmds))
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # F1 latest race results
     if (text == "/f1results"):
@@ -51,7 +32,7 @@ def command_response(text, bot, chat_id):
             msg = f1.format_results(results)
         else:
             msg = "Results not available"
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # F1 standings
     if (text and text.startswith("/f1standings")):
@@ -65,7 +46,7 @@ def command_response(text, bot, chat_id):
             msg = f1.format_standings(standings)
         else:
             msg = "Standings not available"
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # # F1 upcoming race
     if (text == "/f1info"):
@@ -74,11 +55,11 @@ def command_response(text, bot, chat_id):
             circuit_img = f1.get_circuit(info["country"])
             msg = f1.format_upcoming(info)
             if (circuit_img is not None):
-                send_photo(photo=circuit_img, caption=msg, chat_id=chat_id, bot=bot)
+                _send_photo(photo=circuit_img, caption=msg, chat_id=chat_id, bot=bot)
             else:
-                send_message(msg, chat_id, bot)
+                _send_message(msg, chat_id, bot)
         else:
-            send_message(msg="Race info not availabe", chat_id=chat_id, bot=bot)
+            _send_message(msg="Race info not availabe", chat_id=chat_id, bot=bot)
 
     # NHL latest match results
     if (text == "/nhlresults"):
@@ -88,7 +69,7 @@ def command_response(text, bot, chat_id):
             msg = f"*Results:*\n{nhl.format_results(results)}\n[Details]({url})"
         else:
             msg = "No matches yesterday"
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # NHL standings by division
     if (text == "/nhlstandings"):
@@ -98,7 +79,7 @@ def command_response(text, bot, chat_id):
             msg = nhl.format_standings(standings) + f"\n[Details]({url})"
         else:
             msg = "Standings not available"
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # NHL upcoming matches
     if (text == "/nhlinfo"):
@@ -107,15 +88,15 @@ def command_response(text, bot, chat_id):
             msg = f"*Upcoming matches:*\n{nhl.format_upcoming(info)}"
         else:
             msg = "No upcoming games tomorrow"
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # NHL playoff bracket
     if (text == "/nhlplayoffs"):
         bracket_img = nhl.create_bracket()
         if (bracket_img is not None):
-            send_photo(photo=bracket_img, caption="", chat_id=chat_id, bot=bot)
+            _send_photo(photo=bracket_img, caption="", chat_id=chat_id, bot=bot)
         else:
-            send_message(msg="Playoff bracket not available", chat_id=chat_id, bot=bot)
+            _send_message(msg="Playoff bracket not available", chat_id=chat_id, bot=bot)
 
     # NHL stats for Finnish players from latest matches
     if (text and text.startswith("/nhlplayers")):
@@ -128,7 +109,7 @@ def command_response(text, bot, chat_id):
                 msg = nhl.format_players_stats(stats, nationality)
         else:
             msg = "Players stats not available"
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # NHL player stats by player name
     if (text and text.startswith("/nhlplayerinfo")):
@@ -139,7 +120,7 @@ def command_response(text, bot, chat_id):
             msg = nhl.format_player_info(player_name, stats, contract)
         else:
             msg = "Player info not available"
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # Weather info by location
     if (text and text.startswith("/weather")):
@@ -149,13 +130,32 @@ def command_response(text, bot, chat_id):
             msg = weather.format_info(info, location)
         else:
             msg = "Weather data not available"
-        send_message(msg, chat_id, bot)
+        _send_message(msg, chat_id, bot)
 
     # Random Google search image by keyword
     if (text and text.startswith("/search")):
         keyword = text.split("/search")[-1].strip()
         image = img.search_random_image(keyword)
         if (image is not None):
-            send_photo(photo=image, caption="", chat_id=chat_id, bot=bot)
+            _send_photo(photo=image, caption="", chat_id=chat_id, bot=bot)
         else:
-            send_message(msg="No search results", chat_id=chat_id, bot=bot)
+            _send_message(msg="No search results", chat_id=chat_id, bot=bot)
+
+
+def _send_message(msg, chat_id, bot):
+    try:
+        bot.sendMessage(chat_id=chat_id, text=msg, parse_mode="Markdown",
+                        disable_web_page_preview=True)
+        logger.info("Message sent")
+        return OK_RESPONSE
+    except Exception:
+        return ERROR_RESPONSE
+
+
+def _send_photo(photo, caption, chat_id, bot):
+    try:
+        bot.sendPhoto(chat_id=chat_id, photo=photo, caption=caption, parse_mode="Markdown")
+        logger.info("Photo sent")
+        return OK_RESPONSE
+    except Exception:
+        return ERROR_RESPONSE
