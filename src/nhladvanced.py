@@ -2,8 +2,8 @@ import datetime as dt
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-from src.nhlbasic import NHLBasic
-from src.common import set_soup, get_timezone_difference
+from .nhlbasic import NHLBasic
+from .common import set_soup, get_timezone_difference
 
 
 class NHLAdvanced(NHLBasic):

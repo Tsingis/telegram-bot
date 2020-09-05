@@ -1,8 +1,8 @@
-from logger import logger, OK_RESPONSE, ERROR_RESPONSE
-from src.formulaone import FormulaOne
-from src.imagesearch import ImageSearch
-from src.weathersearch import WeatherSearch
-from src.nhladvanced import NHLAdvanced
+from .logger import logger, OK_RESPONSE, ERROR_RESPONSE
+from .formulaone import FormulaOne
+from .imagesearch import ImageSearch
+from .weathersearch import WeatherSearch
+from .nhladvanced import NHLAdvanced
 
 
 f1 = FormulaOne()

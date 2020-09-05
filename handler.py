@@ -1,8 +1,8 @@
 import telegram
 import os
 import json
-from logger import logger, OK_RESPONSE, ERROR_RESPONSE
-from commands import command_response
+from src.logger import logger, OK_RESPONSE, ERROR_RESPONSE
+from src.commands import command_response
 
 
 # Run webhook
