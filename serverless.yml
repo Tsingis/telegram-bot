@@ -14,12 +14,12 @@ provider:
 
 functions:
   webhook:
-    handler: handler.webhook
+    handler: src.handler.webhook
     events:
       - http: POST /
 
   set_webhook:
-    handler: handler.set_webhook
+    handler: src.handler.set_webhook
     events:
       - http: POST /set_webhook
 
@@ -33,7 +33,6 @@ custom:
 package:
   exclude:
     - node_modules/**
-    - venv/**
     - .vscode/**
     - package.json
     - package-lock.json

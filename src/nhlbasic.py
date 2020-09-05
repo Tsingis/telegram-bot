@@ -1,6 +1,6 @@
 import requests
 import datetime as dt
-from scripts.common import get_timezone_difference
+from src.common import get_timezone_difference
 
 
 class NHLBasic:

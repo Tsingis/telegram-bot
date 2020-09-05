@@ -2,8 +2,8 @@ import datetime as dt
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-from scripts.nhlbasic import NHLBasic
-from scripts.common import set_soup, get_timezone_difference
+from src.nhlbasic import NHLBasic
+from src.common import set_soup, get_timezone_difference
 
 
 class NHLAdvanced(NHLBasic):
@@ -359,7 +359,7 @@ class NHLAdvanced(NHLBasic):
                     bracket[series["seriesCode"]] = get_series_data(series)
 
             # Open blank playoff bracket
-            im_bracket = Image.open("static/NHL logos/playoffs.png")
+            im_bracket = Image.open("static/playoffs_template.png")
 
             # bracket.pop("I", None)
             # bracket.pop("J", None)
