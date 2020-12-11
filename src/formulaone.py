@@ -12,30 +12,30 @@ class FormulaOne:
     def get_results(self, amount=3):
         results_url = f"{self.BASE_URL}/en/results.html/{self.date.year}/races.html"
         try:
-            results_table = self._find_table(results_url)
+            resultsTable = self._find_table(results_url)
 
             # Get race url
-            race_results_href = results_table.find_all("a")[-1]["href"]
-            race_results_url = self.BASE_URL + race_results_href
+            raceResultsHref = resultsTable.find_all("a")[-1]["href"]
+            raceResultsUrl = self.BASE_URL + raceResultsHref
 
             # Get drivers
-            results_table = self._find_table(race_results_url)
-            drivers = results_table.find_all("tr")[1:amount + 1]
+            resultsTable = self._find_table(raceResultsUrl)
+            drivers = resultsTable.find_all("tr")[1:amount + 1]
 
             # Get position, name and time for each driver
             results = []
             for driver in drivers:
                 row = [col.text.strip() for col in driver.find_all("td")]
-                driver_result = {
+                driverResult = {
                     "name": str(row[3][-3:]),
                     "position": str(row[1]),
                     "time": str(row[-3])
                 }
-                results.append(driver_result)
+                results.append(driverResult)
 
             return {
                 "results": results,
-                "url": race_results_url
+                "url": raceResultsUrl
             }
         except Exception as ex:
             print("Error getting race results: " + str(ex))
@@ -44,9 +44,9 @@ class FormulaOne:
     # Gets top drivers from overall standings and url for more details. Default top 5
     def get_driver_standings(self, amount=5):
         # Find standings table
-        standings_url = f"{self.BASE_URL}/en/results.html/{self.date.year}/drivers.html"
+        standingsUrl = f"{self.BASE_URL}/en/results.html/{self.date.year}/drivers.html"
         try:
-            table = self._find_table(standings_url)
+            table = self._find_table(standingsUrl)
 
             # Get drivers
             drivers = table.find_all("tr")[1:amount + 1]
@@ -55,16 +55,16 @@ class FormulaOne:
             standings = []
             for driver in drivers:
                 row = [col.text.strip() for col in driver.find_all("td")]
-                driver_standing = {
+                driverStanding = {
                     "name": row[2][-3:],
                     "position": row[1],
                     "points": row[-2]
                 }
-                standings.append(driver_standing)
+                standings.append(driverStanding)
 
             return {
                 "standings": standings,
-                "url": standings_url
+                "url": standingsUrl
             }
         except Exception as ex:
             print("Error getting driver standings: " + str(ex))
@@ -73,9 +73,9 @@ class FormulaOne:
     # Gets top teams from overall standings and url for more details. Default top 5
     def get_team_standings(self, amount=5):
         # Find standings table
-        standings_url = f"{self.BASE_URL}/en/results.html/{self.date.year}/team.html"
+        standingsUrl = f"{self.BASE_URL}/en/results.html/{self.date.year}/team.html"
         try:
-            table = self._find_table(standings_url)
+            table = self._find_table(standingsUrl)
 
             # Get teams
             teams = table.find_all("tr")[1:amount + 1]
@@ -84,17 +84,17 @@ class FormulaOne:
             standings = []
             for team in teams:
                 row = [col.text.strip() for col in team.find_all("td")]
-                team_name_parts = row[2].split(" ")
-                team_standing = {
-                    "name": " ".join(team_name_parts[:2]) if len(team_name_parts) > 2 else team_name_parts[0],
+                teamNameParts = row[2].split(" ")
+                teamStanding = {
+                    "name": " ".join(teamNameParts[:2]) if len(teamNameParts) > 2 else teamNameParts[0],
                     "position": row[1],
                     "points": row[-2]
                 }
-                standings.append(team_standing)
+                standings.append(teamStanding)
 
             return {
                 "standings": standings,
-                "url": standings_url
+                "url": standingsUrl
             }
         except Exception as ex:
             print("Error getting team standings: " + str(ex))
@@ -104,43 +104,39 @@ class FormulaOne:
     def get_upcoming(self):
         try:
             soup = set_soup(self.BASE_URL)
+            race = self._get_current_race()
+            raceNumber = race["number"]
+            raceData = soup.find_all("article", {"class": "race"})[raceNumber - 1]
 
-            # Get race number
-            race_number = self._get_current_race_number()
+            # Location, Grand Prix name and url
+            location = raceData.find("span", {"class": "name"}).text.title()
+            titleElem = raceData.find("h3", {"class": "race-title"})
+            gp = titleElem.text
+            raceUrl = titleElem.find("a", href=True)["href"]
 
-            # Find race data for upcoming race
-            race_data = soup.find_all("article", {"class": "race"})[race_number - 1]
+            # Qualifying and race times
+            timesElem = raceData.find_all("time", {"class": "clock-24"})
+            qualif = timesElem[-3].text.strip()
+            race = timesElem[-1].text.strip()
+            offset = timesElem[0]["data-gmt-offset"]
 
-            # Find url for country name and Grand Prix name
-            country = race_data.find("span", {"class": "name"}).text.title()
-            gp = race_data.find("h3", {"class": "race-title"}).text
-
-            # Find qualifying and race times
-            qualif = race_data.find_all("time", {"class": "clock-24"})[-3].text.strip()
-            race = race_data.find_all("time", {"class": "clock-24"})[-1].text.strip()
-
-            # Find race weekend date range
-            start = race_data.find("time", {"class": "from"}).text.strip()
-            end = race_data.find("time", {"class": "to"}).text.strip()
+            # Race weekend date range
+            start = raceData.find("time", {"class": "from"}).text.strip()
+            end = raceData.find("time", {"class": "to"}).text.strip()
             weekend = start[:-5] + " - " + end[:-5]
 
-            # Find time offset from UTC
-            offset = race_data.find("time", {"class": "clock-24"})["data-gmt-offset"]
-
             # Convert times to local from race time
-            qualif_time = convert_time_to_localtime(qualif, offset)
-            race_time = convert_time_to_localtime(race, offset)
-
-            # Gather info
-            race_info = {
+            qualifTime = convert_time_to_localtime(qualif, offset)
+            raceTime = convert_time_to_localtime(race, offset)
+            
+            return {
                 "grandprix": gp,
                 "weekend": weekend,
-                "country": country,
-                "qualifying": qualif_time,
-                "race": race_time
+                "location": location,
+                "qualifying": qualifTime,
+                "race": raceTime,
+                "raceUrl": self.BASE_URL + raceUrl
             }
-
-            return race_info
         except Exception as ex:
             print("Error getting upcoming race: " + str(ex))
             return None
@@ -151,49 +147,48 @@ class FormulaOne:
 
         header = f"Results for {race}:"
         details = f"\n[Details]({url})"
-        formatted_results = [f"""{result["position"]}. {result["name"]} {result["time"]}""" for result in data["results"]]
+        formattedResults = [f"""{result["position"]}. {result["name"]} {result["time"]}""" for result in data["results"]]
 
-        return f"*{header}*\n" + "\n".join(formatted_results) + details
+        return f"*{header}*\n" + "\n".join(formattedResults) + details
 
     def format_standings(self, data):
         url = data["url"]
-        race_number = self._get_current_race_number()
-        max_races = len(self._get_races())
+        race = self._get_current_race()
+        raceNumber = race["number"]
+        raceDate = race["date"]
+        maxRaces = len(self._get_races())
 
         header = "Standings:"
         details = f"\n[Details]({url})"
 
-        if (race_number is not None or max_races is not None):
-            header = header + f" {(race_number - 1 if race_number < max_races else race_number)}/{max_races}"
+        if (raceNumber is not None or maxRaces is not None):
+            header = header + f" {(raceNumber - 1 if self.date < raceDate else raceNumber)}/{maxRaces}"
 
-        formatted_standings = [f"""{result["position"]}. {result["name"]} - {result["points"]}""" for result in data["standings"]]
+        formattedStandings = [f"""{result["position"]}. {result["name"]} - {result["points"]}""" for result in data["standings"]]
 
-        return f"*{header}*\n" + "\n".join(formatted_standings) + details
+        return f"*{header}*\n" + "\n".join(formattedStandings) + details
 
     def format_upcoming(self, data):
-        race_number = self._get_current_race_number()
-        max_races = len(self._get_races())
+        race = self._get_current_race()
+        raceNumber = race["number"]
+        maxRaces = len(self._get_races())
 
         header = "Upcoming race:"
-        if (race_number is not None or max_races is not None):
-            header = header + f" {race_number}/{max_races}"
+        if (raceNumber is not None or maxRaces is not None):
+            header = header + f" {raceNumber}/{maxRaces}"
 
-        formatted_raceinfo = (f"""{data["grandprix"]}\n""" +
-                              f"""{data["weekend"]} in {data["country"]}\n""" +
-                              f"""Qualifying at {data["qualifying"]}\n""" +
-                              f"""Race at {data["race"]}""")
+        formattedRaceInfo = (f"""{data["grandprix"]}\n""" +
+                             f"""{data["weekend"]} in {data["location"]}\n""" +
+                             f"""Qualifying at {data["qualifying"]}\n""" +
+                             f"""Race at {data["race"]}""")
 
-        return f"*{header}*\n" + formatted_raceinfo
+        return f"*{header}*\n" + formattedRaceInfo
 
     # Gets circuit image
-    def get_circuit(self, country):
-        circuit_name = country.replace(" ", "_")
-        url = f"{self.BASE_URL}/en/racing/{self.date.year}/{circuit_name}.html#circuit"
+    def get_circuit(self, raceUrl):
         try:
-            soup = set_soup(url)
+            soup = set_soup(raceUrl)
             data = soup.find("div", {"class": "f1-race-hub--schedule-circuit-map"})
-
-            # Get circuit image url from data
             return data.find("img", {"class": "lazy"})["data-src"]
         except Exception as ex:
             print("Error getting circuit image: " + str(ex))
@@ -217,18 +212,18 @@ class FormulaOne:
             return None
 
     # Gets the number of current race
-    def _get_current_race_number(self):
+    def _get_current_race(self):
         try:
             races = self._get_races()
-
-            # Get dates for each race
             date_strs = [race.find("time", {"class": "to date-full"}).text.strip() for race in races]
-            # Convert date strings to datetime
             dates = [dt.datetime.strptime(date, "%d %b %Y") for date in date_strs]
 
             # Get race number of the next race.
-            race_number = len([value for value in dates if value < self.date and value < dates[-1]]) + 1
-            return race_number
+            raceNumber = len([value for value in dates if value < self.date and value < dates[-1]]) + 1
+            return {
+                "number": raceNumber,
+                "date": dates[raceNumber - 1]
+            }
         except Exception as ex:
             print("Error getting number of the current race: " + str(ex))
             return None
