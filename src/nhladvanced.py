@@ -45,8 +45,8 @@ class NHLAdvanced(NHLBasic):
             ]
 
             return {
-                "home_teams": home_teams,
-                "away_teams": away_teams,
+                "homeTeams": home_teams,
+                "awayTeams": away_teams,
                 "periods": periods
             }
         except Exception as ex:
@@ -56,8 +56,8 @@ class NHLAdvanced(NHLBasic):
     def format_results(self, data):
         results = []
         for n, period in enumerate(data["periods"]):
-            home = data["home_teams"][n]
-            away = data["away_teams"][n]
+            home = data["homeTeams"][n]
+            away = data["awayTeams"][n]
 
             # If period is other than OT, SO, Not started or Live use empty string
             if (period != "OT" and period != "SO" and period != "Not started" and period != "Live"):
@@ -86,8 +86,8 @@ class NHLAdvanced(NHLBasic):
             away_teams = [team["teams"]["away"]["team"]["name"] for team in games_data]
 
             return {
-                "home_teams": home_teams,
-                "away_teams": away_teams,
+                "homeTeams": home_teams,
+                "awayTeams": away_teams,
                 "times": times
             }
         except Exception as ex:
@@ -97,8 +97,8 @@ class NHLAdvanced(NHLBasic):
     def format_upcoming(self, data):
         results = []
         for n, time in enumerate(data["times"]):
-            home = data["home_teams"][n]
-            away = data["away_teams"][n]
+            home = data["homeTeams"][n]
+            away = data["awayTeams"][n]
 
             # Format times to HH:MM
             date = dt.datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ")
@@ -119,24 +119,29 @@ class NHLAdvanced(NHLBasic):
     def get_standings(self):
         try:
             date = self.date.strftime("%Y-%m-%d")
+            wildcards = self.get_wildcards(date)
+            if (len(wildcards) > 0):
+                division_leaders = self.get_division_leaders(date)
+            else:
+                division_leaders = self.get_division_leaders(date, 5)
             return {
-                "division_leaders": self.get_division_leaders(date),
-                "wildcards": self.get_wildcards(date)
+                "divisionLeaders": division_leaders,
+                "wildcards": wildcards
             }
         except Exception as ex:
             print("Error getting standings: " + str(ex))
             return None
 
     def format_standings(self, data):
-        leaders = data["division_leaders"]
+        leaders = data["divisionLeaders"]
         wilds = data["wildcards"]
-        divisions = [item["division"] for item in leaders]
+        divisions = [item["division"].split(" ")[-1] if " " in item["division"] else item["division"] for item in leaders]
 
         def format_team_info(data, type, value):
             return next(
                 [f"""   {team["name"]} - {team["points"]}/{team["games"]}""".ljust(20, " ")
                  for team in item["teams"]]
-                for item in data if item[type] in value)
+                for item in data if value in item[type])
 
         west = ([f"*{divisions[0]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[0]) +
                 [f"*{divisions[1]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[1]))
@@ -145,8 +150,8 @@ class NHLAdvanced(NHLBasic):
                 [f"*{divisions[3]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[3]))
 
         if (len(wilds) > 0):
-            west = west + ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", "Western")
-            east = east + ["*Wild Card*"] + format_team_info(wilds, "conference", "Eastern")
+            west += ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", "Western")
+            east += ["*Wild Card*"] + format_team_info(wilds, "conference", "Eastern")
 
         return "\n".join([w + e for w, e in zip(west, east)])
 
@@ -305,8 +310,8 @@ class NHLAdvanced(NHLBasic):
             # Get length, cap hit and total salary of current contract
             contract = {
                 "length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
-                "cap_hit": data["CAP HIT"][season_mask].values[0],
-                "total_salary": data["TOTAL SALARY"][season_mask].values[0],
+                "capHit": data["CAP HIT"][season_mask].values[0],
+                "totalSalary": data["TOTAL SALARY"][season_mask].values[0],
             }
             return {
                 "contract": contract,
@@ -318,14 +323,16 @@ class NHLAdvanced(NHLBasic):
 
     def format_player_contract(self, data):
         return (f"""Year: {data["contract"]["length"]} | """
-                f"""Cap hit: {data["contract"]["cap_hit"]} | """
-                f"""Total: {data["contract"]["total_salary"]}""")
+                f"""Cap hit: {data["contract"]["capHit"]} | """
+                f"""Total: {data["contract"]["totalSalary"]}""")
 
     def format_player_info(self, name, stats, contract):
-        url = f"""https://www.nhl.com/player/{name.replace(" ", "-")}-{stats["id"]}"""
-        result = self.format_player_season_stats(stats) + f"\n[Details]({url})"
+        result = ""
+        if (stats is not None):
+            url = f"""https://www.nhl.com/player/{name.replace(" ", "-")}-{stats["id"]}"""
+            result += self.format_player_season_stats(stats) + f"\n[Details]({url})"
         if (contract is not None):
-            result = result + "\nContract:\n" + self.format_player_contract(contract) + f"""\n[Details]({contract["url"]})"""
+            result += "\nContract:\n" + self.format_player_contract(contract) + f"""\n[Details]({contract["url"]})"""
         return result
 
     # Creates playoff bracket for current season

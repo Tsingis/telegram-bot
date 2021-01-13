@@ -115,7 +115,7 @@ def command_response(text, bot, chatId):
         playerName = text.split("/nhlplayerinfo")[-1].strip().lower()
         stats = nhl.get_player_season_stats(playerName)
         contract = nhl.get_player_contract(playerName)
-        if (stats is not None):
+        if (stats is not None or contract is not None):
             msg = nhl.format_player_info(playerName, stats, contract)
         else:
             msg = "Player info not available"
