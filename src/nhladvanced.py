@@ -145,8 +145,8 @@ class NHLAdvanced(NHLBasic):
                 [f"*{divisions[3]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[3]))
 
         if (len(wilds) > 0):
-            west = west + ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", "Western")
-            east = east + ["*Wild Card*"] + format_team_info(wilds, "conference", "Eastern")
+            west += ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", "Western")
+            east += ["*Wild Card*"] + format_team_info(wilds, "conference", "Eastern")
 
         return "\n".join([w + e for w, e in zip(west, east)])
 
@@ -322,10 +322,12 @@ class NHLAdvanced(NHLBasic):
                 f"""Total: {data["contract"]["total_salary"]}""")
 
     def format_player_info(self, name, stats, contract):
-        url = f"""https://www.nhl.com/player/{name.replace(" ", "-")}-{stats["id"]}"""
-        result = self.format_player_season_stats(stats) + f"\n[Details]({url})"
+        result = ""
+        if (stats is not None):
+            url = f"""https://www.nhl.com/player/{name.replace(" ", "-")}-{stats["id"]}"""
+            result += self.format_player_season_stats(stats) + f"\n[Details]({url})"
         if (contract is not None):
-            result = result + "\nContract:\n" + self.format_player_contract(contract) + f"""\n[Details]({contract["url"]})"""
+            result += "\nContract:\n" + self.format_player_contract(contract) + f"""\n[Details]({contract["url"]})"""
         return result
 
     # Creates playoff bracket for current season
