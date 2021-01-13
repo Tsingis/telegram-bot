@@ -130,18 +130,19 @@ class NHLAdvanced(NHLBasic):
     def format_standings(self, data):
         leaders = data["division_leaders"]
         wilds = data["wildcards"]
+        divisions = [item["division"] for item in leaders]
 
         def format_team_info(data, type, value):
             return next(
                 [f"""   {team["name"]} - {team["points"]}/{team["games"]}""".ljust(20, " ")
                  for team in item["teams"]]
-                for item in data if item[type] == value)
+                for item in data if item[type] in value)
 
-        west = (["*Central*".ljust(25, " ")] + format_team_info(leaders, "division", "Central") +
-                ["*Pacific*".ljust(25, " ")] + format_team_info(leaders, "division", "Pacific"))
+        west = ([f"*{divisions[0]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[0]) +
+                [f"*{divisions[1]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[1]))
 
-        east = (["*Metropolitan*"] + format_team_info(leaders, "division", "Metropolitan") +
-                ["*Atlantic*"] + format_team_info(leaders, "division", "Atlantic"))
+        east = ([f"*{divisions[2]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[2]) +
+                [f"*{divisions[3]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[3]))
 
         if (len(wilds) > 0):
             west = west + ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", "Western")
