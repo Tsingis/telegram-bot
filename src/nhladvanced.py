@@ -120,7 +120,7 @@ class NHLAdvanced(NHLBasic):
         try:
             date = self.date.strftime("%Y-%m-%d")
             return {
-                "division_leaders": self.get_division_leaders(date),
+                "division_leaders": self.get_division_leaders(date, 5),
                 "wildcards": self.get_wildcards(date)
             }
         except Exception as ex:
