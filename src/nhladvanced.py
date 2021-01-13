@@ -130,9 +130,7 @@ class NHLAdvanced(NHLBasic):
     def format_standings(self, data):
         leaders = data["division_leaders"]
         wilds = data["wildcards"]
-
         divisions = [item["division"] for item in leaders]
-        print(divisions)
 
         def format_team_info(data, type, value):
             return next(
