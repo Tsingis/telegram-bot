@@ -271,7 +271,8 @@ class NHLAdvanced(NHLBasic):
         if (data["position"] == "Goalie"):
             goalie = (f"""GP: {data["stats"]["games"]} | """
                       f"""W: {data["stats"]["wins"]} | """
-                      f"""W: {data["stats"]["wins"]} | """
+                      f"""L: {data["stats"]["losses"]} | """
+                      f"""OT: {data["stats"]["ot"]} | """
                       f"""Sv: {data["stats"]["saves"]} | """
                       f"""Sv%: {round(data["stats"]["savePercentage"]*100, 2)} | """
                       f"""GA: {data["stats"]["goalsAgainst"]} | """
@@ -285,6 +286,7 @@ class NHLAdvanced(NHLBasic):
                       f"""P: {data["stats"]["points"]} | """
                       f"""Sh%: {round(data["stats"]["shotPct"], 2)} | """
                       f"""+/-: {data["stats"]["plusMinus"]} | """
+                      f"""PIM: {data["stats"]["pim"]} | """
                       f"""TOI/G: {data["stats"]["timeOnIcePerGame"]}""")
             return header + skater
 
