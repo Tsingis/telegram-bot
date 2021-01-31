@@ -92,6 +92,7 @@ class NHLBasic:
             # Get divisions
             divs = [
                 {
+                    "conference": div["conference"]["name"],
                     "division": div["division"]["name"],
                     "data": div["teamRecords"]
                 }
@@ -99,6 +100,7 @@ class NHLBasic:
             ]
             # Get top three leaders on default from each division
             leaders = [{
+                "conference": div["conference"],
                 "division": div["division"],
                 "teams": [
                     {
