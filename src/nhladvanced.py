@@ -135,7 +135,11 @@ class NHLAdvanced(NHLBasic):
     def format_standings(self, data):
         leaders = data["divisionLeaders"]
         wilds = data["wildcards"]
-        divisions = [item["division"].split(" ")[-1] if " " in item["division"] else item["division"] for item in leaders]
+        divisions = [
+            {
+                "name": item["division"].split(" ")[-1] if " " in item["division"] else item["division"],
+                "conference": item["conference"]
+            } for item in leaders]
 
         def format_team_info(data, type, value):
             return next(
@@ -143,17 +147,17 @@ class NHLAdvanced(NHLBasic):
                  for team in item["teams"]]
                 for item in data if value in item[type])
 
-        west = ([f"*{divisions[0]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[0]) +
-                [f"*{divisions[1]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[1]))
+        west = ([f"""*{divisions[0]["name"]}*""".ljust(25, " ")] + format_team_info(leaders, "division", divisions[0]["name"]) +
+                [f"""*{divisions[1]["name"]}*""".ljust(25, " ")] + format_team_info(leaders, "division", divisions[1]["name"]))
 
-        east = ([f"*{divisions[2]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[2]) +
-                [f"*{divisions[3]}*".ljust(25, " ")] + format_team_info(leaders, "division", divisions[3]))
+        east = ([f"""*{divisions[2]["name"]}*""".ljust(25, " ")] + format_team_info(leaders, "division", divisions[2]["name"]) +
+                [f"""*{divisions[3]["name"]}*""".ljust(25, " ")] + format_team_info(leaders, "division", divisions[3]["name"]))
 
         if (len(wilds) > 0):
-            west += ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", "Western")
-            east += ["*Wild Card*"] + format_team_info(wilds, "conference", "Eastern")
+            west += ["*Wild Card*"] + format_team_info(wilds, "conference", divisions[0]["conference"])
+            east += ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", divisions[2]["conference"])
 
-        return "\n".join([w + e for w, e in zip(west, east)])
+        return "\n".join([e + w for w, e in zip(west, east)])
 
     # Get player statistics from the latest round with nationality
     def get_players_stats(self):
