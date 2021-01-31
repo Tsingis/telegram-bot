@@ -133,13 +133,13 @@ class NHLAdvanced(NHLBasic):
             return None
 
     def format_standings(self, data):
-        leaders = data["divisionLeaders"]
-        wilds = data["wildcards"]
-        divisions = [
+        leaders = sorted(data["divisionLeaders"], key=lambda x: x["conference"])
+        wilds = sorted(data["wildcards"], key=lambda x: x["conference"])
+        divisions = sorted([
             {
                 "name": item["division"].split(" ")[-1] if " " in item["division"] else item["division"],
                 "conference": item["conference"]
-            } for item in leaders]
+            } for item in leaders], key=lambda x: x["conference"])
 
         def format_team_info(data, type, value):
             return next(
