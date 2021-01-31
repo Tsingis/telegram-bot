@@ -123,7 +123,7 @@ class NHLAdvanced(NHLBasic):
             if (len(wildcards) > 0):
                 division_leaders = self.get_division_leaders(date)
             else:
-                division_leaders = self.get_division_leaders(date, 5)
+                division_leaders = self.get_division_leaders(date, amount=5)
             return {
                 "divisionLeaders": division_leaders,
                 "wildcards": wildcards
