@@ -43,7 +43,6 @@ class NHLAdvanced(NHLBasic):
                 }
                 for team in games
             ]
-
             return {
                 "homeTeams": home_teams,
                 "awayTeams": away_teams,
@@ -71,7 +70,6 @@ class NHLAdvanced(NHLBasic):
 
             # Format results in format such as "ANA 5 - 4 TBL OT"
             results.append(f"""{home["name"]} {home["goals"]} - {away["goals"]} {away["name"]} {period}""".strip())
-
         return "\n".join(results)
 
     # Get upcoming matches and times
@@ -80,11 +78,9 @@ class NHLAdvanced(NHLBasic):
         try:
             data = self.get_data(self.BASE_URL + f"/schedule?date={date}")
             games_data = data["dates"][0]["games"]
-
             times = [time["gameDate"] for time in games_data]
             home_teams = [team["teams"]["home"]["team"]["name"] for team in games_data]
             away_teams = [team["teams"]["away"]["team"]["name"] for team in games_data]
-
             return {
                 "homeTeams": home_teams,
                 "awayTeams": away_teams,
@@ -112,7 +108,6 @@ class NHLAdvanced(NHLBasic):
 
             # Format results in format such as "ANA - TBL at 19:00"
             results.append(f"""{home} - {away} at {time}""")
-
         return "\n".join(results)
 
     # Get current standings in Wild Card format
@@ -147,15 +142,18 @@ class NHLAdvanced(NHLBasic):
                  for team in item["teams"]]
                 for item in data if value in item[type])
 
-        west = ([f"""*{divisions[0]["name"]}*""".ljust(25, " ")] + format_team_info(leaders, "division", divisions[0]["name"]) +
-                [f"""*{divisions[1]["name"]}*""".ljust(25, " ")] + format_team_info(leaders, "division", divisions[1]["name"]))
+        def format_header(text):
+            return [f"*{text}*".ljust(25, " ")]
 
-        east = ([f"""*{divisions[2]["name"]}*""".ljust(25, " ")] + format_team_info(leaders, "division", divisions[2]["name"]) +
-                [f"""*{divisions[3]["name"]}*""".ljust(25, " ")] + format_team_info(leaders, "division", divisions[3]["name"]))
+        west = (format_header(divisions[0]["name"]) + format_team_info(leaders, "division", divisions[0]["name"]) +
+                format_header(divisions[1]["name"]) + format_team_info(leaders, "division", divisions[1]["name"]))
+
+        east = (format_header(divisions[2]["name"]) + format_team_info(leaders, "division", divisions[2]["name"]) +
+                format_header(divisions[3]["name"]) + format_team_info(leaders, "division", divisions[3]["name"]))
 
         if (len(wilds) > 0):
-            west += ["*Wild Card*"] + format_team_info(wilds, "conference", divisions[0]["conference"])
-            east += ["*Wild Card*".ljust(25, " ")] + format_team_info(wilds, "conference", divisions[2]["conference"])
+            west += format_header("Wild Card") + format_team_info(wilds, "conference", divisions[0]["conference"])
+            east += format_header("Wild Card") + format_team_info(wilds, "conference", divisions[2]["conference"])
 
         return "\n".join([e + w for w, e in zip(west, east)])
 
@@ -165,16 +163,17 @@ class NHLAdvanced(NHLBasic):
         try:
             game_ids = self.get_game_ids(date)
             games = [self.get_games_boxscore(game_id) for game_id in game_ids]
-
             player_ids = []
             for game in games:
                 player_ids.append(game["teams"]["away"]["players"])
                 player_ids.append(game["teams"]["home"]["players"])
 
             # Data for each player
-            players_data = [elem for player in player_ids for elem in [value for key, value in player.items() if key.startswith("ID")]]
-
             players = []
+            players_data = [
+                elem for player in player_ids for elem in
+                [value for key, value in player.items() if key.startswith("ID")]
+            ]
             for player in players_data:
                 if ("nationality" in player["person"] and player["stats"]):
                     players.append({
@@ -184,16 +183,13 @@ class NHLAdvanced(NHLBasic):
                         "team": player["person"]["currentTeam"]["name"],
                         "stats": player["stats"]
                     })
-
             return players
         except Exception as ex:
             print("Error getting players stats: " + str(ex))
             return None
 
     def format_players_stats(self, data, nationality="FIN"):
-
         players = [player for player in data if player["nationality"] == nationality]
-
         if (len(players) > 0):
             # Skaters stats in format: last name (team) | goals+assists | TOI: MM:SS
             skaters = [player for player in players if "skaterStats" in player["stats"]]
@@ -257,7 +253,6 @@ class NHLAdvanced(NHLBasic):
             # Extract all stats for given player
             player_season_data = self.get_data(self.BASE_URL + f"/people/{player_id}/stats?stats=statsSingleSeason&season={self.season}")
             stats = player_season_data["stats"][0]["splits"][0]["stat"]
-
             return {
                 "id": player_id,
                 "name": player_name,
