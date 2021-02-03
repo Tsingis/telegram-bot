@@ -47,6 +47,7 @@ class FormulaOne:
         standingsUrl = f"{self.BASE_URL}/en/results.html/{self.date.year}/drivers.html"
         try:
             table = self._find_table(standingsUrl)
+            print(table)
 
             # Get drivers
             drivers = table.find_all("tr")[1:amount + 1]
