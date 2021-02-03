@@ -70,6 +70,7 @@ class Command():
 
     # Available bot commands
     def available_commands(self):
+        header = "*Available commands:*\n"
         cmds = [
             IMAGE_SEARCH_CMD + " <keyword>",
             WEATHER_SEARCH_CMD + " <location>",
@@ -83,7 +84,7 @@ class Command():
             NHL_PLAYER_INFO_CMD + " <player name>",
             NHL_PLAYOFFS_CMD
         ]
-        return Response(text="\n".join(cmds))
+        return Response(text=header + "\n".join(cmds))
 
     # Random Google search image by keyword
     def search_img(self):
