@@ -1,0 +1,50 @@
+import datetime as dt
+import pandas as pd
+from .nhlbase import NHLBase
+from .common import set_soup
+
+
+class NHLExtra(NHLBase):
+    def __init__(self, date=dt.datetime.utcnow()):
+        super().__init__(date)
+        self.season = self.get_season()
+
+    # Get player contract info for current season
+    def get_player_contract(self, player_name):
+        player_name = player_name.replace(" ", "-").replace("\'", "").lower()
+        url = f"https://www.capfriendly.com/players/{player_name}"
+        try:
+            soup = set_soup(url, target_encoding="utf-8")
+
+            # Find table of current contract
+            table = soup.find("table", {"class": "cntrct fixed tbl"})
+
+            # Put data into dataframe
+            data = pd.read_html(table.prettify(), flavor="bs4", header=0)[0]
+
+            # Alter season column format
+            data["SEASON"] = data["SEASON"].apply(lambda x: x.replace("-", "20"))
+
+            # Filter for current season
+            season_mask = data["SEASON"] == self.season
+
+            # Get length, cap hit and total salary of current contract
+            contract = {
+                "length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
+                "capHit": data["CAP HIT"][season_mask].values[0],
+                "totalSalary": data["TOTAL SALARY"][season_mask].values[0],
+            }
+            return {
+                "contract": contract,
+                "url": url
+            }
+        except Exception as ex:
+            print("Error getting player contract: " + str(ex))
+            return None
+
+    def format_player_contract(self, data):
+        header = "Contract:\n"
+        contract = (f"""Year: {data["contract"]["length"]} | """ +
+                    f"""Cap hit: {data["contract"]["capHit"]} | """ +
+                    f"""Total: {data["contract"]["totalSalary"]}""")
+        return header + contract + f"""\n[Details]({data["url"]})"""

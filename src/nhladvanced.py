@@ -1,12 +1,11 @@
 import datetime as dt
-import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-from .nhlbasic import NHLBasic
-from .common import set_soup, get_timezone_difference
+from .nhlbase import NHLBase
+from .common import get_timezone_difference
 
 
-class NHLAdvanced(NHLBasic):
+class NHLAdvanced(NHLBase):
     def __init__(self, date=dt.datetime.utcnow()):
         super().__init__(date)
         self.season = self.get_season()
@@ -241,8 +240,8 @@ class NHLAdvanced(NHLBasic):
             return f"Players not found for {nationality}"
 
     # Extract player stats with given name
-    def get_player_season_stats(self, player_name):
-        player_name = player_name.strip().lower()
+    def get_player_season_stats(self, name):
+        player_name = name.strip().lower()
         try:
             team_ids = self.get_team_ids()
             rosters = [self.get_roster(id) for id in team_ids]
@@ -266,6 +265,7 @@ class NHLAdvanced(NHLBasic):
             return None
 
     def format_player_season_stats(self, data):
+        url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
         header = f"""{data["position"]} #{data["number"]} for {data["team"]}\n"""
         if (data["position"] == "Goalie"):
             goalie = (f"""GP: {data["stats"]["games"]} | """
@@ -277,7 +277,7 @@ class NHLAdvanced(NHLBasic):
                       f"""GA: {data["stats"]["goalsAgainst"]} | """
                       f"""GAA: {round(data["stats"]["goalAgainstAverage"], 2)} | """
                       f"""SO: {data["stats"]["shutouts"]}""")
-            return header + goalie
+            stats = goalie
         else:
             skater = (f"""GP: {data["stats"]["games"]} | """
                       f"""G: {data["stats"]["goals"]} | """
@@ -287,54 +287,8 @@ class NHLAdvanced(NHLBasic):
                       f"""+/-: {data["stats"]["plusMinus"]} | """
                       f"""PIM: {data["stats"]["pim"]} | """
                       f"""TOI/G: {data["stats"]["timeOnIcePerGame"]}""")
-            return header + skater
-
-    # Get player contract info for current season
-    def get_player_contract(self, player_name):
-        player_name = player_name.replace(" ", "-").replace("\'", "").lower()
-        url = f"https://www.capfriendly.com/players/{player_name}"
-        try:
-            soup = set_soup(url, target_encoding="utf-8")
-
-            # Find table of current contract
-            table = soup.find("table", {"class": "cntrct fixed tbl"})
-
-            # Put data into dataframe
-            data = pd.read_html(table.prettify(), flavor="bs4", header=0)[0]
-
-            # Alter season column format
-            data["SEASON"] = data["SEASON"].apply(lambda x: x.replace("-", "20"))
-
-            # Filter for current season
-            season_mask = data["SEASON"] == self.season
-
-            # Get length, cap hit and total salary of current contract
-            contract = {
-                "length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
-                "capHit": data["CAP HIT"][season_mask].values[0],
-                "totalSalary": data["TOTAL SALARY"][season_mask].values[0],
-            }
-            return {
-                "contract": contract,
-                "url": url
-            }
-        except Exception as ex:
-            print("Error getting player contract: " + str(ex))
-            return None
-
-    def format_player_contract(self, data):
-        return (f"""Year: {data["contract"]["length"]} | """
-                f"""Cap hit: {data["contract"]["capHit"]} | """
-                f"""Total: {data["contract"]["totalSalary"]}""")
-
-    def format_player_info(self, name, stats, contract):
-        result = ""
-        if (stats is not None):
-            url = f"""https://www.nhl.com/player/{name.replace(" ", "-")}-{stats["id"]}"""
-            result += self.format_player_season_stats(stats) + f"\n[Details]({url})"
-        if (contract is not None):
-            result += "\nContract:\n" + self.format_player_contract(contract) + f"""\n[Details]({contract["url"]})"""
-        return result
+            stats = skater
+        return header + stats + f"\n[Details]({url})"
 
     # Creates playoff bracket for current season
     def create_bracket(self):

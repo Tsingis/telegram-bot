@@ -3,12 +3,14 @@ from .formulaone import FormulaOne
 from .imagesearch import ImageSearch
 from .weathersearch import WeatherSearch
 from .nhladvanced import NHLAdvanced
+from .nhlextra import NHLExtra
 
 
 f1 = FormulaOne()
 img = ImageSearch()
 weather = WeatherSearch()
 nhl = NHLAdvanced()
+nhlextra = NHLExtra()
 
 
 def command_response(text, bot, chatId):
@@ -114,11 +116,14 @@ def command_response(text, bot, chatId):
     if (text and text.startswith("/nhlplayerinfo")):
         playerName = text.split("/nhlplayerinfo")[-1].strip().lower()
         stats = nhl.get_player_season_stats(playerName)
-        contract = nhl.get_player_contract(playerName)
-        if (stats is not None or contract is not None):
-            msg = nhl.format_player_info(playerName, stats, contract)
-        else:
-            msg = "Player info not available"
+        contract = nhlextra.get_player_contract(playerName)
+        msg = ""
+        if (stats is not None):
+            msg += nhl.format_player_season_stats(stats)
+        if (contract is not None):
+            msg += "\n" + nhlextra.format_player_contract(contract)
+        if (msg == ""):
+            msg += "Player info not available"
         _send_message(msg, chatId, bot)
 
     # Weather info by location
