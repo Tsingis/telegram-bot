@@ -3,7 +3,7 @@ import datetime as dt
 from .common import get_timezone_difference
 
 
-class NHLBasic:
+class NHLBase:
     BASE_URL = "https://statsapi.web.nhl.com/api/v1/"
 
     def __init__(self, date=dt.datetime.utcnow()):
