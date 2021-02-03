@@ -242,12 +242,12 @@ class NHLAdvanced(NHLBasic):
 
     # Extract player stats with given name
     def get_player_season_stats(self, player_name):
-        player_name = player_name.title().strip()
+        player_name = player_name.strip().lower()
         try:
             team_ids = self.get_team_ids()
             rosters = [self.get_roster(id) for id in team_ids]
             players = [player for roster in rosters for player in roster]
-            player_id = next(player["id"] for player in players if player["name"] == player_name)
+            player_id = next(player["id"] for player in players if player["name"].lower() == player_name)
             player = self.get_data(self.BASE_URL + f"/people/{player_id}/")
 
             # Extract all stats for given player
