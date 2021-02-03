@@ -20,11 +20,11 @@ def webhook(event, context):
             cmd = Command(text)
             res = cmd.response()
             if (res.type == ResponseType.TEXT):
-                msg.send_message(res.text)
+                msg.send_text(res.text)
             if (res.type == ResponseType.IMAGE):
-                msg.send_photo(res.image)
+                msg.send_image(res.image)
             else:
-                msg.send_photo(res.image, res.text)
+                msg.send_image(res.image, res.text)
         return OK_RESPONSE
     return ERROR_RESPONSE
 
