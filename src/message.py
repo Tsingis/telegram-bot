@@ -1,4 +1,7 @@
-from .logger import logger, OK_RESPONSE, ERROR_RESPONSE
+from .logger import logging, OK_RESPONSE, ERROR_RESPONSE
+
+
+logger = logging.getLogger(__name__)
 
 
 class Message():

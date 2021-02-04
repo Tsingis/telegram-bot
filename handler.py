@@ -1,9 +1,12 @@
 import telegram
 import os
 import json
-from src.logger import logger, OK_RESPONSE, ERROR_RESPONSE
+from src.logger import logging, OK_RESPONSE, ERROR_RESPONSE
 from src.command import Command, ResponseType
 from src.message import Message
+
+
+logger = logging.getLogger(__name__)
 
 
 # Run webhook
