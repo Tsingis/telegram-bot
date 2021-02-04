@@ -32,3 +32,7 @@ jobs:
           CSE_ID: ${{ secrets.CSE_ID }}
           GOOGLE_API: ${{ secrets.GOOGLE_API }}
           DARKSKY_API: ${{ secrets.DARKSKY_API }}
+      - name: Reinstall Pillow
+        run: |
+          python3 -m pip uninstall Pillow
+          python3 -m pip install Pillow

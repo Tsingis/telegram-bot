@@ -9,6 +9,7 @@ html5lib
 idna
 numpy
 pandas
+Pillow
 pycparser
 python-dateutil
 python-telegram-bot
@@ -18,4 +19,3 @@ six
 soupsieve
 tornado
 urllib3
-Pillow
