@@ -17,8 +17,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install setuptools
         run: sudo apt-get install -y python3-setuptools
-      - name: Upgrade pip
-        run: python3 -m pip install --upgrade pip
       - name: Install Dependencies
         run: npm install
       - name: Configure AWS Credentials
@@ -34,3 +32,7 @@ jobs:
           CSE_ID: ${{ secrets.CSE_ID }}
           GOOGLE_API: ${{ secrets.GOOGLE_API }}
           DARKSKY_API: ${{ secrets.DARKSKY_API }}
+      - name: Upgrade pip
+        run: python3 -m pip install --upgrade pip
+      - name: Upgrade Pillow
+        run: python3 -m pip install --upgrade Pillow
