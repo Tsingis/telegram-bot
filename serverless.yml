@@ -29,7 +29,6 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: non-linux
-    pythonBin: /opt/python3.8/bin/python
 
 package:
   exclude:
