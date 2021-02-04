@@ -25,3 +25,8 @@ jobs:
           aws-region: eu-west-1
       - name: Serverless Deploy
         run: npm run-script deploy
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_TEST }}
+          CSE_ID: ${{ secrets.CSE_ID }}
+          GOOGLE_API: ${{ secrets.GOOGLE_API }}
+          DARKSKY_API: ${{ secrets.DARKSKY_API }}
