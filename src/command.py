@@ -4,6 +4,10 @@ from .services.imagesearch import ImageSearch
 from .services.weathersearch import WeatherSearch
 from .services.nhladvanced import NHLAdvanced
 from .services.nhlextra import NHLExtra
+from .logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 AVAILABLE_CMD = "/bot"
 IMAGE_SEARCH_CMD = "/search"
@@ -68,6 +72,7 @@ class Command():
         if (self.text.startswith(NHL_PLAYOFFS_CMD)):
             return self.nhl_playoffs()
         else:
+            logging.info(f"Invalid command received: {self.text}")
             return None
 
     # Available bot commands
