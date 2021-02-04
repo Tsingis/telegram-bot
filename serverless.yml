@@ -29,12 +29,10 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: non-linux
+    pythonBin: python3
 
 package:
   exclude:
     - node_modules/**
     - .vscode/**
-    - package.json
-    - package-lock.json
-    - requirements.txt
     - test.py
