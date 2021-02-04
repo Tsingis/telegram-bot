@@ -19,3 +19,4 @@ six
 soupsieve
 tornado
 urllib3
+setuptools
