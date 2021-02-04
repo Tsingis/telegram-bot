@@ -2,14 +2,14 @@ import logging
 import json
 
 
-# TODO Better logging and utilizing CloudWatch
-
 # Set up logging
 logger = logging.getLogger()
 if logger.handlers:
     for handler in logger.handlers:
         logger.removeHandler(handler)
-logging.basicConfig(level=logging.INFO)
+
+format = "%(asctime)s %(name)s %(levelname)s: %(message)s"
+logging.basicConfig(level=logging.INFO, format=format)
 
 OK_RESPONSE = {
     "statusCode": 200,

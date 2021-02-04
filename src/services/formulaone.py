@@ -1,5 +1,9 @@
 import datetime as dt
 from .common import set_soup, convert_time_to_localtime
+from ..logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class FormulaOne:
@@ -37,8 +41,8 @@ class FormulaOne:
                 "results": results,
                 "url": raceResultsUrl
             }
-        except Exception as ex:
-            print("Error getting race results: " + str(ex))
+        except Exception:
+            logger.exception("Error getting race results")
             return None
 
     # Gets top drivers from overall standings and url for more details. Default top 5
@@ -67,8 +71,8 @@ class FormulaOne:
                 "standings": standings,
                 "url": standingsUrl
             }
-        except Exception as ex:
-            print("Error getting driver standings: " + str(ex))
+        except Exception:
+            logger.exception("Error getting driver standings")
             return None
 
     # Gets top teams from overall standings and url for more details. Default top 5
@@ -97,8 +101,8 @@ class FormulaOne:
                 "standings": standings,
                 "url": standingsUrl
             }
-        except Exception as ex:
-            print("Error getting team standings: " + str(ex))
+        except Exception:
+            logger.exception("Error getting team standings")
             return None
 
     # Gets info for the upcoming race
@@ -138,8 +142,8 @@ class FormulaOne:
                 "race": raceTime,
                 "raceUrl": self.BASE_URL + raceUrl
             }
-        except Exception as ex:
-            print("Error getting upcoming race: " + str(ex))
+        except Exception:
+            logger.exception("Error getting upcoming race")
             return None
 
     def format_results(self, data):
@@ -191,8 +195,8 @@ class FormulaOne:
             soup = set_soup(raceUrl)
             data = soup.find("div", {"class": "f1-race-hub--schedule-circuit-map"})
             return data.find("img", {"class": "lazy"})["data-src"]
-        except Exception as ex:
-            print("Error getting circuit image: " + str(ex))
+        except Exception:
+            logger.exception("Error getting circuit image")
             return None
 
     # Find table
@@ -200,16 +204,16 @@ class FormulaOne:
         try:
             soup = set_soup(url)
             return soup.find("table", {"class": "resultsarchive-table"})
-        except Exception as ex:
-            print("Error finding table: " + str(ex))
+        except Exception:
+            logger.exception("Error finding table")
 
     # Gets races of current season
     def _get_races(self):
         try:
             soup = set_soup(self.BASE_URL)
             return soup.find_all("article", {"class": "race"})
-        except Exception as ex:
-            print("Error getting races: " + str(ex))
+        except Exception:
+            logger.exception("Error getting races")
             return None
 
     # Gets the number of current race
@@ -225,6 +229,6 @@ class FormulaOne:
                 "number": raceNumber,
                 "date": dates[raceNumber - 1]
             }
-        except Exception as ex:
-            print("Error getting number of the current race: " + str(ex))
+        except Exception:
+            logger.exception("Error getting number of the current race")
             return None

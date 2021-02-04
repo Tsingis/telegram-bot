@@ -3,6 +3,10 @@ from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from .nhlbase import NHLBase
 from .common import get_timezone_difference
+from ..logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class NHLAdvanced(NHLBase):
@@ -47,8 +51,8 @@ class NHLAdvanced(NHLBase):
                 "awayTeams": away_teams,
                 "periods": periods
             }
-        except Exception as ex:
-            print("Error getting results: " + str(ex))
+        except Exception:
+            logger.exception("Error getting results")
             return None
 
     def format_results(self, data):
@@ -85,8 +89,8 @@ class NHLAdvanced(NHLBase):
                 "awayTeams": away_teams,
                 "times": times
             }
-        except Exception as ex:
-            print("Error getting upcoming matches: " + str(ex))
+        except Exception:
+            logger.exception("Error getting upcoming matches")
             return None
 
     def format_upcoming(self, data):
@@ -122,8 +126,8 @@ class NHLAdvanced(NHLBase):
                 "divisionLeaders": division_leaders,
                 "wildcards": wildcards
             }
-        except Exception as ex:
-            print("Error getting standings: " + str(ex))
+        except Exception:
+            logger.exception("Error getting standings")
             return None
 
     def format_standings(self, data):
@@ -183,8 +187,8 @@ class NHLAdvanced(NHLBase):
                         "stats": player["stats"]
                     })
             return players
-        except Exception as ex:
-            print("Error getting players stats: " + str(ex))
+        except Exception:
+            logger.exception("Error getting players stats")
             return None
 
     def format_players_stats(self, data, nationality="FIN"):
@@ -260,8 +264,8 @@ class NHLAdvanced(NHLBase):
                 "number": player["people"][0]["primaryNumber"],
                 "stats": stats
             }
-        except Exception as ex:
-            print("Error getting player stats: " + str(ex))
+        except Exception:
+            logger.exception(f"Error getting player stats for player: {name}")
             return None
 
     def format_player_season_stats(self, data):
@@ -383,6 +387,6 @@ class NHLAdvanced(NHLBase):
             im_bracket.save(file, "PNG")
             file.seek(0)
             return file
-        except Exception as ex:
-            print("Error getting playoff bracket: " + str(ex))
+        except Exception:
+            logger.exception("Error getting playoff bracket")
             return None

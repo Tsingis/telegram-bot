@@ -2,6 +2,10 @@ import datetime as dt
 import pandas as pd
 from .nhlbase import NHLBase
 from .common import set_soup
+from ..logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class NHLExtra(NHLBase):
@@ -10,9 +14,9 @@ class NHLExtra(NHLBase):
         self.season = self.get_season()
 
     # Get player contract info for current season
-    def get_player_contract(self, player_name):
-        player_name = player_name.replace(" ", "-").replace("\'", "").lower()
-        url = f"https://www.capfriendly.com/players/{player_name}"
+    def get_player_contract(self, name):
+        name = name.replace(" ", "-").replace("\'", "").lower()
+        url = f"https://www.capfriendly.com/players/{name}"
         try:
             soup = set_soup(url, target_encoding="utf-8")
 
@@ -38,8 +42,8 @@ class NHLExtra(NHLBase):
                 "contract": contract,
                 "url": url
             }
-        except Exception as ex:
-            print("Error getting player contract: " + str(ex))
+        except Exception:
+            logger.exception(f"Error getting player contract for player: {name}")
             return None
 
     def format_player_contract(self, data):

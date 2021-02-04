@@ -2,6 +2,10 @@ import requests
 from bs4 import BeautifulSoup
 import datetime as dt
 import re
+from ..logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 # Set soup
@@ -11,8 +15,8 @@ def set_soup(url, target_encoding="latin-1"):
         encoding = res.encoding
         text = res.content.decode(encoding).encode(target_encoding)
         return BeautifulSoup(text, "html.parser")
-    except Exception as ex:
-        print("Error setting soup: " + str(ex))
+    except Exception:
+        logger.exception(f"Error setting soup for url: {url}")
 
 
 # Gets hour difference between UTC and local timezone
