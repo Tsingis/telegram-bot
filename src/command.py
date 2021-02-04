@@ -69,8 +69,8 @@ class Command():
             return self.nhl_players_stats()
         if (self.text.startswith(NHL_PLAYER_INFO_CMD)):
             return self.nhl_player_info()
-        # if (self.text.startswith(NHL_PLAYOFFS_CMD)):
-        #     return self.nhl_playoffs()
+        if (self.text.startswith(NHL_PLAYOFFS_CMD)):
+            return self.nhl_playoffs()
         else:
             logging.info(f"Invalid command received: {self.text}")
             return None
@@ -191,7 +191,7 @@ class Command():
         return Response(text=result)
 
     # NHL playoff bracket
-    # def nhl_playoffs(self):
-    #     bracketImg = nhlAdvanced.create_bracket()
-    #     result = bracketImg if bracketImg is not None else "Playoff bracket not available"
-    #     return Response(image=result, type=ResponseType.IMAGE)
+    def nhl_playoffs(self):
+        bracketImg = nhlAdvanced.create_bracket()
+        result = bracketImg if bracketImg is not None else "Playoff bracket not available"
+        return Response(image=result, type=ResponseType.IMAGE)

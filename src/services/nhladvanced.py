@@ -1,6 +1,6 @@
 import datetime as dt
-# from PIL import Image, ImageDraw, ImageFont
-# from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
 from .nhlbase import NHLBase
 from .common import get_timezone_difference
 from ..logger import logging
@@ -295,108 +295,108 @@ class NHLAdvanced(NHLBase):
         return header + stats + f"\n[Details]({url})"
 
     # Creates playoff bracket for current season
-    # def create_bracket(self):
-    #     def get_series_data(series):
-    #         return {
-    #             "matchup": (self.teams[series["matchupTeams"][0]["team"]["name"]], self.teams[series["matchupTeams"][1]["team"]["name"]]),
-    #             "status": series["currentGame"]["seriesSummary"]["seriesStatusShort"]
-    #             # "top": (series["matchupTeams"][0]["seed"]["isTop"], series["matchupTeams"][1]["seed"]["isTop"])
-    #             # "ranks": (series["matchupTeams"][0]["seed"]["rank"], series["matchupTeams"][1]["seed"]["rank"]),
-    #             # "record": (series["matchupTeams"][0]["seriesRecord"]["wins"], series["matchupTeams"][0]["seriesRecord"]["losses"])
-    #         }
+    def create_bracket(self):
+        def get_series_data(series):
+            return {
+                "matchup": (self.teams[series["matchupTeams"][0]["team"]["name"]], self.teams[series["matchupTeams"][1]["team"]["name"]]),
+                "status": series["currentGame"]["seriesSummary"]["seriesStatusShort"]
+                # "top": (series["matchupTeams"][0]["seed"]["isTop"], series["matchupTeams"][1]["seed"]["isTop"])
+                # "ranks": (series["matchupTeams"][0]["seed"]["rank"], series["matchupTeams"][1]["seed"]["rank"]),
+                # "record": (series["matchupTeams"][0]["seriesRecord"]["wins"], series["matchupTeams"][0]["seriesRecord"]["losses"])
+            }
 
-    #     def insert_team_to_bracket(team, location):
-    #         im_team = Image.open(f"static/NHL logos/{team}.gif")
-    #         width, height = im_team.size
-    #         im_team = im_team.resize((int(0.9 * width), int(0.9 * height)))
-    #         im_bracket.paste(im_team, location)
+        def insert_team_to_bracket(team, location):
+            im_team = Image.open(f"static/NHL logos/{team}.gif")
+            width, height = im_team.size
+            im_team = im_team.resize((int(0.9 * width), int(0.9 * height)))
+            im_bracket.paste(im_team, location)
 
-    #     def insert_status_to_bracket(status, location):
-    #         font = ImageFont.truetype("static/seguibl.ttf", 22)
-    #         im_text = ImageDraw.Draw(im_bracket)
-    #         im_text.text(location, status, align="right", font=font, fill=(0, 0, 0))
+        def insert_status_to_bracket(status, location):
+            font = ImageFont.truetype("static/seguibl.ttf", 22)
+            im_text = ImageDraw.Draw(im_bracket)
+            im_text.text(location, status, align="right", font=font, fill=(0, 0, 0))
 
-    #     try:
-    #         data = self.get_data(self.BASE_URL + f"/tournaments/playoffs?expand=round.series,schedule.game.seriesSummary&season={self.season}")
+        try:
+            data = self.get_data(self.BASE_URL + f"/tournaments/playoffs?expand=round.series,schedule.game.seriesSummary&season={self.season}")
 
-    #         # Gather data for each series
-    #         bracket = dict()
-    #         for round in data["rounds"]:
-    #             for series in round["series"]:
-    #                 bracket[series["seriesCode"]] = get_series_data(series)
+            # Gather data for each series
+            bracket = dict()
+            for round in data["rounds"]:
+                for series in round["series"]:
+                    bracket[series["seriesCode"]] = get_series_data(series)
 
-    #         # Open blank playoff bracket
-    #         im_bracket = Image.open("static/playoffs_template.png")
+            # Open blank playoff bracket
+            im_bracket = Image.open("static/playoffs_template.png")
 
-    #         # bracket.pop("I", None)
-    #         # bracket.pop("J", None)
-    #         # bracket.pop("K", None)
-    #         # bracket.pop("L", None)
-    #         # bracket.pop("M", None)
-    #         # bracket.pop("N", None)
-    #         # bracket.pop("O", None)
+            # bracket.pop("I", None)
+            # bracket.pop("J", None)
+            # bracket.pop("K", None)
+            # bracket.pop("L", None)
+            # bracket.pop("M", None)
+            # bracket.pop("N", None)
+            # bracket.pop("O", None)
 
-    #         # Locations for logos in bracket
-    #         # Round 1
-    #         bracket["A"]["location"] = [(1175, 50), (1175, 185)]
-    #         bracket["B"]["location"] = [(1175, 280), (1175, 405)]
-    #         bracket["C"]["location"] = [(1175, 505), (1175, 625)]
-    #         bracket["D"]["location"] = [(1175, 730), (1175, 865)]
+            # Locations for logos in bracket
+            # Round 1
+            bracket["A"]["location"] = [(1175, 50), (1175, 185)]
+            bracket["B"]["location"] = [(1175, 280), (1175, 405)]
+            bracket["C"]["location"] = [(1175, 505), (1175, 625)]
+            bracket["D"]["location"] = [(1175, 730), (1175, 865)]
 
-    #         bracket["E"]["location"] = [(15, 505), (15, 625)]
-    #         bracket["F"]["location"] = [(15, 730), (15, 865)]
-    #         bracket["G"]["location"] = [(15, 50), (15, 185)]
-    #         bracket["H"]["location"] = [(15, 280), (15, 405)]
+            bracket["E"]["location"] = [(15, 505), (15, 625)]
+            bracket["F"]["location"] = [(15, 730), (15, 865)]
+            bracket["G"]["location"] = [(15, 50), (15, 185)]
+            bracket["H"]["location"] = [(15, 280), (15, 405)]
 
-    #         # Round 2
-    #         if (len(bracket) > 8):
-    #             bracket["I"]["location"] = [(1000, 350), (1000, 120)]
-    #             bracket["J"]["location"] = [(1000, 800), (1000, 570)]
-    #             bracket["K"]["location"] = [(185, 800), (185, 570)]
-    #             bracket["L"]["location"] = [(185, 350), (185, 120)]
+            # Round 2
+            if (len(bracket) > 8):
+                bracket["I"]["location"] = [(1000, 350), (1000, 120)]
+                bracket["J"]["location"] = [(1000, 800), (1000, 570)]
+                bracket["K"]["location"] = [(185, 800), (185, 570)]
+                bracket["L"]["location"] = [(185, 350), (185, 120)]
 
-    #         # Round 3, Conference finals
-    #         if (len(bracket) > 12):
-    #             bracket["M"]["location"] = [(835, 235), (835, 675)]
-    #             bracket["N"]["location"] = [(355, 235), (355, 675)]
+            # Round 3, Conference finals
+            if (len(bracket) > 12):
+                bracket["M"]["location"] = [(835, 235), (835, 675)]
+                bracket["N"]["location"] = [(355, 235), (355, 675)]
 
-    #         # Round 4, Stanley cup final
-    #         if (len(bracket) > 14):
-    #             bracket["O"]["location"] = [(665, 450), (530, 450)]
+            # Round 4, Stanley cup final
+            if (len(bracket) > 14):
+                bracket["O"]["location"] = [(665, 450), (530, 450)]
 
-    #         # Insert teams into bracket
-    #         for key, value in bracket.items():
-    #             insert_team_to_bracket(value["matchup"][0], value["location"][0])
-    #             insert_team_to_bracket(value["matchup"][1], value["location"][1])
+            # Insert teams into bracket
+            for key, value in bracket.items():
+                insert_team_to_bracket(value["matchup"][0], value["location"][0])
+                insert_team_to_bracket(value["matchup"][1], value["location"][1])
 
-    #             if (key == "O"):
-    #                 text_loc_x = 600
-    #                 text_loc_y = 550
-    #                 status = value["status"].rjust(12)
-    #             else:
-    #                 status = value["status"]
-    #                 text_loc_x = int((value["location"][0][0] + value["location"][1][0]) / 2)
-    #                 text_loc_y = int((value["location"][0][1] + value["location"][1][1] + 60) / 2)
+                if (key == "O"):
+                    text_loc_x = 600
+                    text_loc_y = 550
+                    status = value["status"].rjust(12)
+                else:
+                    status = value["status"]
+                    text_loc_x = int((value["location"][0][0] + value["location"][1][0]) / 2)
+                    text_loc_y = int((value["location"][0][1] + value["location"][1][1] + 60) / 2)
 
-    #             insert_status_to_bracket(status, (text_loc_x, text_loc_y))
+                insert_status_to_bracket(status, (text_loc_x, text_loc_y))
 
-    #         # Insert champion into bracket
-    #         if ("wins" in bracket["O"]["status"]):
-    #             winner = bracket["O"]["status"][:3]
-    #             im_winner = Image.open(f"static/NHL logos/{winner}.gif")
-    #             width, height = im_winner.size
-    #             im_winner = im_winner.resize((int(2 * width), int(1.8 * height)))
-    #             im_bracket.paste(im_winner, (520, 765))
+            # Insert champion into bracket
+            if ("wins" in bracket["O"]["status"]):
+                winner = bracket["O"]["status"][:3]
+                im_winner = Image.open(f"static/NHL logos/{winner}.gif")
+                width, height = im_winner.size
+                im_winner = im_winner.resize((int(2 * width), int(1.8 * height)))
+                im_bracket.paste(im_winner, (520, 765))
 
-    #         # Create in-memory image
-    #         filename = f"{self.season}.png"
-    #         file = BytesIO()
-    #         file.name = filename
-    #         im_bracket.save(file, "PNG")
-    #         file.seek(0)
-    #         # test = Image.open(file)
-    #         # test.save(f"{filename}")
-    #         return file
-    #     except Exception:
-    #         logger.exception("Error getting playoff bracket")
-    #         return None
+            # Create in-memory image
+            filename = f"{self.season}.png"
+            file = BytesIO()
+            file.name = filename
+            im_bracket.save(file, "PNG")
+            file.seek(0)
+            # test = Image.open(file)
+            # test.save(f"{filename}")
+            return file
+        except Exception:
+            logger.exception("Error getting playoff bracket")
+            return None
