@@ -16,7 +16,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install setuptools
-        run: sudo apt-get install -y python3-setuptools   
+        run: sudo apt-get install -y python3-setuptools
+      - name: Upgrade pip
+        run: python3 -m pip install --upgrade pip
       - name: Install Dependencies
         run: npm install
       - name: Configure AWS Credentials
