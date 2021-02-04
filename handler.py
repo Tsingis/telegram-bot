@@ -20,7 +20,7 @@ def webhook(event, context):
         msg = Message(bot, chatId)
         text = update.message.text
         if text and text.startswith("/"):
-            logger.info("Command received")
+            logger.info(f"Command received: {text}")
             cmd = Command(text)
             res = cmd.response()
             if (res.type == ResponseType.TEXT):
