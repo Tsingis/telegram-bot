@@ -20,15 +20,16 @@ def webhook(event, context):
         msg = Message(bot, chatId)
         text = update.message.text
         if text and text.startswith("/"):
-            logger.info("Command received")
             cmd = Command(text)
             res = cmd.response()
-            if (res.type == ResponseType.TEXT):
-                msg.send_text(res.text)
-            if (res.type == ResponseType.IMAGE):
-                msg.send_image(res.image)
-            else:
-                msg.send_image(res.image, res.text)
+            if (res is not None):
+                logger.info(f"Command received: {text}")
+                if (res.type == ResponseType.TEXT):
+                    msg.send_text(res.text)
+                if (res.type == ResponseType.IMAGE):
+                    msg.send_image(res.image)
+                if (res.type == ResponseType.TEXT_AND_IMAGE):
+                    msg.send_image(res.image, res.text)
         return OK_RESPONSE
     return ERROR_RESPONSE
 
