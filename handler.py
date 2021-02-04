@@ -28,7 +28,7 @@ def webhook(event, context):
                     msg.send_text(res.text)
                 if (res.type == ResponseType.IMAGE):
                     msg.send_image(res.image)
-                else:
+                if (res.type == ResponseType.TEXT_AND_IMAGE):
                     msg.send_image(res.image, res.text)
         return OK_RESPONSE
     return ERROR_RESPONSE
