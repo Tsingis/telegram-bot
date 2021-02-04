@@ -32,7 +32,3 @@ jobs:
           CSE_ID: ${{ secrets.CSE_ID }}
           GOOGLE_API: ${{ secrets.GOOGLE_API }}
           DARKSKY_API: ${{ secrets.DARKSKY_API }}
-      - name: Upgrade pip
-        run: python3 -m pip install --upgrade pip
-      - name: Upgrade Pillow
-        run: python3 -m pip install --upgrade Pillow
