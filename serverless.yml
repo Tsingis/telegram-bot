@@ -29,6 +29,7 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: non-linux
+    pythonBin: python
 
 package:
   exclude:
