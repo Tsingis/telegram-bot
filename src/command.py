@@ -67,6 +67,8 @@ class Command():
             return self.nhl_player_info()
         if (self.text.startswith(NHL_PLAYOFFS_CMD)):
             return self.nhl_playoffs()
+        else:
+            return None
 
     # Available bot commands
     def available_commands(self):
