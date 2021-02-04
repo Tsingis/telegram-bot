@@ -8,7 +8,7 @@ from src.message import Message
 
 # Run webhook
 def webhook(event, context):
-    logger.info("Event: {}".format(event))
+    logger.info(f"Event: {event}")
     bot = set_bot()
     if event.get("httpMethod") == "POST" and event.get("body"):
         logger.info("Message received")
@@ -17,6 +17,7 @@ def webhook(event, context):
         msg = Message(bot, chatId)
         text = update.message.text
         if text and text.startswith("/"):
+            logger.info("Command received")
             cmd = Command(text)
             res = cmd.response()
             if (res.type == ResponseType.TEXT):

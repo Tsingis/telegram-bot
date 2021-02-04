@@ -10,15 +10,17 @@ class Message():
         try:
             self.bot.sendMessage(chat_id=self.chatId, text=text, parse_mode="Markdown",
                                  disable_web_page_preview=True)
-            logger.info("Text sent")
+            logger.info("Text sent successfully")
             return OK_RESPONSE
         except Exception:
+            logger.exception("Error sending text")
             return ERROR_RESPONSE
 
     def send_image(self, image, text=""):
         try:
             self.bot.sendPhoto(chat_id=self.chatId, photo=image, caption=text, parse_mode="Markdown")
-            logger.info("Image sent")
+            logger.info("Image sent successfully")
             return OK_RESPONSE
         except Exception:
+            logger.exception("Error sending image")
             return ERROR_RESPONSE

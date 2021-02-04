@@ -1,6 +1,10 @@
 import requests
 import datetime as dt
 from .common import get_timezone_difference
+from ..logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class NHLBase:
@@ -25,8 +29,8 @@ class NHLBase:
             if res.status_code == 200:
                 return res.json()
             res.raise_for_status()
-        except requests.exceptions.HTTPError as ex:
-            print("Error getting data: " + str(ex))
+        except requests.exceptions.HTTPError:
+            logger.exception(f"Error getting data for url: {url}")
             return None
 
     # Get team names and abbreviations
@@ -34,8 +38,8 @@ class NHLBase:
         try:
             data = self.get_data(self.BASE_URL + "/teams")
             return {team["name"]: team["abbreviation"] for team in data["teams"]}
-        except Exception as ex:
-            print("Error getting teams: " + str(ex))
+        except Exception:
+            logger.exception("Error getting teams")
             return None
 
     # Get gameIDs for each match on given date
@@ -43,24 +47,24 @@ class NHLBase:
         try:
             data = self.get_data(self.BASE_URL + f"/schedule?date={date}")
             return [game["link"].split("/")[-3] for game in data["dates"][0]["games"]]
-        except Exception as ex:
-            print("Error getting game ids: " + str(ex))
+        except Exception:
+            logger.exception(f"Error getting game ids for date: {date}")
             return None
 
     # Get data from each match by gameID
-    def get_games_linescore(self, game_id):
+    def get_games_linescore(self, gameId):
         try:
-            return self.get_data(self.BASE_URL + f"/game/{game_id}/linescore")
-        except Exception as ex:
-            print("Error getting games linescore: " + str(ex))
+            return self.get_data(self.BASE_URL + f"/game/{gameId}/linescore")
+        except Exception:
+            logger.exception(f"Error getting games linescore for game id: {gameId}")
             return None
 
     # Get data from each match by gameID
-    def get_games_boxscore(self, game_id):
+    def get_games_boxscore(self, gameId):
         try:
-            return self.get_data(self.BASE_URL + f"/game/{game_id}/boxscore")
-        except Exception as ex:
-            print("Error getting games boxscore: " + str(ex))
+            return self.get_data(self.BASE_URL + f"/game/{gameId}/boxscore")
+        except Exception:
+            logger.exception(f"Error getting games boxscore for game id: {gameId}")
             return None
 
     # Get team IDs
@@ -68,20 +72,20 @@ class NHLBase:
         try:
             data = self.get_data(self.BASE_URL + "/teams")
             return [team["id"] for team in data["teams"]]
-        except Exception as ex:
-            print("Error getting team ids: " + str(ex))
+        except Exception:
+            logger.exception("Error getting team ids")
             return None
 
     # Get rosters with teamID
-    def get_roster(self, team_id):
+    def get_roster(self, teamId):
         try:
-            data = self.get_data(self.BASE_URL + f"/teams/{team_id}/roster")
+            data = self.get_data(self.BASE_URL + f"/teams/{teamId}/roster")
             return [{
                 "id": player["person"]["id"],
                 "name": player["person"]["fullName"]
             } for player in data["roster"]]
-        except Exception as ex:
-            print("Error getting rosters: " + str(ex))
+        except Exception:
+            logger.exception(f"Error getting rosters for team id: {teamId}")
             return None
 
     # Get division leaders
@@ -112,8 +116,8 @@ class NHLBase:
                 ]}
                 for div in divs]
             return leaders
-        except Exception as ex:
-            print("Error getting division leaders: " + str(ex))
+        except Exception:
+            logger.exception(f"Error getting division leaders for date {date}")
             return None
 
     # Get wildcards
@@ -134,6 +138,6 @@ class NHLBase:
                 ]}
                 for conf in data["records"]]
             return wilds
-        except Exception as ex:
-            print("Error getting wildcards: " + str(ex))
+        except Exception:
+            logger.exception(f"Error getting wildcards for date {date}")
             return None

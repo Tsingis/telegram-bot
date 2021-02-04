@@ -1,6 +1,10 @@
 import requests
 import googlemaps
 import os
+from ..logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class WeatherSearch:
@@ -26,8 +30,8 @@ class WeatherSearch:
             if (res.status_code == 200):
                 return res.json()
             res.raise_for_status()
-        except requests.exceptions.HTTPError as ex:
-            print("Error getting weather data " + str(ex))
+        except requests.exceptions.HTTPError:
+            logger.exception(f"Error getting weather data for location: {location}")
             return None
 
     def format_info(self, data, location):
@@ -54,5 +58,5 @@ class WeatherSearch:
         try:
             result = self.gmaps.geocode(location)
             return result[0]["geometry"]["location"]
-        except Exception as ex:
-            print(f"Error getting coordinates for {location}: " + str(ex))
+        except Exception:
+            logger.exception(f"Error getting coordinates for location: {location}")

@@ -1,6 +1,10 @@
 import os
 import requests
 from random import choice
+from ..logger import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class ImageSearch:
@@ -18,8 +22,8 @@ class ImageSearch:
             data = self._get_data(keyword)
             if "items" in data:
                 return choice([result["link"] for result in data["items"]])
-        except Exception as ex:
-            print(f"Error getting random Google image with keyword {keyword}: " + str(ex))
+        except Exception:
+            logger.exception(f"Error getting image with keyword: {keyword}")
             return None
 
     # Get image data
@@ -37,5 +41,5 @@ class ImageSearch:
             if res.status_code == 200:
                 return res.json()
             res.raise_for_status()
-        except requests.exceptions.HTTPError as ex:
-            print("Error getting search data: " + str(ex))
+        except requests.exceptions.HTTPError:
+            logger.exception("Error getting image search data")
