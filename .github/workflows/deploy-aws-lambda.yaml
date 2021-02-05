@@ -1,0 +1,32 @@
+name: deploy-aws-lambda
+on:
+  # push:
+  #   branches:
+  #     - test
+jobs:
+  deploy:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
+        run: npm install
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+      - name: Serverless Deploy
+        run: npm run-script deploy
+        env:
+          TELEGRAM_TOKEN_TEST: ${{ secrets.TELEGRAM_TOKEN_TEST }}
+          CSE_ID: ${{ secrets.CSE_ID }}
+          GOOGLE_API: ${{ secrets.GOOGLE_API }}
+          DARKSKY_API: ${{ secrets.DARKSKY_API }}

@@ -7,7 +7,6 @@ future
 googlemaps
 html5lib
 idna
-numpy
 pandas
 Pillow
 pycparser

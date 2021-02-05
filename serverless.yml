@@ -22,7 +22,7 @@ functions:
     handler: handler.set_webhook
     events:
       - http: POST /set_webhook
-
+      
 plugins:
   - serverless-python-requirements
 
@@ -34,7 +34,5 @@ package:
   exclude:
     - node_modules/**
     - .vscode/**
-    - package.json
-    - package-lock.json
-    - requirements.txt
+    - .github/**
     - test.py
