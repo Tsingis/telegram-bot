@@ -17,15 +17,11 @@ functions:
     handler: handler.webhook
     events:
       - http: POST /
-    layers:
-      - arn:aws:lambda:${self:provider.region}:770693421928:layer:Klayers-python38-Pillow:8
 
   set_webhook:
     handler: handler.set_webhook
     events:
       - http: POST /set_webhook
-    layers:
-      - arn:aws:lambda:${self:provider.region}:770693421928:layer:Klayers-python38-Pillow:8
       
 plugins:
   - serverless-python-requirements
@@ -33,7 +29,6 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: non-linux
-    pythonBin: python3
 
 package:
   exclude:
