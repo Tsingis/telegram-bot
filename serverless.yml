@@ -22,14 +22,13 @@ functions:
     handler: handler.set_webhook
     events:
       - http: POST /set_webhook
-
+      
 plugins:
   - serverless-python-requirements
 
 custom:
   pythonRequirements:
     dockerizePip: non-linux
-    pythonBin: python
 
 package:
   exclude:

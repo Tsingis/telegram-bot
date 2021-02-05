@@ -97,8 +97,10 @@ class Command():
     def search_img(self):
         keyword = self.text.split(IMAGE_SEARCH_CMD)[-1].strip()
         img = imgSearch.search_random_image(keyword)
-        result = img if img is not None else "No search results"
-        return Response(image=result, type=ResponseType.IMAGE)
+        if (img is not None):
+            return Response(image=img, type=ResponseType.IMAGE)
+        else:
+            return Response(text="No search results")
 
     # Weather info by location
     def search_weather(self):
@@ -111,20 +113,21 @@ class Command():
     def f1_info(self):
         info = f1.get_upcoming()
         if (info is not None):
+            result = f1.format_upcoming(info)
             circuitImg = f1.get_circuit(info["raceUrl"])
-            msg = f1.format_upcoming(info)
-            result = (msg, circuitImg) if circuitImg is not None else (msg, None)
+            if (circuitImg is not None):
+                return Response(text=result, image=circuitImg, type=ResponseType.TEXT_AND_IMAGE)
         else:
-            result = ("Race info not available", None)
-        return Response(text=result[0], image=result[1], type=ResponseType.TEXT_AND_IMAGE)
+            result = "Race info not available"
+        return Response(text=result)
 
     # F1 standings
     def f1_standings(self):
         parameter = self.text.split(F1_STANDINGS_CMD)[-1].strip().upper()
         if (parameter == "TEAM"):
-            standings = f1.get_team_standings(10)
+            standings = f1.get_team_standings(amount=10)
         else:
-            standings = f1.get_driver_standings(10)
+            standings = f1.get_driver_standings(amount=10)
         result = f1.format_standings(standings) if standings is not None else "Standings not available"
         return Response(text=result)
 
@@ -193,5 +196,7 @@ class Command():
     # NHL playoff bracket
     def nhl_playoffs(self):
         bracketImg = nhlAdvanced.create_bracket()
-        result = bracketImg if bracketImg is not None else "Playoff bracket not available"
-        return Response(image=result, type=ResponseType.IMAGE)
+        if (bracketImg is not None):
+            return Response(image=bracketImg, type=ResponseType.IMAGE)
+        else:
+            return Response(text="Playoff bracket not available")
