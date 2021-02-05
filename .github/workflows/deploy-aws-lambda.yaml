@@ -1,11 +1,11 @@
 name: deploy-aws-lambda
 on:
-  # push:
-  #   branches:
-  #     - test
+  push:
+    branches:
+      - test
 jobs:
   deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [14.x]
@@ -15,6 +15,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Install setuptools
+        run: sudo apt-get install -y python3-setuptools
       - name: Install Dependencies
         run: npm install
       - name: Configure AWS Credentials
