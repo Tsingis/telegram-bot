@@ -22,57 +22,42 @@ class NHLAdvanced(NHLBase):
             game_ids = self.get_game_ids(date)
             games = [self.get_games_linescore(game_id) for game_id in game_ids]
 
-            # Extract periods OT/SO for finalized matches or not started/live
-            periods = [
-                game["currentPeriodOrdinal"] if "currentPeriodTimeRemaining" in game and game["currentPeriodTimeRemaining"] == "Final"
-                else "Not started" if game["currentPeriod"] == 0
-                else "Live" for game in games
-            ]
-
-            # Extract home teams and their goals scored
-            home_teams = [
-                {
-                    "name": team["teams"]["home"]["team"]["name"],
-                    "goals": str(team["teams"]["home"]["goals"])
+            data = []
+            for game in games:
+                if ("currentPeriodTimeRemaining" in game and
+                    game["currentPeriodTimeRemaining"] == "Final"):
+                    period = game["currentPeriodOrdinal"]
+                elif (game["currentPeriod"] == 0):
+                    period = "Not started"
+                else:
+                    period = "Live"
+                info = {
+                    "homeTeam": {
+                        "name": game["teams"]["home"]["team"]["name"],
+                        "goals": str(game["teams"]["home"]["goals"])
+                    },
+                    "awayTeam": {
+                        "name": game["teams"]["away"]["team"]["name"],
+                        "goals": str(game["teams"]["away"]["goals"])
+                    },
+                    "period": period
                 }
-                for team in games
-            ]
-
-            # Extract away teams and their goals scored
-            away_teams = [
-                {
-                    "name": team["teams"]["away"]["team"]["name"],
-                    "goals": str(team["teams"]["away"]["goals"])
-                }
-                for team in games
-            ]
-            return {
-                "homeTeams": home_teams,
-                "awayTeams": away_teams,
-                "periods": periods
-            }
+                data.append(info)
+            return data
         except Exception:
             logger.exception("Error getting results")
             return None
 
     def format_results(self, data):
         results = []
-        for n, period in enumerate(data["periods"]):
-            home = data["homeTeams"][n]
-            away = data["awayTeams"][n]
-
+        for game in data:
+            period = game["period"]
             # If period is other than OT, SO, Not started or Live use empty string
             if (period != "OT" and period != "SO" and period != "Not started" and period != "Live"):
                 period = ""
-
-            # Replace team names with abbreviations
-            if (home["name"] in self.teams):
-                home["name"] = self.teams[home["name"]]
-            if (away["name"] in self.teams):
-                away["name"] = self.teams[away["name"]]
-
-            # Format results in format such as "ANA 5 - 4 TBL OT"
-            results.append(f"""{home["name"]} {home["goals"]} - {away["goals"]} {away["name"]} {period}""".strip())
+            home = self.teams[game["homeTeam"]["name"]]
+            away = self.teams[game["awayTeam"]["name"]]
+            results.append(f"""{home} {game["homeTeam"]["goals"]} - {game["awayTeam"]["goals"]} {away} {period}""".strip())
         return "\n".join(results)
 
     # Get upcoming matches and times
@@ -80,37 +65,33 @@ class NHLAdvanced(NHLBase):
         date = self.date.strftime("%Y-%m-%d")
         try:
             data = self.get_data(self.BASE_URL + f"/schedule?date={date}")
-            games_data = data["dates"][0]["games"]
-            times = [time["gameDate"] for time in games_data]
-            home_teams = [team["teams"]["home"]["team"]["name"] for team in games_data]
-            away_teams = [team["teams"]["away"]["team"]["name"] for team in games_data]
-            return {
-                "homeTeams": home_teams,
-                "awayTeams": away_teams,
-                "times": times
-            }
+            games = data["dates"][0]["games"]
+            data = []
+            for game in games:
+                info = {
+                    "homeTeam": game["teams"]["home"]["team"]["name"],
+                    "awayTeam": game["teams"]["away"]["team"]["name"],
+                    "date": game["gameDate"],
+                    "status": game["status"]["detailedState"]
+                }
+                data.append(info)
+            return data
         except Exception:
             logger.exception("Error getting upcoming matches")
             return None
 
     def format_upcoming(self, data):
         results = []
-        for n, time in enumerate(data["times"]):
-            home = data["homeTeams"][n]
-            away = data["awayTeams"][n]
-
+        for game in data:
             # Format times to HH:MM
-            date = dt.datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ")
+            date = dt.datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
             time = dt.datetime.strftime(date + dt.timedelta(hours=get_timezone_difference(date)), "%H:%M")
-
-            # Replace team names with abbreviations
-            if home in self.teams:
-                home = self.teams[home]
-            if away in self.teams:
-                away = self.teams[away]
-
-            # Format results in format such as "ANA - TBL at 19:00"
-            results.append(f"""{home} - {away} at {time}""")
+            home = self.teams[game["homeTeam"]]
+            away = self.teams[game["awayTeam"]]
+            if (game["status"] == "Postponed"):
+                results.append(f"{home} - {away} Postponed")
+            else:
+                results.append(f"{home} - {away} at {time}")
         return "\n".join(results)
 
     # Get current standings in Wild Card format
