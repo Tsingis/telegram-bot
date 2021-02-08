@@ -174,52 +174,63 @@ class NHLAdvanced(NHLBase):
     def format_players_stats(self, data, nationality="FIN"):
         players = [player for player in data if player["nationality"] == nationality]
         if (len(players) > 0):
-            # Skaters stats in format: last name (team) | goals+assists | TOI: MM:SS
+            # Skaters
             skaters = [player for player in players if "skaterStats" in player["stats"]]
-            skatersStats = [
-                (f"""{player["lastName"]} ({self.teams[player["team"]]}) | {str(player["stats"]["skaterStats"]["goals"])}"""
-                    f"""+{str(player["stats"]["skaterStats"]["assists"])} | TOI: {player["stats"]["skaterStats"]["timeOnIce"]}""")
-                for player in skaters
-            ]
+            skatersStats = []
+            for skater in skaters:
+                stats = {
+                    "name": skater["lastName"],
+                    "team": skater["team"],
+                    "goals": skater["stats"]["skaterStats"]["goals"],
+                    "assists": skater["stats"]["skaterStats"]["assists"],
+                    "timeOnIce": skater["stats"]["skaterStats"]["timeOnIce"]
+                }
+                skatersStats.append(stats)
 
-            # Sort first by name
-            skatersStats.sort(key=lambda x: x.split("|")[0])
+            skatersStats.sort(key=lambda x: x["name"])
+            skatersStats.sort(key=lambda x: (x["goals"] + x["assists"], x["goals"], x["assists"]),
+                              reverse=True)
 
-            # Sort in descending order by points (goals+assists)
-            skatersStats.sort(
-                key=lambda x: (
-                    (int(x.split("|")[1].split("+")[0]) + int(x.split("|")[1].split("+")[-1])),
-                    (int(x.split("|")[1].split("+")[0]))),
-                reverse=True
-            )
+            # Skaters stats in format: last name (team) | goals+assists | TOI: MM:SS
+            skatersHeader = "*Skaters:*\n"
+
+            def format_skater_stats(stats):
+                return (f"""{stats["name"]} ({self.teams[stats["team"]]}) | {str(stats["goals"])}""" +
+                        f"""+{str(stats["assists"])} | TOI: {stats["timeOnIce"]}""")
+
+            skatersTexts = [format_skater_stats(stats) for stats in skatersStats]
+
+            # Goalies
+            goalies = [player for player in players if "goalieStats" in player["stats"]]
+            goaliesStats = []
+            for goalie in goalies:
+                stats = {
+                    "name": goalie["lastName"],
+                    "team": goalie["team"],
+                    "saves": goalie["stats"]["goalieStats"]["saves"],
+                    "shots": goalie["stats"]["goalieStats"]["shots"],
+                    "timeOnIce": goalie["stats"]["goalieStats"]["timeOnIce"]
+                }
+                goaliesStats.append(stats)
+
+            goaliesStats.sort(key=lambda x: x["name"])
+            goaliesStats.sort(key=lambda x: (x["saves"], x["shots"]), reverse=True)
 
             # Goalies stats in format: last name (team) | saves/shots | TOI: MM:SS
-            goalies = [player for player in players if "goalieStats" in player["stats"]]
-            goaliesStats = [
-                (f"""{player["lastName"]} ({self.teams[player["team"]]}) | {str(player["stats"]["goalieStats"]["saves"])}"""
-                    f"""/{str(player["stats"]["goalieStats"]["shots"])} | TOI: {player["stats"]["goalieStats"]["timeOnIce"]}""")
-                for player in goalies
-            ]
+            goaliesHeader = "*Goalies:*\n"
 
-            # Sort first by name
-            goaliesStats.sort(key=lambda x: x.split("|")[0])
+            def format_goalie_stats(stats):
+                return (f"""{stats["name"]} ({self.teams[stats["team"]]}) | {str(stats["saves"])}""" +
+                        f"""/{str(stats["shots"])} | TOI: {stats["timeOnIce"]}""")
 
-            # Sort in descending order by number of saves out of shots at
-            goaliesStats.sort(
-                key=lambda x: (
-                    int(x.split("|")[1].split("/")[-1]),
-                    int(x.split("|")[1].split("/")[0])),
-                reverse=True
-            )
+            goaliesTexts = [format_goalie_stats(stats) for stats in goaliesStats]
 
-            skaterHeader = "*Skaters:*\n"
-            goalieHeader = "*Goalies:*\n"
-            if (len(goaliesStats) == 0 and len(skatersStats) > 0):
-                return skaterHeader + "\n".join(skatersStats)
-            elif (len(skatersStats) == 0 and len(goaliesStats) > 0):
-                return goalieHeader + "\n".join(goaliesStats)
+            if (len(goaliesTexts) == 0 and len(skatersTexts) > 0):
+                return skatersHeader + "\n".join(skatersTexts)
+            elif (len(skatersTexts) == 0 and len(goaliesTexts) > 0):
+                return goaliesHeader + "\n".join(goaliesTexts)
             else:
-                return skaterHeader + "\n".join(skatersStats) + "\n" + goalieHeader + "\n".join(goaliesStats)
+                return skatersHeader + "\n".join(skatersTexts) + "\n" + goaliesHeader + "\n".join(goaliesTexts)
         else:
             return f"Players not found for {nationality}"
 
