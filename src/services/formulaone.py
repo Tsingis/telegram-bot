@@ -133,7 +133,7 @@ class FormulaOne:
             # Convert times to local from race time
             qualifTime = convert_time_to_localtime(qualif, offset)
             raceTime = convert_time_to_localtime(race, offset)
-            
+
             return {
                 "grandprix": gp,
                 "weekend": weekend,
