@@ -35,4 +35,5 @@ package:
     - node_modules/**
     - .vscode/**
     - .github/**
-    - test.py
+    - maintest.py
+    - tests/**
