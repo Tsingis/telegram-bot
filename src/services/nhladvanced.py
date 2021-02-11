@@ -163,7 +163,7 @@ class NHLAdvanced(NHLBase):
                         "firstName": player["person"]["firstName"],
                         "lastName": player["person"]["lastName"],
                         "nationality": player["person"]["nationality"],
-                        "team": player["person"]["currentTeam"]["name"],
+                        "team": self.teams[player["person"]["currentTeam"]["name"]],
                         "stats": player["stats"]
                     })
             return players
@@ -171,8 +171,8 @@ class NHLAdvanced(NHLBase):
             logger.exception("Error getting players stats")
             return None
 
-    def format_players_stats(self, data, nationality="FIN"):
-        players = [player for player in data if player["nationality"] == nationality]
+    def format_players_stats(self, data, filter="FIN"):
+        players = [player for player in data if player["nationality"] == filter or player["team"] == filter]
         if (len(players) > 0):
             # Skaters
             skaters = [player for player in players if "skaterStats" in player["stats"]]
@@ -195,7 +195,7 @@ class NHLAdvanced(NHLBase):
             skatersHeader = "*Skaters:*\n"
 
             def format_skater_stats(stats):
-                return (f"""{stats["name"]} ({self.teams[stats["team"]]}) | {str(stats["goals"])}""" +
+                return (f"""{stats["name"]} ({stats["team"]}) | {str(stats["goals"])}""" +
                         f"""+{str(stats["assists"])} | TOI: {stats["timeOnIce"]}""")
 
             skatersTexts = [format_skater_stats(stats) for stats in skatersStats]
@@ -220,7 +220,7 @@ class NHLAdvanced(NHLBase):
             goaliesHeader = "*Goalies:*\n"
 
             def format_goalie_stats(stats):
-                return (f"""{stats["name"]} ({self.teams[stats["team"]]}) | {str(stats["saves"])}""" +
+                return (f"""{stats["name"]} ({stats["team"]}) | {str(stats["saves"])}""" +
                         f"""/{str(stats["shots"])} | TOI: {stats["timeOnIce"]}""")
 
             goaliesTexts = [format_goalie_stats(stats) for stats in goaliesStats]
@@ -232,7 +232,7 @@ class NHLAdvanced(NHLBase):
             else:
                 return skatersHeader + "\n".join(skatersTexts) + "\n" + goaliesHeader + "\n".join(goaliesTexts)
         else:
-            return f"Players not found for {nationality}"
+            return f"Players not found for {filter.upper()}"
 
     # Extract player stats with given name
     def get_player_season_stats(self, name):

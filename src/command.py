@@ -82,12 +82,12 @@ class Command():
             IMAGE_SEARCH_CMD + " <keyword>",
             WEATHER_SEARCH_CMD + " <location>",
             F1_INFO_CMD,
-            F1_STANDINGS_CMD + " <'driver' or 'team'>",
+            F1_STANDINGS_CMD + " <'driver'> or <'team'>",
             F1_RESULTS_CMD,
             NHL_INFO_CMD,
             NHL_STANDINGS_CMD,
             NHL_RESULTS_CMD,
-            NHL_PLAYERS_STATS_CMD + " <nationality>",
+            NHL_PLAYERS_STATS_CMD + " <nationality> or <team>",
             NHL_PLAYER_INFO_CMD + " <player name>",
             NHL_PLAYOFFS_CMD
         ]
@@ -166,15 +166,15 @@ class Command():
             result = "No matches yesterday"
         return Response(text=result)
 
-    # NHL stats for players of given nationality from latest round
+    # NHL stats for players of given nationality or team from latest round
     def nhl_players_stats(self):
-        nationality = self.text.split(NHL_PLAYERS_STATS_CMD)[-1].strip().upper()
+        filter = self.text.split(NHL_PLAYERS_STATS_CMD)[-1].strip().upper()
         stats = nhlAdvanced.get_players_stats()
         if (stats is not None):
-            if (not nationality):
+            if (not filter):
                 result = nhlAdvanced.format_players_stats(stats)
             else:
-                result = nhlAdvanced.format_players_stats(stats, nationality)
+                result = nhlAdvanced.format_players_stats(stats, filter)
         else:
             result = "Players stats not available"
         return Response(text=result)
