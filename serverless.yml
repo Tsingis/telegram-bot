@@ -28,8 +28,6 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: non-linux
-    useDownloadCache: true
-    useStaticCache: true
 
 package:
   exclude:

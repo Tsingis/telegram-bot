@@ -1,8 +1,8 @@
 name: deploy-aws-lambda
 on:
-  push:
-    branches:
-      - test
+  # push:
+  #   branches:
+  #     - test
 jobs:
   deploy:
     runs-on: windows-latest
