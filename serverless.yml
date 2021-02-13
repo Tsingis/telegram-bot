@@ -11,8 +11,6 @@ provider:
     GOOGLE_API: ${env:GOOGLE_API}
     DARKSKY_API: ${env:DARKSKY_API}
     CSE_ID: ${env:CSE_ID}
-    SLS_DEBUG: "*"
-
 functions:
   webhook:
     handler: handler.webhook
@@ -30,6 +28,8 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: non-linux
+    useDownloadCache: true
+    useStaticCache: true
 
 package:
   exclude:
