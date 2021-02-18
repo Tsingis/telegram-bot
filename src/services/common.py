@@ -50,3 +50,8 @@ def convert_time_to_localtime(time, offset):
 def format_markdown(text):
     specials = ["*", "_"]
     return re.sub(rf"""(?<!\\)((?:\\\\)*)([{"".join(specials)}])""", r"\1\\\2", text)
+
+
+# Removes linebreaks and whitespaces from text
+def remove_linebreak_and_whitespace(text):
+    return text.replace(" ", "").replace("\n", "")
