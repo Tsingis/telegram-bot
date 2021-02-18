@@ -1,4 +1,3 @@
-import datetime as dt
 import pandas as pd
 from .nhlbase import NHLBase
 from .common import set_soup
@@ -9,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 class NHLExtra(NHLBase):
-    def __init__(self, date=dt.datetime.utcnow()):
-        super().__init__(date)
+    def __init__(self):
+        super().__init__()
         self.season = self.get_season()
 
     # Get player contract info for current season

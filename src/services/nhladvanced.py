@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 
 class NHLAdvanced(NHLBase):
-    def __init__(self, date=dt.datetime.utcnow()):
-        super().__init__(date)
+    def __init__(self):
+        super().__init__()
         self.season = self.get_season()
         self.teams = self.get_teams()
 
