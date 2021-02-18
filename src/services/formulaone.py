@@ -1,5 +1,5 @@
 import datetime as dt
-from .common import set_soup, convert_time_to_localtime
+from .common import set_soup, convert_time_to_localtime, remove_linebreak_and_whitespace
 from ..logger import logging
 
 
@@ -45,14 +45,22 @@ class FormulaOne:
             logger.exception("Error getting race results")
             return None
 
+    def format_results(self, data):
+        url = data["url"]
+        race = url.split("/")[-2].replace("-", " ").title()
+
+        header = f"Results for {race}:"
+        details = f"\n[Details]({url})"
+        formattedResults = [f"""{result["position"]}. {result["name"]} {result["time"]}""" for result in data["results"]]
+
+        return f"*{header}*\n" + "\n".join(formattedResults) + details
+
     # Gets top drivers from overall standings and url for more details. Default top 5
     def get_driver_standings(self, amount=5):
         # Find standings table
         standingsUrl = f"{self.BASE_URL}/en/results.html/{self.date.year}/drivers.html"
         try:
             table = self._find_table(standingsUrl)
-            print(table)
-
             # Get drivers
             drivers = table.find_all("tr")[1:amount + 1]
 
@@ -105,6 +113,23 @@ class FormulaOne:
             logger.exception("Error getting team standings")
             return None
 
+    def format_standings(self, data):
+        url = data["url"]
+        race = self._get_current_race()
+        raceNumber = race["number"]
+        raceDate = race["date"]
+        maxRaces = len(self._get_races())
+
+        header = "Standings:"
+        details = f"\n[Details]({url})"
+
+        if (raceNumber is not None or maxRaces is not None):
+            header = header + f" {(raceNumber - 1 if self.date < raceDate else raceNumber)}/{maxRaces}"
+
+        formattedStandings = [f"""{result["position"]}. {result["name"]} - {result["points"]}""" for result in data["standings"]]
+
+        return f"*{header}*\n" + "\n".join(formattedStandings) + details
+
     # Gets info for the upcoming race
     def get_upcoming(self):
         try:
@@ -140,42 +165,15 @@ class FormulaOne:
                 "location": location,
                 "qualifying": qualifTime,
                 "race": raceTime,
+                "raceNumber": raceNumber,
                 "raceUrl": self.BASE_URL + raceUrl
             }
         except Exception:
             logger.exception("Error getting upcoming race")
             return None
 
-    def format_results(self, data):
-        url = data["url"]
-        race = url.split("/")[-2].replace("-", " ").title()
-
-        header = f"Results for {race}:"
-        details = f"\n[Details]({url})"
-        formattedResults = [f"""{result["position"]}. {result["name"]} {result["time"]}""" for result in data["results"]]
-
-        return f"*{header}*\n" + "\n".join(formattedResults) + details
-
-    def format_standings(self, data):
-        url = data["url"]
-        race = self._get_current_race()
-        raceNumber = race["number"]
-        raceDate = race["date"]
-        maxRaces = len(self._get_races())
-
-        header = "Standings:"
-        details = f"\n[Details]({url})"
-
-        if (raceNumber is not None or maxRaces is not None):
-            header = header + f" {(raceNumber - 1 if self.date < raceDate else raceNumber)}/{maxRaces}"
-
-        formattedStandings = [f"""{result["position"]}. {result["name"]} - {result["points"]}""" for result in data["standings"]]
-
-        return f"*{header}*\n" + "\n".join(formattedStandings) + details
-
     def format_upcoming(self, data):
-        race = self._get_current_race()
-        raceNumber = race["number"]
+        raceNumber = data["raceNumber"]
         maxRaces = len(self._get_races())
 
         header = "Upcoming race:"
@@ -220,8 +218,9 @@ class FormulaOne:
     def _get_current_race(self):
         try:
             races = self._get_races()
-            date_strs = [race.find("time", {"class": "to date-full"}).text.strip() for race in races]
-            dates = [dt.datetime.strptime(date, "%d %b %Y") for date in date_strs]
+            dateDetails = [race.find("p", {"class": "race-date-full"}).text for race in races]
+            dateStrs = [remove_linebreak_and_whitespace(detail).split("-")[-1] for detail in dateDetails]
+            dates = [dt.datetime.strptime(date, "%d%b%Y") if date != "TBC" else self.date.replace(month=12, day=31) for date in dateStrs]
 
             # Get race number of the next race.
             raceNumber = len([value for value in dates if value < self.date and value < dates[-1]]) + 1
