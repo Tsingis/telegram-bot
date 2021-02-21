@@ -9,7 +9,7 @@ provider:
   environment:
     TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     GOOGLE_API: ${env:GOOGLE_API}
-    DARKSKY_API: ${env:DARKSKY_API}
+    OPENWEATHER_API: ${env:OPENWEATHER_API}
     CSE_ID: ${env:CSE_ID}
 functions:
   webhook:

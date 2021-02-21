@@ -105,8 +105,14 @@ class Command():
     # Weather info by location
     def search_weather(self):
         location = self.text.split(WEATHER_SEARCH_CMD)[-1].strip()
-        info = weatherSearch.get_data(location)
-        result = weatherSearch.format_info(info, location) if info is not None else "Weather data not available"
+        info = weatherSearch.get_info(location)
+        if (info is not None):
+            result = weatherSearch.format_info(info, location)
+            icon = weatherSearch.get_icon_url(info)
+            if (icon is not None):
+                return Response(text=result, image=icon, type=ResponseType.TEXT_AND_IMAGE)
+        else:
+            result = "Weather data not available"
         return Response(text=result)
 
     # F1 upcoming race

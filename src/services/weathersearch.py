@@ -8,50 +8,66 @@ logger = logging.getLogger(__name__)
 
 
 class WeatherSearch:
-
     GOOGLE_API_KEY = os.environ["GOOGLE_API"]
-    DARKSKY_API_KEY = os.environ["DARKSKY_API"]
+    OPENWEATHER_API_KEY = os.environ["OPENWEATHER_API"]
 
     def __init__(self):
         self.gmaps = googlemaps.Client(key=self.GOOGLE_API_KEY)
 
-    # Get specific weather data for given coords
-    def get_data(self, location):
+    # Get specific weather data for given location
+    def get_info(self, location):
         try:
             coords = self._get_coords(location)
-            url = (f"""https://api.darksky.net/forecast/{self.DARKSKY_API_KEY}/"""
-                   f"""{coords["lat"]},{coords["lng"]}""")
-            params = {
-                "units": "si",
-                "exclude": "minutely,hourly,daily,alerts,flags"
+            url = ("https://api.openweathermap.org/data/2.5/weather?" +
+                   f"""lat={coords["lat"]}&lon={coords["lng"]}""" +
+                   f"""&units=metric&appid={self.OPENWEATHER_API_KEY}""")
+            res = requests.get(url).json()
+            data = {
+                "description": res["weather"][0]["description"],
+                "temperature": round(res["main"]["temp"], 1),
+                "wind": round(res["wind"]["speed"], 2),
+                "humidity": int(round(res["main"]["humidity"], 0)),
+                "pressure": int(round(res["main"]["pressure"], 0)),
+                "clouds": int(round(res["clouds"]["all"], 0)),
+                "icon": res["weather"][0]["icon"]
             }
 
-            res = requests.get(url=url, params=params)
-            if (res.status_code == 200):
-                return res.json()
-            res.raise_for_status()
-        except requests.exceptions.HTTPError:
-            logger.exception(f"Error getting weather data for location: {location}")
+            if ("snow" in res):
+                data["precipitation"] = "snow"
+                data["amount"] = round(res["snow"]["1h"], 2)
+
+            if ("rain" in res):
+                data["precipitation"] = "rain"
+                data["amount"] = round(res["rain"]["1h"], 2)
+
+            return data
+        except Exception:
             return None
 
     def format_info(self, data, location):
-        current = data["currently"]
         info = {
-            "Summary": current["summary"],
-            "Temp": str(round(current["temperature"], 1)) + " C",
-            "Wind": str(round(current["windSpeed"], 2)) + " m/s",
-            "Hum": str(int(round(current["humidity"] * 100, 0))) + " %",
-            "Pres": str(int(round(current["pressure"], 0))) + " hPa",
-            "Clouds": str(int(round(current["cloudCover"] * 100, 0))) + " %"
+            "Desc": data["description"].capitalize(),
+            "Temp": str(data["temperature"]) + " C",
+            "Wind": str(data["wind"]) + " m/s",
+            "Hum": str(data["humidity"]) + " %",
+            "Pres": str(data["pressure"]) + " hPa",
+            "Clouds": str(data["clouds"]) + " %",
         }
 
-        if ("precipType" in current):
-            info["Precip"] = current["precipType"]
-            info["Amount"] = str(round(current["precipIntensity"], 2)) + " mm/h"
+        if ("snow" in data or "rain" in data):
+            info["Precip"] = data["precipitation"]
+            info["Amount"] = str(data["amount"]) + " mm/h"
 
-        header = f"*Weather for {location.capitalize()}:*\n"
-        formatted_info = "\n".join([f"{key}: {value}" for (key, value) in info.items()])
-        return header + formatted_info + "\n\n*Powered by Dark Sky*"
+        header = f"*Weather for {location.capitalize()}:*\n\n"
+        return header + "\n".join([f"{key}: {value}" for (key, value) in info.items()])
+
+    # Get icon for weather
+    def get_icon_url(self, data):
+        try:
+            return f"""https://openweathermap.org/img/wn/{data["icon"]}@4x.png"""
+        except Exception:
+            logger.exception(f"Error getting weather icon for data: {data}")
+            return None
 
     # Get coordinates for given location
     def _get_coords(self, location):
