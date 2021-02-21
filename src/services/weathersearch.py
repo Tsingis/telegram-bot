@@ -33,11 +33,11 @@ class WeatherSearch:
             }
 
             if ("snow" in res):
-                data["precipitation"] = "snow"
+                data["precipType"] = "snow"
                 data["amount"] = round(res["snow"]["1h"], 2)
 
             if ("rain" in res):
-                data["precipitation"] = "rain"
+                data["precipType"] = "rain"
                 data["amount"] = round(res["rain"]["1h"], 2)
 
             return data
@@ -47,18 +47,18 @@ class WeatherSearch:
     def format_info(self, data, location):
         info = {
             "Desc": data["description"].capitalize(),
-            "Temp": str(data["temperature"]) + " C",
+            "Temp": str(data["temperature"]) + " °C",
             "Wind": str(data["wind"]) + " m/s",
             "Hum": str(data["humidity"]) + " %",
             "Pres": str(data["pressure"]) + " hPa",
             "Clouds": str(data["clouds"]) + " %",
         }
 
-        if ("snow" in data or "rain" in data):
-            info["Precip"] = data["precipitation"]
+        if ("precipType" in data):
+            info["Precip"] = data["precipType"]
             info["Amount"] = str(data["amount"]) + " mm/h"
 
-        header = f"*Weather for {location.capitalize()}:*\n"
+        header = f"*Weather for {location.title()}*\n"
         return header + "\n".join([f"{key}: {value}" for (key, value) in info.items()])
 
     # Get icon for weather
