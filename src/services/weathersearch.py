@@ -58,7 +58,7 @@ class WeatherSearch:
             info["Precip"] = data["precipitation"]
             info["Amount"] = str(data["amount"]) + " mm/h"
 
-        header = f"*Weather for {location.capitalize()}:*\n\n"
+        header = f"*Weather for {location.capitalize()}:*\n"
         return header + "\n".join([f"{key}: {value}" for (key, value) in info.items()])
 
     # Get icon for weather
