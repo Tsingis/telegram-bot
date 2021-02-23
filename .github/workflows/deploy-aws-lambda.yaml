@@ -1,8 +1,8 @@
 name: deploy-aws-lambda
 on:
-  # push:
-  #   branches:
-  #     - test
+  push:
+    branches:
+      - test
 jobs:
   deploy:
     runs-on: windows-latest
@@ -15,6 +15,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Update docker
+        run: Install-Package -Name docker -ProviderName DockerMsftProvider -Verbose -Update; Start-Service docker
+          shell: powershell
       - name: Install Dependencies
         run: npm install
       - name: Configure AWS Credentials
