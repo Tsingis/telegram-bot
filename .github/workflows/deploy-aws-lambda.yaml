@@ -19,7 +19,7 @@ jobs:
         run: Install-Package -Name docker -ProviderName DockerMsftProvider -Verbose -Update -Force
         shell: powershell
       - name: Restart Docker
-        run:  Restart-Service Docker
+        run:  Restart-Service *docker*
         shell: powershell
       - name: Install Dependencies
         run: npm install
