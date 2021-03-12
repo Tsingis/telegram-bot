@@ -18,7 +18,10 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Update docker
-        run: Install-Package -Name docker -ProviderName DockerMsftProvider -Verbose -Update; Start-Service docker
+        run: Install-Package -Name docker -ProviderName DockerMsftProvider -Verbose -Update -Force
+        shell: powershell
+      - name: Start Docker
+        run:  Start-Service Docker
         shell: powershell
       - name: Show Docker version
         run: docker --version  
