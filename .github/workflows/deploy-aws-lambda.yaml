@@ -21,10 +21,8 @@ jobs:
         run: Install-Package -Name docker -ProviderName DockerMsftProvider -Verbose -Update -Force
         shell: powershell
       - name: Start Docker
-        run:  Start-Service Docker
+        run:  Restart-Service Docker
         shell: powershell
-      - name: Show Docker version
-        run: docker --version  
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
