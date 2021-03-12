@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - test
-      - prod
 jobs:
   deploy:
     runs-on: windows-latest
