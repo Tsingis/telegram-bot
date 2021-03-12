@@ -19,7 +19,7 @@ jobs:
         run: npm install
       - name: Update docker
         run: Install-Package -Name docker -ProviderName DockerMsftProvider -Verbose -Update; Start-Service docker
-          shell: powershell
+        shell: powershell
       - name: Show Docker version
         run: docker --version  
       - name: Configure AWS Credentials
