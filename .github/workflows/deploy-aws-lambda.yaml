@@ -18,8 +18,8 @@ jobs:
       - name: Update docker
         run: Install-Package -Name docker -ProviderName DockerMsftProvider -Verbose -Update -Force
         shell: powershell
-      - name: Restart Docker
-        run:  Restart-Service *docker*
+      - name: Start Docker
+        run:  Start-Service Docker
         shell: powershell
       - name: Install Dependencies
         run: npm install
