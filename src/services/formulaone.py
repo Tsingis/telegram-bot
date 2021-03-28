@@ -118,7 +118,7 @@ class FormulaOne:
         races = self._get_races()
         maxRaces = races["count"]
         raceNumber = races["currentRaceNumber"]
-        raceDate = races["currentRacedate"]
+        raceDate = races["currentRaceDate"]
 
         header = "Standings:"
         details = f"\n[Details]({url})"
