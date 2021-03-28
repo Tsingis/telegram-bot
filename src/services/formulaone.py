@@ -115,10 +115,10 @@ class FormulaOne:
 
     def format_standings(self, data):
         url = data["url"]
-        race = self._get_current_race()
-        raceNumber = race["number"]
-        raceDate = race["date"]
-        maxRaces = len(self._get_races())
+        races = self._get_races()
+        maxRaces = races["count"]
+        raceNumber = races["currentRaceNumber"]
+        raceDate = races["currentRacedate"]
 
         header = "Standings:"
         details = f"\n[Details]({url})"
@@ -134,8 +134,8 @@ class FormulaOne:
     def get_upcoming(self):
         try:
             soup = set_soup(self.BASE_URL)
-            race = self._get_current_race()
-            raceNumber = race["number"]
+            races = self._get_races()
+            raceNumber = races["currentRaceNumber"]
             raceData = soup.find_all("article", {"class": "race"})[raceNumber - 1]
 
             # Location, Grand Prix name and url
@@ -165,7 +165,6 @@ class FormulaOne:
                 "location": location,
                 "qualifying": qualifTime,
                 "race": raceTime,
-                "raceNumber": raceNumber,
                 "raceUrl": self.BASE_URL + raceUrl
             }
         except Exception:
@@ -173,8 +172,9 @@ class FormulaOne:
             return None
 
     def format_upcoming(self, data):
-        raceNumber = data["raceNumber"]
-        maxRaces = len(self._get_races())
+        races = self._get_races()
+        maxRaces = races["count"]
+        raceNumber = races["currentRaceNumber"]
 
         header = "Upcoming race:"
         if (raceNumber is not None or maxRaces is not None):
@@ -209,24 +209,29 @@ class FormulaOne:
     def _get_races(self):
         try:
             soup = set_soup(self.BASE_URL)
-            return soup.find_all("article", {"class": "race"})
+            races = soup.find_all("article", {"class": "race"})
+            dateDetails = [race.find("p", {"class": "race-date-full"}).text for race in races]
+            dateStrs = [remove_linebreak_and_whitespace(detail).split("-")[-1] for detail in dateDetails]
+            dates = [dt.datetime.strptime(date, "%d%b%Y") if date != "TBC" else self.date.replace(month=12, day=31) for date in dateStrs]
+            currentRace = self._get_current_race(dates)
+            return {
+                "count": len(dates),
+                "raceDates": dates,
+                "currentRaceDate": currentRace["date"],
+                "currentRaceNumber": currentRace["number"]
+            }
         except Exception:
             logger.exception("Error getting races")
             return None
 
     # Gets the number of current race
-    def _get_current_race(self):
+    def _get_current_race(self, dates):
         try:
-            races = self._get_races()
-            dateDetails = [race.find("p", {"class": "race-date-full"}).text for race in races]
-            dateStrs = [remove_linebreak_and_whitespace(detail).split("-")[-1] for detail in dateDetails]
-            dates = [dt.datetime.strptime(date, "%d%b%Y") if date != "TBC" else self.date.replace(month=12, day=31) for date in dateStrs]
-
-            # Get race number of the next race.
-            raceNumber = len([value for value in dates if value < self.date and value < dates[-1]]) + 1
+            currentDate = dt.datetime(self.date.year, self.date.month, self.date.day)
+            raceNumber = len([value for value in dates if value < currentDate and value < dates[-1]])
             return {
-                "number": raceNumber,
-                "date": dates[raceNumber - 1]
+                "number": raceNumber + 1,
+                "date": dates[raceNumber]
             }
         except Exception:
             logger.exception("Error getting number of the current race")
