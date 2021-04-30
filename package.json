@@ -1,15 +1,15 @@
 {
-  "name": "telegram-bot-test",
-  "version": "1.0.0",
-  "description": "Telegram bot test",
-  "dependencies": {},
-  "devDependencies": {
-    "serverless": "^2.33.1",
-    "serverless-python-requirements": "^5.1.1"
-  },
-  "scripts": {
-    "deploy": "serverless deploy"
-  },
-  "author": "",
-  "license": "ISC"
+    "name": "telegram-bot-test",
+    "version": "1.0.0",
+    "description": "Telegram bot test",
+    "dependencies": {},
+    "devDependencies": {
+        "serverless": "^2.38.0",
+        "serverless-python-requirements": "^5.1.1"
+    },
+    "scripts": {
+        "deploy": "serverless deploy"
+    },
+    "author": "",
+    "license": "ISC"
 }

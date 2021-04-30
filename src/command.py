@@ -46,6 +46,9 @@ class Command():
     def __init__(self, text):
         self.text = text
 
+    def commandDisabled(self):
+        return Response(text="Command is disabled")
+
     def response(self):
         if (self.text.startswith(AVAILABLE_CMD)):
             return self.available_commands()
@@ -54,11 +57,14 @@ class Command():
         if (self.text.startswith(WEATHER_SEARCH_CMD)):
             return self.search_weather()
         if (self.text.startswith(F1_INFO_CMD)):
-            return self.f1_info()
+            # return self.f1_info()
+            return self.commandDisabled()
         if (self.text.startswith(F1_STANDINGS_CMD)):
-            return self.f1_standings()
+            # return self.f1_standings()
+            return self.commandDisabled()
         if (self.text.startswith(F1_RESULTS_CMD)):
-            return self.f1_results()
+            # return self.f1_results()
+            return self.commandDisabled()
         if (self.text.startswith(NHL_INFO_CMD)):
             return self.nhl_info()
         if (self.text.startswith(NHL_STANDINGS_CMD)):
