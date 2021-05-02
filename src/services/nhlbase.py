@@ -56,7 +56,8 @@ class NHLBase:
         try:
             return self.get_data(self.BASE_URL + f"/game/{gameId}/linescore")
         except Exception:
-            logger.exception(f"Error getting games linescore for game id: {gameId}")
+            logger.exception(
+                f"Error getting games linescore for game id: {gameId}")
             return None
 
     # Get data from each match by gameID
@@ -64,14 +65,16 @@ class NHLBase:
         try:
             return self.get_data(self.BASE_URL + f"/game/{gameId}/boxscore")
         except Exception:
-            logger.exception(f"Error getting games boxscore for game id: {gameId}")
+            logger.exception(
+                f"Error getting games boxscore for game id: {gameId}")
             return None
 
     # Get team IDs
     def get_team_ids(self):
         try:
             data = self.get_data(self.BASE_URL + "/teams")
-            return [team["id"] for team in data["teams"]]
+            return [team["id"] for team in data["teams"]
+                    if team["active"] and "firstYearOfPlay" in team]
         except Exception:
             logger.exception("Error getting team ids")
             return None
@@ -92,7 +95,8 @@ class NHLBase:
     def get_division_leaders(self, date, amount=3):
         try:
             teams = self.get_teams()
-            data = self.get_data(self.BASE_URL + f"/standings/byDivision?date={date}")
+            data = self.get_data(
+                self.BASE_URL + f"/standings/byDivision?date={date}")
             # Get divisions
             divs = [
                 {
@@ -124,7 +128,8 @@ class NHLBase:
     def get_wildcards(self, date, amount=5):
         try:
             teams = self.get_teams()
-            data = self.get_data(self.BASE_URL + f"/standings/wildCard?date={date}")
+            data = self.get_data(
+                self.BASE_URL + f"/standings/wildCard?date={date}")
             # Get top five wildcards on default from each conference
             wilds = [{
                 "conference": conf["conference"]["name"],

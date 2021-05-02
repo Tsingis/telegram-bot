@@ -24,7 +24,7 @@ class NHLAdvanced(NHLBase):
             data = []
             for game in games:
                 if ("currentPeriodTimeRemaining" in game and
-                    game["currentPeriodTimeRemaining"] == "Final"):
+                        game["currentPeriodTimeRemaining"] == "Final"):
                     period = game["currentPeriodOrdinal"]
                 elif (game["currentPeriod"] == 0):
                     period = "Not started"
@@ -56,7 +56,8 @@ class NHLAdvanced(NHLBase):
                 period = ""
             home = self.teams[game["homeTeam"]["name"]]
             away = self.teams[game["awayTeam"]["name"]]
-            results.append(f"""{home} {game["homeTeam"]["goals"]} - {game["awayTeam"]["goals"]} {away} {period}""".strip())
+            results.append(
+                f"""{home} {game["homeTeam"]["goals"]} - {game["awayTeam"]["goals"]} {away} {period}""".strip())
         return "\n".join(results)
 
     # Get upcoming matches and times
@@ -84,7 +85,8 @@ class NHLAdvanced(NHLBase):
         for game in data:
             # Format times to HH:MM
             date = dt.datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
-            time = dt.datetime.strftime(date + dt.timedelta(hours=get_timezone_difference(date)), "%H:%M")
+            time = dt.datetime.strftime(
+                date + dt.timedelta(hours=get_timezone_difference(date)), "%H:%M")
             home = self.teams[game["homeTeam"]]
             away = self.teams[game["awayTeam"]]
             if (game["status"] == "Postponed"):
@@ -111,7 +113,8 @@ class NHLAdvanced(NHLBase):
             return None
 
     def format_standings(self, data):
-        leaders = sorted(data["divisionLeaders"], key=lambda x: x["conference"])
+        leaders = sorted(data["divisionLeaders"],
+                         key=lambda x: x["conference"])
         wilds = sorted(data["wildcards"], key=lambda x: x["conference"])
         divisions = sorted([
             {
@@ -135,8 +138,10 @@ class NHLAdvanced(NHLBase):
                 format_header(divisions[3]["name"]) + format_team_info(leaders, "division", divisions[3]["name"]))
 
         if (len(wilds) > 0):
-            west += format_header("Wild Card") + format_team_info(wilds, "conference", divisions[0]["conference"])
-            east += format_header("Wild Card") + format_team_info(wilds, "conference", divisions[2]["conference"])
+            west += format_header("Wild Card") + format_team_info(wilds,
+                                                                  "conference", divisions[0]["conference"])
+            east += format_header("Wild Card") + format_team_info(wilds,
+                                                                  "conference", divisions[2]["conference"])
 
         return "\n".join([e + w for w, e in zip(west, east)])
 
@@ -172,10 +177,12 @@ class NHLAdvanced(NHLBase):
             return None
 
     def format_players_stats(self, data, filter="FIN"):
-        players = [player for player in data if player["nationality"] == filter or player["team"] == filter]
+        players = [player for player in data if player["nationality"]
+                   == filter or player["team"] == filter]
         if (len(players) > 0):
             # Skaters
-            skaters = [player for player in players if "skaterStats" in player["stats"]]
+            skaters = [
+                player for player in players if "skaterStats" in player["stats"]]
             skatersStats = []
             for skater in skaters:
                 stats = {
@@ -198,10 +205,12 @@ class NHLAdvanced(NHLBase):
                 return (f"""{stats["name"]} ({stats["team"]}) | {str(stats["goals"])}""" +
                         f"""+{str(stats["assists"])} | TOI: {stats["timeOnIce"]}""")
 
-            skatersTexts = [format_skater_stats(stats) for stats in skatersStats]
+            skatersTexts = [format_skater_stats(
+                stats) for stats in skatersStats]
 
             # Goalies
-            goalies = [player for player in players if "goalieStats" in player["stats"]]
+            goalies = [
+                player for player in players if "goalieStats" in player["stats"]]
             goaliesStats = []
             for goalie in goalies:
                 stats = {
@@ -214,7 +223,8 @@ class NHLAdvanced(NHLBase):
                 goaliesStats.append(stats)
 
             goaliesStats.sort(key=lambda x: x["name"])
-            goaliesStats.sort(key=lambda x: (x["saves"], x["shots"]), reverse=True)
+            goaliesStats.sort(key=lambda x: (
+                x["saves"], x["shots"]), reverse=True)
 
             # Goalies stats in format: last name (team) | saves/shots | TOI: MM:SS
             goaliesHeader = "*Goalies:*\n"
@@ -223,7 +233,8 @@ class NHLAdvanced(NHLBase):
                 return (f"""{stats["name"]} ({stats["team"]}) | {str(stats["saves"])}""" +
                         f"""/{str(stats["shots"])} | TOI: {stats["timeOnIce"]}""")
 
-            goaliesTexts = [format_goalie_stats(stats) for stats in goaliesStats]
+            goaliesTexts = [format_goalie_stats(
+                stats) for stats in goaliesStats]
 
             if (len(goaliesTexts) == 0 and len(skatersTexts) > 0):
                 return skatersHeader + "\n".join(skatersTexts)
@@ -241,11 +252,13 @@ class NHLAdvanced(NHLBase):
             teamIds = self.get_team_ids()
             rosters = [self.get_roster(id) for id in teamIds]
             players = [player for roster in rosters for player in roster]
-            playerId = next(player["id"] for player in players if player["name"].lower() == playerName)
+            playerId = next(
+                player["id"] for player in players if player["name"].lower() == playerName)
             player = self.get_data(self.BASE_URL + f"/people/{playerId}/")
 
             # Extract all stats for given player
-            playerData = self.get_data(self.BASE_URL + f"/people/{playerId}/stats?stats=statsSingleSeason&season={self.season}")
+            playerData = self.get_data(
+                self.BASE_URL + f"/people/{playerId}/stats?stats=statsSingleSeason&season={self.season}")
             stats = playerData["stats"][0]["splits"][0]["stat"]
             return {
                 "id": playerId,
@@ -305,10 +318,12 @@ class NHLAdvanced(NHLBase):
         def insert_status_to_bracket(status, location):
             font = ImageFont.truetype("static/seguibl.ttf", 22)
             imgText = ImageDraw.Draw(imgBracket)
-            imgText.text(location, status, align="right", font=font, fill=(0, 0, 0))
+            imgText.text(location, status, align="right",
+                         font=font, fill=(0, 0, 0))
 
         try:
-            data = self.get_data(self.BASE_URL + f"/tournaments/playoffs?expand=round.series,schedule.game.seriesSummary&season={self.season}")
+            data = self.get_data(
+                self.BASE_URL + f"/tournaments/playoffs?expand=round.series,schedule.game.seriesSummary&season={self.season}")
 
             # Gather data for each series
             bracket = dict()
@@ -357,8 +372,10 @@ class NHLAdvanced(NHLBase):
 
             # Insert teams into bracket
             for key, value in bracket.items():
-                insert_team_to_bracket(value["matchup"][0], value["location"][0])
-                insert_team_to_bracket(value["matchup"][1], value["location"][1])
+                insert_team_to_bracket(
+                    value["matchup"][0], value["location"][0])
+                insert_team_to_bracket(
+                    value["matchup"][1], value["location"][1])
 
                 if (key == "O"):
                     textLocX = 600
@@ -366,8 +383,10 @@ class NHLAdvanced(NHLBase):
                     status = value["status"].rjust(12)
                 else:
                     status = value["status"]
-                    textLocX = int((value["location"][0][0] + value["location"][1][0]) / 2)
-                    textLocY = int((value["location"][0][1] + value["location"][1][1] + 60) / 2)
+                    textLocX = int(
+                        (value["location"][0][0] + value["location"][1][0]) / 2)
+                    textLocY = int(
+                        (value["location"][0][1] + value["location"][1][1] + 60) / 2)
 
                 insert_status_to_bracket(status, (textLocX, textLocY))
 
@@ -376,7 +395,8 @@ class NHLAdvanced(NHLBase):
                 winner = bracket["O"]["status"][:3]
                 imgWinner = Image.open(f"static/NHL logos/{winner}.gif")
                 width, height = imgWinner.size
-                imgWinner = imgWinner.resize((int(2 * width), int(1.8 * height)))
+                imgWinner = imgWinner.resize(
+                    (int(2 * width), int(1.8 * height)))
                 imgBracket.paste(imgWinner, (520, 765))
 
             # Create in-memory image

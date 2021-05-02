@@ -26,7 +26,8 @@ class NHLExtra(NHLBase):
             data = pd.read_html(table.prettify(), flavor="bs4", header=0)[0]
 
             # Alter season column format
-            data["SEASON"] = data["SEASON"].apply(lambda x: x.replace("-", "20"))
+            data["SEASON"] = data["SEASON"].apply(
+                lambda x: x.replace("-", "20"))
 
             # Filter for current season
             season_mask = data["SEASON"] == self.season
@@ -42,7 +43,8 @@ class NHLExtra(NHLBase):
                 "url": url
             }
         except Exception:
-            logger.exception(f"Error getting player contract for player: {name}")
+            logger.exception(
+                f"Error getting player contract for player: {name}")
             return None
 
     def format_player_contract(self, data):
