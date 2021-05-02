@@ -10,12 +10,12 @@ class CommandTest(unittest.TestCase):
         "/bot",
         "/weather helsinki",
         "/search icecream",
-        "/f1info",
         "/f1results",
         "/f1standings",
-        "/nhlinfo",
+        "/f1info",
         "/nhlresults",
         "/nhlstandings",
+        "/nhlinfo",
         "/nhlplayers",
         "/nhlplayerinfo connor mcdavid",
         "/nhlplayoffs"
@@ -34,6 +34,8 @@ class CommandTest(unittest.TestCase):
 
         if (printMsg and msg.text is not None):
             print(msg.text)
+            if (msg.image is not None):
+                print(msg.image)
 
 
 if __name__ == '__main__':

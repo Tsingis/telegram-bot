@@ -1,8 +1,8 @@
-import datetime as dt
+from datetime import datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from .nhlbase import NHLBase
-from .common import get_timezone_difference
+from .common import convert_utc_to_local
 from ..logger import logging
 
 
@@ -16,7 +16,7 @@ class NHLAdvanced(NHLBase):
 
     # Get match results from the latest round
     def get_results(self):
-        date = (self.date - dt.timedelta(days=1)).strftime("%Y-%m-%d")
+        date = (self.date - timedelta(days=1)).strftime("%Y-%m-%d")
         try:
             gameIds = [game["id"] for game in self.get_games(date)]
             games = [self.get_games_linescore(game_id) for game_id in gameIds]
@@ -73,9 +73,9 @@ class NHLAdvanced(NHLBase):
         results = []
         for game in data:
             # Format times to HH:MM
-            date = dt.datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
-            time = dt.datetime.strftime(
-                date + dt.timedelta(hours=get_timezone_difference(date)), "%H:%M")
+            date = datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
+            time = datetime.strftime(
+                convert_utc_to_local(date), "%H:%M")
             home = self.teams[game["homeTeam"]]["shortName"]
             away = self.teams[game["awayTeam"]]["shortName"]
             if (game["status"] == "Postponed"):
@@ -138,7 +138,7 @@ class NHLAdvanced(NHLBase):
 
     # Get player statistics from the latest round with nationality
     def get_players_stats(self):
-        date = (self.date - dt.timedelta(days=1)).strftime("%Y-%m-%d")
+        date = (self.date - timedelta(days=1)).strftime("%Y-%m-%d")
         try:
             gameIds = [game["id"] for game in self.get_games(date)]
             games = [self.get_games_boxscore(game_id) for game_id in gameIds]

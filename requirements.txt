@@ -18,3 +18,4 @@ six
 soupsieve
 tornado
 urllib3
+icalendar
