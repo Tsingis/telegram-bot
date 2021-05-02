@@ -1,6 +1,6 @@
 from datetime import datetime
 from .formulaonebase import FormulaOne
-from .common import set_soup, format_date
+from .common import convert_timezone, set_soup
 from ..logger import logging
 
 
@@ -135,11 +135,11 @@ class FormulaOneAdvanced(FormulaOne):
             return None
 
     def format_upcoming(self, data):
-        dateOutputPattern = "%a %B %d at %H:%M"
-        data["qualifyingTime"] = format_date(
-            data["qualifyingTime"], dateOutputPattern)
-        data["raceTime"] = format_date(
-            data["raceTime"], dateOutputPattern)
+        data["raceName"] = "TEST"
+        data["qualifyingTime"] = self.format_date(
+            data["qualifyingTime"])
+        data["raceTime"] = self.format_date(
+            data["raceTime"])
         header = f"""Upcoming race: {data["raceNumber"]}/{self.racesAmount}"""
         formattedRaceInfo = (f"""{data["raceName"]}\n""" +
                              f"""{data["location"]}\n""" +
@@ -171,3 +171,9 @@ class FormulaOneAdvanced(FormulaOne):
             return soup.find("table", {"class": "resultsarchive-table"})
         except Exception:
             logger.exception("Error finding table")
+
+    # Formats date with given input and output patterns
+    def format_date(self, date):
+        pattern = "%a %B %d at %H:%M"
+        date = convert_timezone(date, None, "Europe/Helsinki")
+        return datetime.strftime(date, pattern)

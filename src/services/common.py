@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
 from dateutil import tz
 import re
 from ..logger import logging
@@ -21,19 +20,17 @@ def set_soup(url, target_encoding="latin-1"):
 
 
 # Change UTC to Finnish timezone
-def convert_timezone(date, sourceTz=None, targetTz="Europe/Helsinki"):
+def convert_timezone(date, sourceTz=None, targetTz=None):
     if (sourceTz is None):
         sourceTz = tz.tzutc()
     else:
         sourceTz = tz.gettz(sourceTz)
+    if (targetTz is None):
+        targetTz = tz.tzutc()
+    else:
+        targetTz = tz.gettz(targetTz)
     date = date.replace(tzinfo=sourceTz)
-    return date.astimezone(tz.gettz(targetTz))
-
-
-# Formats date with given input and output patterns
-def format_date(date, pattern):
-    date = convert_timezone(date)
-    return datetime.strftime(date, pattern)
+    return date.astimezone(targetTz)
 
 
 # Replace special Markdown characters used in Telegram

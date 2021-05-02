@@ -11,7 +11,8 @@ class NHLBase:
     BASE_URL = "https://statsapi.web.nhl.com/api/v1/"
 
     def __init__(self, date=datetime.utcnow()):
-        self.date = convert_timezone(date)
+        self.targetTimezone = "Europe/Helsinki"
+        self.date = convert_timezone(date, None, self.targetTimezone)
         month = self.date.month
         year = self.date.year
         self.season = f"{year-1}{year}" if month < 9 else f"{year}{year+1}"
