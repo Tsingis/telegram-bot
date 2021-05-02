@@ -51,7 +51,8 @@ class FormulaOne:
 
         header = f"Results for {race}:"
         details = f"\n[Details]({url})"
-        formattedResults = [f"""{result["position"]}. {result["name"]} {result["time"]}""" for result in data["results"]]
+        formattedResults = [
+            f"""{result["position"]}. {result["name"]} {result["time"]}""" for result in data["results"]]
 
         return f"*{header}*\n" + "\n".join(formattedResults) + details
 
@@ -124,9 +125,11 @@ class FormulaOne:
         details = f"\n[Details]({url})"
 
         if (raceNumber is not None or maxRaces is not None):
-            header = header + f" {(raceNumber - 1 if self.date < raceDate else raceNumber)}/{maxRaces}"
+            header = header + \
+                f" {(raceNumber - 1 if self.date < raceDate else raceNumber)}/{maxRaces}"
 
-        formattedStandings = [f"""{result["position"]}. {result["name"]} - {result["points"]}""" for result in data["standings"]]
+        formattedStandings = [
+            f"""{result["position"]}. {result["name"]} - {result["points"]}""" for result in data["standings"]]
 
         return f"*{header}*\n" + "\n".join(formattedStandings) + details
 
@@ -136,7 +139,8 @@ class FormulaOne:
             soup = set_soup(self.BASE_URL)
             races = self._get_races()
             raceNumber = races["currentRaceNumber"]
-            raceData = soup.find_all("article", {"class": "race"})[raceNumber - 1]
+            raceData = soup.find_all("article", {"class": "race"})[
+                raceNumber - 1]
 
             # Location, Grand Prix name and url
             location = raceData.find("span", {"class": "name"}).text.title()
@@ -191,7 +195,8 @@ class FormulaOne:
     def get_circuit(self, raceUrl):
         try:
             soup = set_soup(raceUrl)
-            data = soup.find("div", {"class": "f1-race-hub--schedule-circuit-map"})
+            data = soup.find(
+                "div", {"class": "f1-race-hub--schedule-circuit-map"})
             return data.find("img", {"class": "lazy"})["data-src"]
         except Exception:
             logger.exception("Error getting circuit image")
@@ -210,9 +215,12 @@ class FormulaOne:
         try:
             soup = set_soup(self.BASE_URL)
             races = soup.find_all("article", {"class": "race"})
-            dateDetails = [race.find("p", {"class": "race-date-full"}).text for race in races]
-            dateStrs = [remove_linebreak_and_whitespace(detail).split("-")[-1] for detail in dateDetails]
-            dates = [dt.datetime.strptime(date, "%d%b%Y") if date != "TBC" else self.date.replace(month=12, day=31) for date in dateStrs]
+            dateDetails = [
+                race.find("p", {"class": "race-date-full"}).text for race in races]
+            dateStrs = [remove_linebreak_and_whitespace(
+                detail).split("-")[-1] for detail in dateDetails]
+            dates = [dt.datetime.strptime(date, "%d%b%Y") if date != "TBC" else self.date.replace(
+                month=12, day=31) for date in dateStrs]
             currentRace = self._get_current_race(dates)
             return {
                 "count": len(dates),
@@ -227,8 +235,10 @@ class FormulaOne:
     # Gets the number of current race
     def _get_current_race(self, dates):
         try:
-            currentDate = dt.datetime(self.date.year, self.date.month, self.date.day)
-            raceNumber = len([value for value in dates if value < currentDate and value < dates[-1]])
+            currentDate = dt.datetime(
+                self.date.year, self.date.month, self.date.day)
+            raceNumber = len([value for value in dates if value <
+                             currentDate and value < dates[-1]])
             return {
                 "number": raceNumber + 1,
                 "date": dates[raceNumber]

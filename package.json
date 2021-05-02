@@ -1,10 +1,10 @@
 {
   "name": "telegram-bot-prod",
   "version": "1.0.0",
-  "description": "Telegram bot production",
+  "description": "Telegram bot prod",
   "dependencies": {},
   "devDependencies": {
-    "serverless": "^2.38.0",
+    "serverless": "^2.39.0",
     "serverless-python-requirements": "^5.1.1"
   },
   "scripts": {

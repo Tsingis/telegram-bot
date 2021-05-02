@@ -75,4 +75,5 @@ class WeatherSearch:
             result = self.gmaps.geocode(location)
             return result[0]["geometry"]["location"]
         except Exception:
-            logger.exception(f"Error getting coordinates for location: {location}")
+            logger.exception(
+                f"Error getting coordinates for location: {location}")

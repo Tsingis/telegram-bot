@@ -20,7 +20,7 @@ class CommandTest(unittest.TestCase):
         "/nhlplayerinfo connor mcdavid",
         "/nhlplayoffs"
     )
-    def test_bot_command(self, cmdText):
+    def test_bot_command(self, cmdText, printMsg=True):
         cmd = Command(cmdText)
         msg = cmd.response()
         self.assertIsNotNone(msg)
@@ -31,6 +31,9 @@ class CommandTest(unittest.TestCase):
         if (msg.type == ResponseType.TEXT_AND_IMAGE):
             self.assertIsNotNone(msg.text)
             self.assertIsNotNone(msg.image)
+
+        if (printMsg and msg.text is not None):
+            print(msg.text)
 
 
 if __name__ == '__main__':

@@ -140,13 +140,15 @@ class Command():
             standings = f1.get_team_standings(amount=10)
         else:
             standings = f1.get_driver_standings(amount=10)
-        result = f1.format_standings(standings) if standings is not None else "Standings not available"
+        result = f1.format_standings(
+            standings) if standings is not None else "Standings not available"
         return Response(text=result)
 
     # F1 latest race results
     def f1_results(self):
         results = f1.get_results()
-        result = f1.format_results(results) if results is not None else "Results not available"
+        result = f1.format_results(
+            results) if results is not None else "Results not available"
         return Response(text=result)
 
     # NHL upcoming matches
@@ -163,7 +165,8 @@ class Command():
         url = "https://www.nhl.com/standings/"
         standings = nhlAdvanced.get_standings()
         if (standings is not None):
-            result = nhlAdvanced.format_standings(standings) + f"\n[Details]({url})"
+            result = nhlAdvanced.format_standings(
+                standings) + f"\n[Details]({url})"
         else:
             result = "Standings not available"
         return Response(text=result)
@@ -194,11 +197,11 @@ class Command():
     # NHL player stats by player name
     def nhl_player_info(self):
         playerName = self.text.split(NHL_PLAYER_INFO_CMD)[-1].strip().lower()
-        stats = nhlAdvanced.get_player_season_stats(playerName)
+        stats = nhlAdvanced.get_player_stats(playerName)
         contract = nhlExtra.get_player_contract(playerName)
         result = ""
         if (stats is not None):
-            result += nhlAdvanced.format_player_season_stats(stats)
+            result += nhlAdvanced.format_player_stats(stats)
         if (contract is not None):
             result += "\n" + nhlExtra.format_player_contract(contract)
         if (not result):
@@ -207,7 +210,7 @@ class Command():
 
     # NHL playoff bracket
     def nhl_playoffs(self):
-        bracketImg = nhlAdvanced.create_bracket()
+        bracketImg = nhlAdvanced.get_bracket()
         if (bracketImg is not None):
             return Response(image=bracketImg, type=ResponseType.IMAGE)
         else:
