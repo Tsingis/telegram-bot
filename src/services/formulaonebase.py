@@ -2,6 +2,7 @@
 import requests
 from datetime import datetime
 from icalendar import Calendar
+from .common import convert_timezone
 from ..logger import logging
 
 
@@ -72,5 +73,6 @@ class FormulaOne():
         return next((word for word in text.split(" ") if word.startswith(pattern)), pattern)
 
     def format_date(self, date):
-        date = date.strftime(self.datePattern)
+        dateTzAdjust = convert_timezone(date, "Europe/London")
+        date = dateTzAdjust.strftime(self.datePattern)
         return datetime.strptime(date, self.datePattern)

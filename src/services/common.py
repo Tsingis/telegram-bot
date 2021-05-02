@@ -21,15 +21,18 @@ def set_soup(url, target_encoding="latin-1"):
 
 
 # Change UTC to Finnish timezone
-def convert_utc_to_local(date):
-    timezone = tz.gettz("Europe/Helsinki")
-    date = date.replace(tzinfo=tz.tzutc())
-    return date.astimezone(timezone)
+def convert_timezone(date, sourceTz=None, targetTz="Europe/Helsinki"):
+    if (sourceTz is None):
+        sourceTz = tz.tzutc()
+    else:
+        sourceTz = tz.gettz(sourceTz)
+    date = date.replace(tzinfo=sourceTz)
+    return date.astimezone(tz.gettz(targetTz))
 
 
 # Formats date with given input and output patterns
 def format_date(date, pattern):
-    date = convert_utc_to_local(date)
+    date = convert_timezone(date)
     return datetime.strftime(date, pattern)
 
 
