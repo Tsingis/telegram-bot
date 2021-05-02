@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from .nhlbase import NHLBase
-from .common import convert_utc_to_local
+from .common import convert_timezone
 from ..logger import logging
 
 
@@ -75,7 +75,7 @@ class NHLAdvanced(NHLBase):
             # Format times to HH:MM
             date = datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
             time = datetime.strftime(
-                convert_utc_to_local(date), "%H:%M")
+                convert_timezone(date=date, targetTz=self.targetTimezone), "%H:%M")
             home = self.teams[game["homeTeam"]]["shortName"]
             away = self.teams[game["awayTeam"]]["shortName"]
             if (game["status"] == "Postponed"):

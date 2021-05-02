@@ -2,6 +2,7 @@
 import requests
 from datetime import datetime
 from icalendar import Calendar
+from .common import convert_timezone
 from ..logger import logging
 
 
@@ -53,8 +54,8 @@ class FormulaOne():
             raceWeekend = {
                 "raceNumber": index + 1,
                 "raceName": race["summary"].split("-")[0].strip(),
-                "qualifyingTime": self.format_date(qualif["startTime"]),
-                "raceTime": self.format_date(race["startTime"]),
+                "qualifyingTime": self.format_date_utc(qualif["startTime"]),
+                "raceTime": self.format_date_utc(race["startTime"]),
                 "raceUrl": self.find_race_url(race["description"]),
                 "location": race["location"],
             }
@@ -71,6 +72,7 @@ class FormulaOne():
         pattern = "https://www.formula1.com/en/racing"
         return next((word for word in text.split(" ") if word.startswith(pattern)), pattern)
 
-    def format_date(self, date):
-        date = date.strftime(self.datePattern)
+    def format_date_utc(self, date):
+        dateTzAdjust = convert_timezone(date=date, sourceTz="Europe/London")
+        date = dateTzAdjust.strftime(self.datePattern)
         return datetime.strptime(date, self.datePattern)

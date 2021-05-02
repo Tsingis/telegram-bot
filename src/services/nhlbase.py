@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-from .common import convert_utc_to_local
+from .common import convert_timezone
 from ..logger import logging
 
 
@@ -11,7 +11,8 @@ class NHLBase:
     BASE_URL = "https://statsapi.web.nhl.com/api/v1/"
 
     def __init__(self, date=datetime.utcnow()):
-        self.date = convert_utc_to_local(date)
+        self.targetTimezone = "Europe/Helsinki"
+        self.date = convert_timezone(date=date, targetTz=self.targetTimezone)
         month = self.date.month
         year = self.date.year
         self.season = f"{year-1}{year}" if month < 9 else f"{year}{year+1}"
