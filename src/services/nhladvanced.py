@@ -12,14 +12,13 @@ logger = logging.getLogger(__name__)
 class NHLAdvanced(NHLBase):
     def __init__(self):
         super().__init__()
-        self.season = self.get_season()
         self.teams = self.get_teams()
 
     # Get match results from the latest round
     def get_results(self):
         date = (self.date - dt.timedelta(days=1)).strftime("%Y-%m-%d")
         try:
-            gameIds = self.get_game_ids(date)
+            gameIds = [game["id"] for game in self.get_games(date)]
             games = [self.get_games_linescore(game_id) for game_id in gameIds]
             data = []
             for game in games:
@@ -54,8 +53,8 @@ class NHLAdvanced(NHLBase):
             # If period is other than OT, SO, Not started or Live use empty string
             if (period != "OT" and period != "SO" and period != "Not started" and period != "Live"):
                 period = ""
-            home = self.teams[game["homeTeam"]["name"]]
-            away = self.teams[game["awayTeam"]["name"]]
+            home = self.teams[game["homeTeam"]["name"]]["shortName"]
+            away = self.teams[game["awayTeam"]["name"]]["shortName"]
             results.append(
                 f"""{home} {game["homeTeam"]["goals"]} - {game["awayTeam"]["goals"]} {away} {period}""".strip())
         return "\n".join(results)
@@ -64,18 +63,8 @@ class NHLAdvanced(NHLBase):
     def get_upcoming(self):
         date = self.date.strftime("%Y-%m-%d")
         try:
-            data = self.get_data(self.BASE_URL + f"/schedule?date={date}")
-            games = data["dates"][0]["games"]
-            data = []
-            for game in games:
-                info = {
-                    "homeTeam": game["teams"]["home"]["team"]["name"],
-                    "awayTeam": game["teams"]["away"]["team"]["name"],
-                    "date": game["gameDate"],
-                    "status": game["status"]["detailedState"]
-                }
-                data.append(info)
-            return data
+            games = self.get_games(date)
+            return games
         except Exception:
             logger.exception("Error getting upcoming matches")
             return None
@@ -87,8 +76,8 @@ class NHLAdvanced(NHLBase):
             date = dt.datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
             time = dt.datetime.strftime(
                 date + dt.timedelta(hours=get_timezone_difference(date)), "%H:%M")
-            home = self.teams[game["homeTeam"]]
-            away = self.teams[game["awayTeam"]]
+            home = self.teams[game["homeTeam"]]["shortName"]
+            away = self.teams[game["awayTeam"]]["shortName"]
             if (game["status"] == "Postponed"):
                 results.append(f"{home} - {away} Postponed")
             else:
@@ -104,10 +93,11 @@ class NHLAdvanced(NHLBase):
                 divisionLeaders = self.get_division_leaders(date)
             else:
                 divisionLeaders = self.get_division_leaders(date, amount=5)
-            return {
+            standings = {
                 "divisionLeaders": divisionLeaders,
                 "wildcards": wildcards
             }
+            return standings
         except Exception:
             logger.exception("Error getting standings")
             return None
@@ -143,13 +133,14 @@ class NHLAdvanced(NHLBase):
             east += format_header("Wild Card") + format_team_info(wilds,
                                                                   "conference", divisions[2]["conference"])
 
-        return "\n".join([e + w for w, e in zip(west, east)])
+        standings = "\n".join([e + w for w, e in zip(west, east)])
+        return standings
 
     # Get player statistics from the latest round with nationality
     def get_players_stats(self):
         date = (self.date - dt.timedelta(days=1)).strftime("%Y-%m-%d")
         try:
-            gameIds = self.get_game_ids(date)
+            gameIds = [game["id"] for game in self.get_games(date)]
             games = [self.get_games_boxscore(game_id) for game_id in gameIds]
             playerIds = []
             for game in games:
@@ -168,7 +159,7 @@ class NHLAdvanced(NHLBase):
                         "firstName": player["person"]["firstName"],
                         "lastName": player["person"]["lastName"],
                         "nationality": player["person"]["nationality"],
-                        "team": self.teams[player["person"]["currentTeam"]["name"]],
+                        "team": self.teams[player["person"]["currentTeam"]["name"]]["shortName"],
                         "stats": player["stats"]
                     })
             return players
@@ -246,33 +237,22 @@ class NHLAdvanced(NHLBase):
             return f"Players not found for {filter.upper()}"
 
     # Extract player stats with given name
-    def get_player_season_stats(self, name):
-        playerName = name.strip().lower()
+    def get_player_stats(self, name):
         try:
-            teamIds = self.get_team_ids()
+            teamIds = [team["id"] for team in self.teams.values()]
             rosters = [self.get_roster(id) for id in teamIds]
             players = [player for roster in rosters for player in roster]
             playerId = next(
-                player["id"] for player in players if player["name"].lower() == playerName)
-            player = self.get_data(self.BASE_URL + f"/people/{playerId}/")
-
-            # Extract all stats for given player
-            playerData = self.get_data(
-                self.BASE_URL + f"/people/{playerId}/stats?stats=statsSingleSeason&season={self.season}")
-            stats = playerData["stats"][0]["splits"][0]["stat"]
-            return {
-                "id": playerId,
-                "name": playerName,
-                "team": self.teams[player["people"][0]["currentTeam"]["name"]],
-                "position": player["people"][0]["primaryPosition"]["name"],
-                "number": player["people"][0]["primaryNumber"],
-                "stats": stats
-            }
+                player["id"] for player in players if player["name"].lower() == name.lower())
+            player = self.get_player(playerId)
+            player["team"] = self.teams[player["team"]]["shortName"]
+            player["stats"] = self.get_player_season_stats(playerId)
+            return player
         except Exception:
             logger.exception(f"Error getting player stats for player: {name}")
             return None
 
-    def format_player_season_stats(self, data):
+    def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
         header = f"""{data["position"]} #{data["number"]} for {data["team"]}\n"""
         if (data["position"] == "Goalie"):
@@ -281,7 +261,7 @@ class NHLAdvanced(NHLBase):
                       f"""L: {data["stats"]["losses"]} | """
                       f"""OT: {data["stats"]["ot"]} | """
                       f"""Sv: {data["stats"]["saves"]} | """
-                      f"""Sv%: {round(data["stats"]["savePercentage"]*100, 2)} | """
+                      f"""Sv%: {round(data["stats"]["savePercentage"] * 100, 2)} | """
                       f"""GA: {data["stats"]["goalsAgainst"]} | """
                       f"""GAA: {round(data["stats"]["goalAgainstAverage"], 2)} | """
                       f"""SO: {data["stats"]["shutouts"]}""")
@@ -299,10 +279,11 @@ class NHLAdvanced(NHLBase):
         return header + stats + f"\n[Details]({url})"
 
     # Creates playoff bracket for current season
-    def create_bracket(self):
+    def get_bracket(self):
         def get_series_data(series):
             return {
-                "matchup": (self.teams[series["matchupTeams"][0]["team"]["name"]], self.teams[series["matchupTeams"][1]["team"]["name"]]),
+                "matchup": (self.teams[series["matchupTeams"][0]["team"]["name"]]["shortName"],
+                            self.teams[series["matchupTeams"][1]["team"]["name"]]["shortName"]),
                 "status": series["currentGame"]["seriesSummary"]["seriesStatusShort"]
                 # "top": (series["matchupTeams"][0]["seed"]["isTop"], series["matchupTeams"][1]["seed"]["isTop"])
                 # "ranks": (series["matchupTeams"][0]["seed"]["rank"], series["matchupTeams"][1]["seed"]["rank"]),
@@ -322,8 +303,7 @@ class NHLAdvanced(NHLBase):
                          font=font, fill=(0, 0, 0))
 
         try:
-            data = self.get_data(
-                self.BASE_URL + f"/tournaments/playoffs?expand=round.series,schedule.game.seriesSummary&season={self.season}")
+            data = self.get_playoffs()
 
             # Gather data for each series
             bracket = dict()

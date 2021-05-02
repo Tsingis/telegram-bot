@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 class NHLExtra(NHLBase):
     def __init__(self):
         super().__init__()
-        self.season = self.get_season()
 
     # Get player contract info for current season
     def get_player_contract(self, name):
