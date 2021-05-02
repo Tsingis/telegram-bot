@@ -1,5 +1,5 @@
 from enum import Enum
-from .services.formulaone import FormulaOne
+from .services.formulaoneadvanced import FormulaOneAdvanced
 from .services.imagesearch import ImageSearch
 from .services.weathersearch import WeatherSearch
 from .services.nhladvanced import NHLAdvanced
@@ -24,7 +24,7 @@ NHL_PLAYOFFS_CMD = "/nhlplayoffs"
 
 imgSearch = ImageSearch()
 weatherSearch = WeatherSearch()
-f1 = FormulaOne()
+f1Advanced = FormulaOneAdvanced()
 nhlAdvanced = NHLAdvanced()
 nhlExtra = NHLExtra()
 
@@ -57,14 +57,11 @@ class Command():
         if (self.text.startswith(WEATHER_SEARCH_CMD)):
             return self.search_weather()
         if (self.text.startswith(F1_INFO_CMD)):
-            # return self.f1_info()
-            return self.commandDisabled()
+            return self.f1_info()
         if (self.text.startswith(F1_STANDINGS_CMD)):
-            # return self.f1_standings()
-            return self.commandDisabled()
+            return self.f1_standings()
         if (self.text.startswith(F1_RESULTS_CMD)):
-            # return self.f1_results()
-            return self.commandDisabled()
+            return self.f1_results()
         if (self.text.startswith(NHL_INFO_CMD)):
             return self.nhl_info()
         if (self.text.startswith(NHL_STANDINGS_CMD)):
@@ -123,10 +120,10 @@ class Command():
 
     # F1 upcoming race
     def f1_info(self):
-        info = f1.get_upcoming()
+        info = f1Advanced.get_upcoming()
         if (info is not None):
-            result = f1.format_upcoming(info)
-            circuitImg = f1.get_circuit(info["raceUrl"])
+            result = f1Advanced.format_upcoming(info)
+            circuitImg = f1Advanced.find_circuit_image(info["raceUrl"])
             if (circuitImg is not None):
                 return Response(text=result, image=circuitImg, type=ResponseType.TEXT_AND_IMAGE)
         else:
@@ -137,17 +134,17 @@ class Command():
     def f1_standings(self):
         parameter = self.text.split(F1_STANDINGS_CMD)[-1].strip().upper()
         if (parameter == "TEAM"):
-            standings = f1.get_team_standings(amount=10)
+            standings = f1Advanced.get_team_standings(amount=10)
         else:
-            standings = f1.get_driver_standings(amount=10)
-        result = f1.format_standings(
+            standings = f1Advanced.get_driver_standings(amount=10)
+        result = f1Advanced.format_standings(
             standings) if standings is not None else "Standings not available"
         return Response(text=result)
 
     # F1 latest race results
     def f1_results(self):
-        results = f1.get_results()
-        result = f1.format_results(
+        results = f1Advanced.get_results()
+        result = f1Advanced.format_results(
             results) if results is not None else "Results not available"
         return Response(text=result)
 
