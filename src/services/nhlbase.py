@@ -1,5 +1,5 @@
 import requests
-import datetime as dt
+from datetime import datetime
 from .common import convert_utc_to_local
 from ..logger import logging
 
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class NHLBase:
     BASE_URL = "https://statsapi.web.nhl.com/api/v1/"
 
-    def __init__(self, date=dt.datetime.utcnow()):
+    def __init__(self, date=datetime.utcnow()):
         self.date = convert_utc_to_local(date)
         month = self.date.month
         year = self.date.year
