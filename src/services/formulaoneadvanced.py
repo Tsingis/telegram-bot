@@ -135,7 +135,6 @@ class FormulaOneAdvanced(FormulaOne):
             return None
 
     def format_upcoming(self, data):
-        data["raceName"] = "TEST"
         data["qualifyingTime"] = self.format_date(
             data["qualifyingTime"])
         data["raceTime"] = self.format_date(
