@@ -73,6 +73,6 @@ class FormulaOne():
         return next((word for word in text.split(" ") if word.startswith(pattern)), pattern)
 
     def format_date_utc(self, date):
-        dateTzAdjust = convert_timezone(date, "Europe/London")
+        dateTzAdjust = convert_timezone(date=date, sourceTz="Europe/London")
         date = dateTzAdjust.strftime(self.datePattern)
         return datetime.strptime(date, self.datePattern)

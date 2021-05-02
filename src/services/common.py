@@ -19,7 +19,7 @@ def set_soup(url, target_encoding="latin-1"):
         logger.exception(f"Error setting soup for url: {url}")
 
 
-# Change UTC to Finnish timezone
+# Convert date between timezones
 def convert_timezone(date, sourceTz=None, targetTz=None):
     if (sourceTz is None):
         sourceTz = tz.tzutc()

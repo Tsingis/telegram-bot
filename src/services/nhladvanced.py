@@ -75,7 +75,7 @@ class NHLAdvanced(NHLBase):
             # Format times to HH:MM
             date = datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
             time = datetime.strftime(
-                convert_timezone(date, None, self.targetTimezone), "%H:%M")
+                convert_timezone(date=date, targetTz=self.targetTimezone), "%H:%M")
             home = self.teams[game["homeTeam"]]["shortName"]
             away = self.teams[game["awayTeam"]]["shortName"]
             if (game["status"] == "Postponed"):

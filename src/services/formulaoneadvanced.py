@@ -175,5 +175,6 @@ class FormulaOneAdvanced(FormulaOne):
     # Formats date with given input and output patterns
     def format_date(self, date):
         pattern = "%a %B %d at %H:%M"
-        date = convert_timezone(date, None, "Europe/Helsinki")
+        date = convert_timezone(date=date,
+                                targetTz="Europe/Helsinki")
         return datetime.strftime(date, pattern)
