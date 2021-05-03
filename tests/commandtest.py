@@ -33,6 +33,8 @@ class CommandTest(unittest.TestCase):
             self.assertIsNotNone(msg.image)
 
         if (printMsg):
+            print("COMMAND: " + cmdText)
+            print()
             if (msg.text is not None):
                 print(msg.text)
             if (msg.image is not None):
