@@ -46,7 +46,6 @@ class FormulaOneAdvanced(FormulaOne):
             }
         except Exception:
             logger.exception("Error getting race results")
-            return None
 
     def format_results(self, data):
         url = data["url"]
@@ -81,7 +80,6 @@ class FormulaOneAdvanced(FormulaOne):
             }
         except Exception:
             logger.exception("Error getting driver standings")
-            return None
 
     # Gets top teams from overall standings and url for more details. Default top 5
     def get_team_standings(self, amount=5):
@@ -108,7 +106,6 @@ class FormulaOneAdvanced(FormulaOne):
             }
         except Exception:
             logger.exception("Error getting team standings")
-            return None
 
     def format_standings(self, data):
         url = data["url"]
@@ -132,7 +129,6 @@ class FormulaOneAdvanced(FormulaOne):
             return race
         except Exception:
             logger.exception("Error getting upcoming race")
-            return None
 
     def format_upcoming(self, data):
         data["qualifyingTime"] = self.format_date(
@@ -161,7 +157,6 @@ class FormulaOneAdvanced(FormulaOne):
             return imgContainer.find("img", {"class": "lazy"})["data-src"]
         except Exception:
             logger.exception("Error getting circuit image")
-            return None
 
     # Find table from page
     def find_table(self, url):

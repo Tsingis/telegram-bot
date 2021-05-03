@@ -37,7 +37,7 @@ class CommandTest(unittest.TestCase):
                 print(msg.text)
             if (msg.image is not None):
                 print(msg.image)
-            print()
+            print("\n\n")
 
 
 if __name__ == '__main__':

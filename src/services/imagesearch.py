@@ -23,7 +23,6 @@ class ImageSearch:
                 return image
         except Exception:
             logger.exception(f"Error getting image with keyword: {keyword}")
-            return None
 
     # Get image data
     def get_data(self, keyword):

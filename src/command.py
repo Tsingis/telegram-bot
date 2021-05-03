@@ -76,7 +76,6 @@ class Command():
             return self.nhl_playoffs()
         else:
             logging.info(f"Invalid command received: {self.text}")
-            return None
 
     # Available bot commands
     def available_commands(self):

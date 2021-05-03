@@ -46,7 +46,6 @@ class WeatherSearch:
         except requests.exceptions.HTTPError:
             logger.exception(
                 f"Error getting info for location: {location}")
-            return None
 
     def format_info(self, data, location):
         info = {
@@ -71,7 +70,6 @@ class WeatherSearch:
             return f"""https://openweathermap.org/img/wn/{data["icon"]}@4x.png"""
         except Exception:
             logger.exception(f"Error getting weather icon for data: {data}")
-            return None
 
     # Get coordinates for given location
     def _get_coords(self, location):

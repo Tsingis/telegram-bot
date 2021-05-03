@@ -44,7 +44,6 @@ class NHLAdvanced(NHLBase):
             return data
         except Exception:
             logger.exception("Error getting results")
-            return None
 
     def format_results(self, data):
         results = []
@@ -67,7 +66,6 @@ class NHLAdvanced(NHLBase):
             return games
         except Exception:
             logger.exception("Error getting upcoming matches")
-            return None
 
     def format_upcoming(self, data):
         results = []
@@ -100,7 +98,6 @@ class NHLAdvanced(NHLBase):
             return standings
         except Exception:
             logger.exception("Error getting standings")
-            return None
 
     def format_standings(self, data):
         leaders = sorted(data["divisionLeaders"],
@@ -165,7 +162,6 @@ class NHLAdvanced(NHLBase):
             return players
         except Exception:
             logger.exception("Error getting players stats")
-            return None
 
     def format_players_stats(self, data, filter="FIN"):
         players = [player for player in data if player["nationality"]
@@ -250,7 +246,6 @@ class NHLAdvanced(NHLBase):
             return player
         except Exception:
             logger.exception(f"Error getting player stats for player: {name}")
-            return None
 
     def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
@@ -390,4 +385,3 @@ class NHLAdvanced(NHLBase):
             return file
         except Exception:
             logger.exception("Error getting playoff bracket")
-            return None

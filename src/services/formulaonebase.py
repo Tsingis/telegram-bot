@@ -30,7 +30,6 @@ class FormulaOne():
         except requests.exceptions.HTTPError:
             logger.exception(
                 f"Error getting data for url: {self.CALENDAR_URL}")
-            return None
 
     def event_to_dict(self, event):
         uid = str(event["UID"])
