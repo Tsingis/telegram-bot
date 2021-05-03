@@ -8,8 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class ImageSearch:
-
-    # Set Google Developer API and CSE ID
     GOOGLE_API_KEY = os.environ["GOOGLE_API"]
     CSE_ID = os.environ["CSE_ID"]
 
@@ -19,15 +17,16 @@ class ImageSearch:
     # Search image url with given keyword
     def search_random_image(self, keyword):
         try:
-            data = self._get_data(keyword)
-            if "items" in data:
-                return choice([result["link"] for result in data["items"]])
+            data = self.get_data(keyword)
+            if ("items" in data):
+                image = choice([result["link"] for result in data["items"]])
+                return image
         except Exception:
             logger.exception(f"Error getting image with keyword: {keyword}")
             return None
 
     # Get image data
-    def _get_data(self, keyword):
+    def get_data(self, keyword):
         url = "https://www.googleapis.com/customsearch/v1"
         params = {
             "key": self.GOOGLE_API_KEY,
@@ -37,8 +36,8 @@ class ImageSearch:
             "q": keyword
         }
         try:
-            res = requests.get(url=url, params=params)
-            if res.status_code == 200:
+            res = requests.get(url, params)
+            if (res.status_code == 200):
                 return res.json()
             res.raise_for_status()
         except requests.exceptions.HTTPError:

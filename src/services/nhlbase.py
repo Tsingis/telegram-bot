@@ -20,7 +20,7 @@ class NHLBase:
     def get_data(self, url):
         try:
             res = requests.get(url)
-            if res.status_code == 200:
+            if (res.status_code == 200):
                 return res.json()
             res.raise_for_status()
         except requests.exceptions.HTTPError:

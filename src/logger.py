@@ -4,7 +4,7 @@ import json
 
 # Set up logging
 logger = logging.getLogger()
-if logger.handlers:
+if (logger.handlers):
     for handler in logger.handlers:
         logger.removeHandler(handler)
 

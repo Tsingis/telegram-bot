@@ -18,7 +18,7 @@ class FormulaOne():
     def get_race_data(self):
         try:
             res = requests.get(self.CALENDAR_URL)
-            if res.status_code == 200:
+            if (res.status_code == 200):
                 calendar = Calendar.from_ical(res.text)
                 events = [self.event_to_dict(event)
                           for event in calendar.walk("VEVENT")]

@@ -20,28 +20,32 @@ class WeatherSearch:
             coords = self._get_coords(location)
             url = ("https://api.openweathermap.org/data/2.5/weather?" +
                    f"""lat={coords["lat"]}&lon={coords["lng"]}""" +
-                   f"""&units=metric&appid={self.OPENWEATHER_API_KEY}""")
-            res = requests.get(url).json()
-            data = {
-                "description": res["weather"][0]["description"],
-                "temperature": round(res["main"]["temp"], 1),
-                "wind": round(res["wind"]["speed"], 2),
-                "humidity": int(round(res["main"]["humidity"], 0)),
-                "pressure": int(round(res["main"]["pressure"], 0)),
-                "clouds": int(round(res["clouds"]["all"], 0)),
-                "icon": res["weather"][0]["icon"]
-            }
+                   f"&units=metric&appid={self.OPENWEATHER_API_KEY}")
+            res = requests.get(url)
+            if (res.status_code == 200):
+                data = res.json()
+                info = {
+                    "description": data["weather"][0]["description"],
+                    "temperature": round(data["main"]["temp"], 1),
+                    "wind": round(data["wind"]["speed"], 2),
+                    "humidity": int(round(data["main"]["humidity"], 0)),
+                    "pressure": int(round(data["main"]["pressure"], 0)),
+                    "clouds": int(round(data["clouds"]["all"], 0)),
+                    "icon": data["weather"][0]["icon"]
+                }
 
-            if ("snow" in res):
-                data["precipType"] = "snow"
-                data["amount"] = round(res["snow"]["1h"], 2)
+                if ("snow" in data):
+                    info["precipType"] = "snow"
+                    info["amount"] = round(data["snow"]["1h"], 2)
 
-            if ("rain" in res):
-                data["precipType"] = "rain"
-                data["amount"] = round(res["rain"]["1h"], 2)
-
-            return data
-        except Exception:
+                if ("rain" in data):
+                    info["precipType"] = "rain"
+                    info["amount"] = round(data["rain"]["1h"], 2)
+                return info
+            res.raise_for_status()
+        except requests.exceptions.HTTPError:
+            logger.exception(
+                f"Error getting info for location: {location}")
             return None
 
     def format_info(self, data, location):
