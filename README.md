@@ -4,7 +4,7 @@
 
 - F1 results, standings and upcoming race
 - NHL results, standings (both driver and team), upcoming matches, players' stats after each round by nationality or team, player's season stats and playoffs bracket
-- Weather info with given location by using Google Geocoding and Dark Sky API
+- Weather info with given location by using Google Geocoding and OpenWeather API
 - Random picture with Google Custom Search Engine by keyword for giggles
 
 **How it works:**
