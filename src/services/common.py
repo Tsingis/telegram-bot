@@ -31,9 +31,3 @@ def convert_timezone(date, sourceTz=None, targetTz=None):
         targetTz = tz.gettz(targetTz)
     date = date.replace(tzinfo=sourceTz)
     return date.astimezone(targetTz)
-
-
-# Replace special Markdown characters used in Telegram
-def format_markdown(text):
-    specials = ["*", "_"]
-    return re.sub(rf"""(?<!\\)((?:\\\\)*)([{"".join(specials)}])""", r"\1\\\2", text)

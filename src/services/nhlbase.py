@@ -13,9 +13,8 @@ class NHLBase:
     def __init__(self, date=datetime.utcnow()):
         self.targetTimezone = "Europe/Helsinki"
         self.date = convert_timezone(date=date, targetTz=self.targetTimezone)
-        month = self.date.month
         year = self.date.year
-        self.season = f"{year-1}{year}" if month < 9 else f"{year}{year+1}"
+        self.season = f"{year-1}{year}" if self.date.month < 9 else f"{year}{year+1}"
 
     # Get JSON formatted data from given url
     def get_data(self, url):
