@@ -13,7 +13,8 @@ class FormulaOneAdvanced(FormulaOne):
     def __init__(self, date=datetime.utcnow()):
         super().__init__()
         self.date = date
-        self.races = sorted(self.get_race_data(), key=lambda x: x["raceTime"])
+        raceWeekends = self.get_race_weekends()
+        self.races = sorted(raceWeekends, key=lambda x: x["raceTime"])
         self.racesAmount = len(self.races)
 
     # Gets top drivers from the latest race and url for more details. Default top 3
@@ -124,8 +125,8 @@ class FormulaOneAdvanced(FormulaOne):
     # Gets info for the upcoming race
     def get_upcoming(self):
         try:
-            race = next((
-                race for race in self.races if race["raceTime"] >= self.date), self.races[-1])
+            race = next(
+                (race for race in self.races if race["raceTime"] >= self.date), self.races[-1])
             return race
         except Exception:
             logger.exception("Error getting upcoming race")
