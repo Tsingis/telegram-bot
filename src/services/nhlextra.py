@@ -44,7 +44,6 @@ class NHLExtra(NHLBase):
         except Exception:
             logger.exception(
                 f"Error getting player contract for player: {name}")
-            return None
 
     def format_player_contract(self, data):
         header = "Contract:\n"

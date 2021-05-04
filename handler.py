@@ -13,13 +13,13 @@ logger = logging.getLogger(__name__)
 def webhook(event, context):
     logger.info(f"Event: {event}")
     bot = set_bot()
-    if event.get("httpMethod") == "POST" and event.get("body"):
+    if (event.get("httpMethod") == "POST" and event.get("body")):
         logger.info("Message received")
         update = telegram.Update.de_json(json.loads(event.get("body")), bot)
         chatId = update.message.chat.id
         msg = Message(bot, chatId)
         text = update.message.text
-        if text and text.startswith("/"):
+        if (text and text.startswith("/")):
             cmd = Command(text)
             res = cmd.response()
             if (res is not None):
@@ -41,7 +41,7 @@ def set_webhook(event, context):
     url = f"""https://{event.get("headers").get("Host")}/{event.get("requestContext").get("stage")}/"""
     webhook = bot.set_webhook(url)
 
-    if webhook:
+    if (webhook):
         return OK_RESPONSE
 
     return ERROR_RESPONSE

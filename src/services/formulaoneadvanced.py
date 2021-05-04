@@ -13,7 +13,8 @@ class FormulaOneAdvanced(FormulaOne):
     def __init__(self, date=datetime.utcnow()):
         super().__init__()
         self.date = date
-        self.races = sorted(self.get_race_data(), key=lambda x: x["raceTime"])
+        raceWeekends = self.get_race_weekends()
+        self.races = sorted(raceWeekends, key=lambda x: x["raceTime"])
         self.racesAmount = len(self.races)
 
     # Gets top drivers from the latest race and url for more details. Default top 3
@@ -46,7 +47,6 @@ class FormulaOneAdvanced(FormulaOne):
             }
         except Exception:
             logger.exception("Error getting race results")
-            return None
 
     def format_results(self, data):
         url = data["url"]
@@ -81,7 +81,6 @@ class FormulaOneAdvanced(FormulaOne):
             }
         except Exception:
             logger.exception("Error getting driver standings")
-            return None
 
     # Gets top teams from overall standings and url for more details. Default top 5
     def get_team_standings(self, amount=5):
@@ -108,7 +107,6 @@ class FormulaOneAdvanced(FormulaOne):
             }
         except Exception:
             logger.exception("Error getting team standings")
-            return None
 
     def format_standings(self, data):
         url = data["url"]
@@ -127,12 +125,11 @@ class FormulaOneAdvanced(FormulaOne):
     # Gets info for the upcoming race
     def get_upcoming(self):
         try:
-            race = next((
-                race for race in self.races if race["raceTime"] >= self.date), self.races[-1])
+            race = next(
+                (race for race in self.races if race["raceTime"] >= self.date), self.races[-1])
             return race
         except Exception:
             logger.exception("Error getting upcoming race")
-            return None
 
     def format_upcoming(self, data):
         data["qualifyingTime"] = self.format_date(
@@ -161,7 +158,6 @@ class FormulaOneAdvanced(FormulaOne):
             return imgContainer.find("img", {"class": "lazy"})["data-src"]
         except Exception:
             logger.exception("Error getting circuit image")
-            return None
 
     # Find table from page
     def find_table(self, url):

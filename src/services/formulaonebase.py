@@ -15,22 +15,21 @@ class FormulaOne():
     def __init__(self):
         self.datePattern = "%Y-%m-%dT%H:%M:%S.%f"
 
-    def get_race_data(self):
+    def get_race_weekends(self):
         try:
             res = requests.get(self.CALENDAR_URL)
-            if res.status_code == 200:
+            if (res.status_code == 200):
                 calendar = Calendar.from_ical(res.text)
                 events = [self.event_to_dict(event)
                           for event in calendar.walk("VEVENT")]
                 qualifs = self.filter_events_by_type(events, ["qualifying"])
                 races = self.filter_events_by_type(events, ["race"])
-                raceData = self.events_to_race_weekends(qualifs, races)
-                return raceData
+                raceWeekends = self.events_to_race_weekends(qualifs, races)
+                return raceWeekends
             res.raise_for_status()
         except requests.exceptions.HTTPError:
             logger.exception(
                 f"Error getting data for url: {self.CALENDAR_URL}")
-            return None
 
     def event_to_dict(self, event):
         uid = str(event["UID"])
