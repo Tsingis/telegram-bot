@@ -16,7 +16,7 @@ def set_soup(url, target_encoding="latin-1"):
         text = res.content.decode(encoding).encode(target_encoding)
         return BeautifulSoup(text, "html.parser")
     except Exception:
-        logger.exception(f"Error setting soup for url: {url}")
+        logger.exception(f"Error setting soup with url: {url}")
 
 
 # Convert date between timezones

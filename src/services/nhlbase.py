@@ -24,7 +24,7 @@ class NHLBase:
                 return res.json()
             res.raise_for_status()
         except requests.exceptions.HTTPError:
-            logger.exception(f"Error getting data for url: {url}")
+            logger.exception(f"Error getting data with url: {url}")
 
     # Get player basic info
     def get_player(self, playerId):
@@ -39,7 +39,7 @@ class NHLBase:
             }
             return player
         except Exception:
-            logger.exception(f"Error getting player for id: {playerId}")
+            logger.exception(f"Error getting player with id: {playerId}")
 
     # Get player's regular season stats
     def get_player_season_stats(self, playerId):
@@ -49,7 +49,7 @@ class NHLBase:
             stats = data["stats"][0]["splits"][0]["stat"]
             return stats
         except Exception:
-            logger.exception(f"Error getting player stats for id: {playerId}")
+            logger.exception(f"Error getting player stats with id: {playerId}")
 
     # Get teams with ids and abbreviations
     def get_teams(self):
@@ -85,7 +85,7 @@ class NHLBase:
             return data
         except Exception:
             logger.exception(
-                f"Error getting games linescore for game id: {gameId}")
+                f"Error getting games linescore with game id: {gameId}")
 
     # Get data from each match by gameId
     def get_games_boxscore(self, gameId):
@@ -94,7 +94,7 @@ class NHLBase:
             return data
         except Exception:
             logger.exception(
-                f"Error getting games boxscore for game id: {gameId}")
+                f"Error getting games boxscore with game id: {gameId}")
 
     # Get rosters with teamId
     def get_roster(self, teamId):
@@ -106,7 +106,7 @@ class NHLBase:
             } for player in data["roster"]]
             return roster
         except Exception:
-            logger.exception(f"Error getting rosters for team id: {teamId}")
+            logger.exception(f"Error getting rosters with team id: {teamId}")
 
     # Get division leaders
     def get_division_leaders(self, date, amount=3):
@@ -138,7 +138,8 @@ class NHLBase:
                 for div in divs]
             return leaders
         except Exception:
-            logger.exception(f"Error getting division leaders for date {date}")
+            logger.exception(
+                f"Error getting division leaders for date {date}")
 
     # Get wildcards
     def get_wildcards(self, date, amount=5):
