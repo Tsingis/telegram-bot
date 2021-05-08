@@ -39,21 +39,29 @@ class Command():
 
     def __init__(self, text):
         self.text = text
-        self.imgSearch = ImageSearch()
-        self.weatherSearch = WeatherSearch()
-        self.f1Advanced = FormulaOneAdvanced()
-        self.nhlAdvanced = NHLAdvanced()
-        self.nhlExtra = NHLExtra()
+        self.imgSearch = None
+        self.weatherSearch = None
+        self.nhlAdvanced = None
+        self.nhlExtra = None
+        self.f1Advanced = None
 
     def commandDisabled(self):
         return Response(text="Command is disabled")
 
     def response(self):
+        if (self.text.startswith("/nhl")):
+            self.nhlAdvanced = NHLAdvanced()
+            self.nhlExtra = NHLExtra()
+        if (self.text.startswith("/f1")):
+            self.f1Advanced = FormulaOneAdvanced()
+
         if (self.text.startswith(self.AVAILABLE_CMD)):
             return self.available_commands()
         if (self.text.startswith(self.IMAGE_SEARCH_CMD)):
+            self.imgSearch = ImageSearch()
             return self.search_img()
         if (self.text.startswith(self.WEATHER_SEARCH_CMD)):
+            self.weatherSearch = WeatherSearch()
             return self.search_weather()
         if (self.text.startswith(self.F1_INFO_CMD)):
             return self.f1_info()
