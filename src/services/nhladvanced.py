@@ -230,7 +230,7 @@ class NHLAdvanced(NHLBase):
             else:
                 return skatersHeader + "\n".join(skatersTexts) + "\n" + goaliesHeader + "\n".join(goaliesTexts)
         else:
-            return f"Players not found for {filter.upper()}"
+            return f"Players not found with {filter.upper()}"
 
     # Extract player stats with given name
     def get_player_stats(self, name):
