@@ -2,6 +2,7 @@
 import requests
 from datetime import datetime
 from icalendar import Calendar
+import unicodedata
 from .common import convert_timezone
 from ..logger import logging
 
@@ -19,7 +20,7 @@ class FormulaOne():
         try:
             res = requests.get(self.CALENDAR_URL)
             if (res.status_code == 200):
-                calendar = Calendar.from_ical(res.text)
+                calendar = Calendar.from_ical(res.content)
                 events = [self.event_to_dict(event)
                           for event in calendar.walk("VEVENT")]
                 qualifs = self.filter_events_by_type(events, ["qualifying"])
@@ -38,7 +39,7 @@ class FormulaOne():
             "type": uid.split("@")[0].strip(),
             "startTime": event["DTSTART"].dt,
             "endTime": event["DTEND"].dt,
-            "summary": str(event["SUMMARY"]).strip(),
+            "summary": self.format_text_encoding(event["SUMMARY"]),
             "description": str(event["DESCRIPTION"]).strip(),
             "location": str(event["LOCATION"]).strip()
         }
@@ -70,6 +71,10 @@ class FormulaOne():
     def find_race_url(self, text):
         pattern = "https://www.formula1.com/en/racing"
         return next((word for word in text.split(" ") if word.startswith(pattern)), pattern)
+
+    def format_text_encoding(self, text):
+        normalized = unicodedata.normalize("NFKD", text)
+        return normalized.encode("ascii", "ignore").decode("utf-8")
 
     def format_date_utc(self, date):
         dateTzAdjust = convert_timezone(date=date, sourceTz="Europe/London")
