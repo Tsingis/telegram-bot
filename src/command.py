@@ -39,22 +39,17 @@ class Command():
 
     def __init__(self, text):
         self.text = text
-        self.imgSearch = None
-        self.weatherSearch = None
-        self.nhlAdvanced = None
-        self.nhlExtra = None
-        self.f1Advanced = None
-
-    def commandDisabled(self):
-        return Response(text="Command is disabled")
-
-    def response(self):
-        if (self.text.startswith("/nhl")):
+        if (text.startswith(self.IMAGE_SEARCH_CMD)):
+            self.imgSearch = ImageSearch()
+        if (text.startswith(self.WEATHER_SEARCH_CMD)):
+            self.weatherSearch = WeatherSearch()
+        if (text.startswith("/nhl")):
             self.nhlAdvanced = NHLAdvanced()
             self.nhlExtra = NHLExtra()
-        if (self.text.startswith("/f1")):
+        if (text.startswith("/f1")):
             self.f1Advanced = FormulaOneAdvanced()
 
+    def response(self):
         if (self.text.startswith(self.AVAILABLE_CMD)):
             return self.available_commands()
         if (self.text.startswith(self.IMAGE_SEARCH_CMD)):
@@ -108,95 +103,90 @@ class Command():
         img = self.imgSearch.search_random_image(keyword)
         if (img is not None):
             return Response(image=img, type=ResponseType.IMAGE)
-        else:
-            return Response(text="No search results")
+        return Response(text="No search results")
 
     # Weather info by location
     def search_weather(self):
+        text = "Weather data not available"
         location = self.text.split(self.WEATHER_SEARCH_CMD)[-1].strip()
         info = self.weatherSearch.get_info(location)
         if (info is not None):
-            result = self.weatherSearch.format_info(info, location)
+            text = self.weatherSearch.format_info(info, location)
             icon = self.weatherSearch.get_icon_url(info)
             if (icon is not None):
-                return Response(text=result, image=icon, type=ResponseType.TEXT_AND_IMAGE)
-        else:
-            result = "Weather data not available"
-        return Response(text=result)
+                return Response(text=text, image=icon, type=ResponseType.TEXT_AND_IMAGE)
+        return Response(text=text)
 
     # F1 upcoming race
     def f1_info(self):
+        text = "Race info not available"
         info = self.f1Advanced.get_upcoming()
         if (info is not None):
-            result = self.f1Advanced.format_upcoming(info)
+            text = self.f1Advanced.format_upcoming(info)
             circuitImg = self.f1Advanced.find_circuit_image(info["raceUrl"])
             if (circuitImg is not None):
-                return Response(text=result, image=circuitImg, type=ResponseType.TEXT_AND_IMAGE)
-        else:
-            result = "Race info not available"
-        return Response(text=result)
+                return Response(text=text, image=circuitImg, type=ResponseType.TEXT_AND_IMAGE)
+        return Response(text=text)
 
     # F1 standings
     def f1_standings(self):
+        text = "Standings not available"
         parameter = self.text.split(self.F1_STANDINGS_CMD)[-1].strip().upper()
         if (parameter == "TEAM"):
             standings = self.f1Advanced.get_team_standings(amount=10)
         else:
             standings = self.f1Advanced.get_driver_standings(amount=10)
-        result = self.f1Advanced.format_standings(
-            standings) if standings is not None else "Standings not available"
-        return Response(text=result)
+        if (standings is not None):
+            text = self.f1Advanced.format_standings(standings)
+        return Response(text=text)
 
     # F1 latest race results
     def f1_results(self):
+        text = "Results not available"
         results = self.f1Advanced.get_results()
-        result = self.f1Advanced.format_results(
-            results) if results is not None else "Results not available"
-        return Response(text=result)
+        if (results is not None):
+            text = self.f1Advanced.format_results(results)
+        return Response(text=text)
 
     # NHL upcoming matches
     def nhl_info(self):
+        text = "No upcoming games tomorrow"
         info = self.nhlAdvanced.get_upcoming()
         if (info is not None):
-            result = f"*Upcoming matches:*\n{self.nhlAdvanced.format_upcoming(info)}"
-        else:
-            result = "No upcoming games tomorrow"
-        return Response(text=result)
+            text = f"*Upcoming matches:*\n{self.nhlAdvanced.format_upcoming(info)}"
+        return Response(text=text)
 
     # NHL standings
     def nhl_standings(self):
+        text = "Standings not available"
         url = "https://www.nhl.com/standings/"
         standings = self.nhlAdvanced.get_standings()
         if (standings is not None):
-            result = self.nhlAdvanced.format_standings(
+            text = self.nhlAdvanced.format_standings(
                 standings) + f"\n[Details]({url})"
-        else:
-            result = "Standings not available"
-        return Response(text=result)
+        return Response(text=text)
 
     # NHL latest match results
     def nhl_results(self):
+        text = "No matches yesterday"
         url = "https://www.livetulokset.com/jaakiekko/"
         results = self.nhlAdvanced.get_results()
         if (results is not None):
-            result = f"*Results:*\n{self.nhlAdvanced.format_results(results)}\n[Details]({url})"
-        else:
-            result = "No matches yesterday"
-        return Response(text=result)
+            text = f"*Results:*\n{self.nhlAdvanced.format_results(results)}\n[Details]({url})"
+        return Response(text=text)
 
     # NHL stats for players of given nationality or team from latest round
     def nhl_players_stats(self):
-        filter = self.text.split(
+        text = "Players stats not available"
+        filterWord = self.text.split(
             self.NHL_PLAYERS_STATS_CMD)[-1].strip().upper()
         stats = self.nhlAdvanced.get_players_stats()
         if (stats is not None):
-            if (not filter):
-                result = self.nhlAdvanced.format_players_stats(stats)
+            if (not filterWord):
+                text = self.nhlAdvanced.format_players_stats(stats)
             else:
-                result = self.nhlAdvanced.format_players_stats(stats, filter)
-        else:
-            result = "Players stats not available"
-        return Response(text=result)
+                text = self.nhlAdvanced.format_players_stats(stats, filterWord)
+        return Response(text=text)
 
     # NHL player stats by player name
     def nhl_player_info(self):
@@ -204,19 +194,18 @@ class Command():
             self.NHL_PLAYER_INFO_CMD)[-1].strip().lower()
         stats = self.nhlAdvanced.get_player_stats(playerName)
         contract = self.nhlExtra.get_player_contract(playerName)
-        result = ""
+        text = ""
         if (stats is not None):
-            result += self.nhlAdvanced.format_player_stats(stats)
+            text += self.nhlAdvanced.format_player_stats(stats)
         if (contract is not None):
-            result += "\n" + self.nhlExtra.format_player_contract(contract)
-        if (not result):
-            result += "Player info not available"
-        return Response(text=result)
+            text += "\n" + self.nhlExtra.format_player_contract(contract)
+        if (not text):
+            text = "Player info not available"
+        return Response(text=text)
 
     # NHL playoff bracket
     def nhl_playoffs(self):
         bracketImg = self.nhlAdvanced.get_bracket()
         if (bracketImg is not None):
             return Response(image=bracketImg, type=ResponseType.IMAGE)
-        else:
-            return Response(text="Playoff bracket not available")
+        return Response(text="Playoff bracket not available")

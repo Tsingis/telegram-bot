@@ -17,10 +17,10 @@ class Message():
         except Exception:
             logger.exception("Error sending text")
 
-    def send_image(self, image, text=""):
+    def send_image(self, image, caption=""):
         try:
             self.bot.sendPhoto(chat_id=self.chatId, photo=image,
-                               caption=text, parse_mode="Markdown")
+                               caption=caption, parse_mode="Markdown")
             logger.info("Image sent successfully")
         except Exception:
             logger.exception("Error sending image")

@@ -29,13 +29,13 @@ class NHLExtra(NHLBase):
                 lambda x: x.replace("-", "20"))
 
             # Filter for current season
-            season_mask = data["SEASON"] == self.season
+            seasonMask = data["SEASON"] == self.season
 
             # Get length, cap hit and total salary of current contract
             contract = {
-                "length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
-                "capHit": data["CAP HIT"][season_mask].values[0],
-                "totalSalary": data["TOTAL SALARY"][season_mask].values[0],
+                "length": f"{data.index[seasonMask].values[0] + 1}/{len(data) - 1}",
+                "capHit": data["CAP HIT"][seasonMask].values[0],
+                "totalSalary": data["TOTAL SALARY"][seasonMask].values[0],
             }
             return {
                 "contract": contract,

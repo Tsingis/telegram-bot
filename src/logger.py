@@ -8,13 +8,13 @@ if (logger.handlers):
     for handler in logger.handlers:
         logger.removeHandler(handler)
 
-format = "%(asctime)s %(name)s %(levelname)s: %(message)s"
-logging.basicConfig(level=logging.INFO, format=format)
+logFormat = "%(asctime)s %(name)s %(levelname)s: %(message)s"
+logging.basicConfig(level=logging.INFO, format=logFormat)
 
 OK_RESPONSE = {
     "statusCode": 200,
     "headers": {"Content-Type": "application/json"},
-    "body": json.dumps("ok")
+    "body": json.dumps("Ok!")
 }
 ERROR_RESPONSE = {
     "statusCode": 400,

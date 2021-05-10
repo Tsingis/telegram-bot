@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 from dateutil import tz
-import re
 from ..logger import logging
 
 
@@ -9,12 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 # Set soup for site
-def set_soup(url, target_encoding="latin-1"):
+def set_soup(url, targetEncoding="latin-1"):
     try:
         res = requests.get(url)
-        encoding = res.encoding
-        text = res.content.decode(encoding).encode(target_encoding)
-        return BeautifulSoup(text, "html.parser")
+        if (res.status_code == 200):
+            text = res.text.encode(targetEncoding)
+            return BeautifulSoup(text, "html.parser")
+        res.raise_for_status()
     except Exception:
         logger.exception(f"Error setting soup with url: {url}")
 
