@@ -249,7 +249,7 @@ class NHLAdvanced(NHLBase):
 
     def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
-        header = f"""{data["name"]} - {data["position"]} #{data["number"]} for {data["team"]}\n"""
+        header = f"""{data["name"]} #{data["number"]} {data["position"]} for {data["team"]}\n"""
         if (data["position"] == "Goalie"):
             goalie = (f"""GP: {data["stats"]["games"]} | """
                       f"""W: {data["stats"]["wins"]} | """
