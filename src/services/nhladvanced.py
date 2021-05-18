@@ -276,17 +276,21 @@ class NHLAdvanced(NHLBase):
     # Creates playoff bracket for current season
     def get_bracket(self):
         def get_series_data(series):
+            topTeam = self.teams[series["matchupTeams"]
+                                 [0]["team"]["name"]]["shortName"]
+            bottomTeam = self.teams[series["matchupTeams"]
+                                    [1]["team"]["name"]]["shortName"]
+            status = series["currentGame"]["seriesSummary"]["seriesStatusShort"]
             return {
-                "matchup": (self.teams[series["matchupTeams"][0]["team"]["name"]]["shortName"],
-                            self.teams[series["matchupTeams"][1]["team"]["name"]]["shortName"]),
-                "status": series["currentGame"]["seriesSummary"]["seriesStatusShort"]
-                # "top": (series["matchupTeams"][0]["seed"]["isTop"], series["matchupTeams"][1]["seed"]["isTop"])
-                # "ranks": (series["matchupTeams"][0]["seed"]["rank"], series["matchupTeams"][1]["seed"]["rank"]),
-                # "record": (series["matchupTeams"][0]["seriesRecord"]["wins"], series["matchupTeams"][0]["seriesRecord"]["losses"])
+                "matchup": {
+                    "top": topTeam,
+                    "bottom": bottomTeam
+                },
+                "status": status
             }
 
         def insert_team_to_bracket(team, location):
-            imgTeam = Image.open(f"static/NHL logos/{team}.gif")
+            imgTeam = Image.open(f"static/NHL_logos/{team}.gif")
             width, height = imgTeam.size
             imgTeam = imgTeam.resize((int(0.9 * width), int(0.9 * height)))
             imgBracket.paste(imgTeam, location)
@@ -294,85 +298,80 @@ class NHLAdvanced(NHLBase):
         def insert_status_to_bracket(status, location):
             font = ImageFont.truetype("static/seguibl.ttf", 22)
             imgText = ImageDraw.Draw(imgBracket)
-            imgText.text(location, status, align="right",
+            imgText.text(location, status, anchor="mm",
                          font=font, fill=(0, 0, 0))
 
         try:
             data = self.get_playoffs()
-
-            # Gather data for each series
             bracket = dict()
             for round in data["rounds"]:
                 for series in round["series"]:
-                    bracket[series["seriesCode"]] = get_series_data(series)
+                    if "matchupTeams" in series:
+                        bracket[series["seriesCode"]] = get_series_data(series)
 
             # Open blank playoff bracket
             imgBracket = Image.open("static/playoffs_template.png")
 
-            # bracket.pop("I", None)
-            # bracket.pop("J", None)
-            # bracket.pop("K", None)
-            # bracket.pop("L", None)
-            # bracket.pop("M", None)
-            # bracket.pop("N", None)
-            # bracket.pop("O", None)
-
             # Locations for logos in bracket
             # Round 1
-            bracket["A"]["location"] = [(1175, 50), (1175, 185)]
-            bracket["B"]["location"] = [(1175, 280), (1175, 405)]
-            bracket["C"]["location"] = [(1175, 505), (1175, 625)]
-            bracket["D"]["location"] = [(1175, 730), (1175, 865)]
-
-            bracket["E"]["location"] = [(15, 505), (15, 625)]
-            bracket["F"]["location"] = [(15, 730), (15, 865)]
-            bracket["G"]["location"] = [(15, 50), (15, 185)]
-            bracket["H"]["location"] = [(15, 280), (15, 405)]
+            bracket["A"]["location"] = {
+                "top": (1175, 50), "bottom": (1175, 185)}
+            bracket["B"]["location"] = {
+                "top": (1175, 280), "bottom": (1175, 405)}
+            bracket["C"]["location"] = {
+                "top": (1175, 505), "bottom": (1175, 625)}
+            bracket["D"]["location"] = {
+                "top": (1175, 730), "bottom": (1175, 865)}
+            bracket["E"]["location"] = {
+                "top": (15, 505), "bottom": (15, 625)}
+            bracket["F"]["location"] = {
+                "top": (15, 730), "bottom": (15, 865)}
+            bracket["G"]["location"] = {
+                "top": (15, 50), "bottom": (15, 185)}
+            bracket["H"]["location"] = {
+                "top": (15, 280), "bottom": (15, 405)}
 
             # Round 2
             if (len(bracket) > 8):
-                bracket["I"]["location"] = [(1000, 350), (1000, 120)]
-                bracket["J"]["location"] = [(1000, 800), (1000, 570)]
-                bracket["K"]["location"] = [(185, 800), (185, 570)]
-                bracket["L"]["location"] = [(185, 350), (185, 120)]
+                bracket["I"]["location"] = {
+                    "top": (1000, 350), "bottom": (1000, 120)}
+                bracket["J"]["location"] = {
+                    "top": (1000, 800), "bottom": (1000, 570)}
+                bracket["K"]["location"] = {
+                    "top": (185, 800), "bottom": (185, 570)}
+                bracket["L"]["location"] = {
+                    "top": (185, 350), "bottom": (185, 120)}
 
             # Round 3, Conference finals
             if (len(bracket) > 12):
-                bracket["M"]["location"] = [(835, 235), (835, 675)]
-                bracket["N"]["location"] = [(355, 235), (355, 675)]
+                bracket["M"]["location"] = {
+                    "top": (835, 235), "bottom": (835, 675)}
+                bracket["N"]["location"] = {
+                    "top": (355, 235), "bottom": (355, 675)}
 
             # Round 4, Stanley cup final
             if (len(bracket) > 14):
-                bracket["O"]["location"] = [(665, 450), (530, 450)]
+                bracket["O"]["location"] = {
+                    "top": (665, 450), "bottom": (530, 450)}
 
             # Insert teams into bracket
             for key, value in bracket.items():
                 insert_team_to_bracket(
-                    value["matchup"][0], value["location"][0])
+                    value["matchup"]["top"], value["location"]["top"])
                 insert_team_to_bracket(
-                    value["matchup"][1], value["location"][1])
+                    value["matchup"]["bottom"], value["location"]["bottom"])
 
                 if (key == "O"):
-                    textLocX = 600
-                    textLocY = 550
-                    status = value["status"].rjust(12)
+                    textLocX = 665
+                    textLocY = 560
+                    status = value["status"]
                 else:
                     status = value["status"]
-                    textLocX = int(
-                        (value["location"][0][0] + value["location"][1][0]) / 2)
-                    textLocY = int(
-                        (value["location"][0][1] + value["location"][1][1] + 60) / 2)
+                    textLocX = value["location"]["top"][0] + 75
+                    textLocY = int((value["location"]["top"]
+                                   [1] + value["location"]["bottom"][1] + 90) / 2)
 
                 insert_status_to_bracket(status, (textLocX, textLocY))
-
-            # Insert champion into bracket
-            if ("wins" in bracket["O"]["status"]):
-                winner = bracket["O"]["status"][:3]
-                imgWinner = Image.open(f"static/NHL logos/{winner}.gif")
-                width, height = imgWinner.size
-                imgWinner = imgWinner.resize(
-                    (int(2 * width), int(1.8 * height)))
-                imgBracket.paste(imgWinner, (520, 765))
 
             # Create in-memory image
             filename = f"{self.season}.png"
