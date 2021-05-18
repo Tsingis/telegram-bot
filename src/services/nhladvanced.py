@@ -276,17 +276,17 @@ class NHLAdvanced(NHLBase):
     # Creates playoff bracket for current season
     def get_bracket(self):
         def get_series_data(series):
-            topTeam = self.teams[series["matchupTeams"]
-                                 [0]["team"]["name"]]["shortName"]
-            bottomTeam = self.teams[series["matchupTeams"]
-                                    [1]["team"]["name"]]["shortName"]
-            status = series["currentGame"]["seriesSummary"]["seriesStatusShort"]
+            teams = [team for team in series["matchupTeams"]]
+            topTeam = next(team["team"]["name"]
+                           for team in teams if team["seed"]["isTop"])
+            bottomTeam = next(team["team"]["name"]
+                              for team in teams if not team["seed"]["isTop"])
             return {
                 "matchup": {
-                    "top": topTeam,
-                    "bottom": bottomTeam
+                    "top": self.teams[topTeam]["shortName"],
+                    "bottom": self.teams[bottomTeam]["shortName"]
                 },
-                "status": status
+                "status": series["currentGame"]["seriesSummary"]["seriesStatusShort"]
             }
 
         def insert_team_to_bracket(team, location):
@@ -367,7 +367,7 @@ class NHLAdvanced(NHLBase):
                     status = value["status"]
                 else:
                     status = value["status"]
-                    textLocX = value["location"]["top"][0] + 75
+                    textLocX = value["location"]["top"][0] + 70
                     textLocY = int((value["location"]["top"]
                                    [1] + value["location"]["bottom"][1] + 90) / 2)
 
