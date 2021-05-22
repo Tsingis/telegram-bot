@@ -21,14 +21,14 @@ class FormulaOneAdvanced(FormulaOne):
     def get_results(self, amount=3):
         results_url = f"{self.BASE_URL}/en/results.html/{self.date.year}/races.html"
         try:
-            resultsTable = self.find_table(results_url)
+            resultsTable = self._find_table(results_url)
 
             # Get race url
             raceResultsHref = resultsTable.find_all("a")[-1]["href"]
             raceResultsUrl = self.BASE_URL + raceResultsHref
 
             # Get drivers
-            resultsTable = self.find_table(raceResultsUrl)
+            resultsTable = self._find_table(raceResultsUrl)
             drivers = resultsTable.find_all("tr")[1:amount + 1]
 
             # Get position, name and time for each driver
@@ -62,7 +62,7 @@ class FormulaOneAdvanced(FormulaOne):
         # Find standings table
         standingsUrl = f"{self.BASE_URL}/en/results.html/{self.date.year}/drivers.html"
         try:
-            table = self.find_table(standingsUrl)
+            table = self._find_table(standingsUrl)
             drivers = table.find_all("tr")[1:amount + 1]
 
             # Get position, name and points for each driver
@@ -87,7 +87,7 @@ class FormulaOneAdvanced(FormulaOne):
         # Find standings table
         standingsUrl = f"{self.BASE_URL}/en/results.html/{self.date.year}/team.html"
         try:
-            table = self.find_table(standingsUrl)
+            table = self._find_table(standingsUrl)
             teams = table.find_all("tr")[1:amount + 1]
 
             # Get position, name and points for each team
@@ -132,9 +132,9 @@ class FormulaOneAdvanced(FormulaOne):
             logger.exception("Error getting upcoming race")
 
     def format_upcoming(self, data):
-        data["qualifyingTime"] = self.format_date(
+        data["qualifyingTime"] = self._format_date(
             data["qualifyingTime"])
-        data["raceTime"] = self.format_date(
+        data["raceTime"] = self._format_date(
             data["raceTime"])
         header = f"""Upcoming race: {data["raceNumber"]}/{self.racesAmount}"""
         formattedRaceInfo = (f"""{data["raceName"]}\n""" +
@@ -160,7 +160,7 @@ class FormulaOneAdvanced(FormulaOne):
             logger.exception("Error getting circuit image")
 
     # Find table from page
-    def find_table(self, url):
+    def _find_table(self, url):
         try:
             soup = set_soup(url)
             return soup.find("table", {"class": "resultsarchive-table"})
@@ -168,7 +168,7 @@ class FormulaOneAdvanced(FormulaOne):
             logger.exception("Error finding table")
 
     # Formats date with given input and output patterns
-    def format_date(self, date):
+    def _format_date(self, date):
         pattern = "%a %B %d at %H:%M"
         date = convert_timezone(date=date,
                                 targetTz="Europe/Helsinki")
