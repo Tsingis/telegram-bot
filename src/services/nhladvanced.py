@@ -139,26 +139,22 @@ class NHLAdvanced(NHLBase):
         try:
             gameIds = [game["id"] for game in self.get_games(date)]
             games = [self.get_games_boxscore(game_id) for game_id in gameIds]
-            playerIds = []
-            for game in games:
-                playerIds.append(game["teams"]["away"]["players"])
-                playerIds.append(game["teams"]["home"]["players"])
+            playerIds = [game["teams"]["away"]["players"] for game in games]
+            playerIds.extend(
+                [game["teams"]["home"]["players"] for game in games])
 
             # Data for each player
-            players = []
             playersData = [
                 elem for player in playerIds for elem in
                 [value for key, value in player.items() if key.startswith("ID")]
             ]
-            for player in playersData:
-                if ("nationality" in player["person"] and player["stats"]):
-                    players.append({
-                        "firstName": player["person"]["firstName"],
-                        "lastName": player["person"]["lastName"],
-                        "nationality": player["person"]["nationality"],
-                        "team": self.teams[player["person"]["currentTeam"]["name"]]["shortName"],
-                        "stats": player["stats"]
-                    })
+            players = [{
+                "firstName": player["person"]["firstName"],
+                "lastName": player["person"]["lastName"],
+                "nationality": player["person"]["nationality"],
+                "team": self.teams[player["person"]["currentTeam"]["name"]]["shortName"],
+                "stats": player["stats"]
+            } for player in playersData if "nationality" in player["person"] and player["stats"]]
             return players
         except Exception:
             logger.exception("Error getting players stats")
@@ -168,58 +164,46 @@ class NHLAdvanced(NHLBase):
                    == filter or player["team"] == filter]
         if (len(players) > 0):
             # Skaters
-            skaters = [
-                player for player in players if "skaterStats" in player["stats"]]
-            skatersStats = []
-            for skater in skaters:
-                stats = {
-                    "name": skater["lastName"],
-                    "team": skater["team"],
-                    "goals": skater["stats"]["skaterStats"]["goals"],
-                    "assists": skater["stats"]["skaterStats"]["assists"],
-                    "timeOnIce": skater["stats"]["skaterStats"]["timeOnIce"]
-                }
-                skatersStats.append(stats)
+            skatersStats = [{
+                "name": skater["lastName"],
+                "team": skater["team"],
+                "goals": skater["stats"]["skaterStats"]["goals"],
+                "assists": skater["stats"]["skaterStats"]["assists"],
+                "timeOnIce": skater["stats"]["skaterStats"]["timeOnIce"]
+            } for skater in players if "skaterStats" in skater["stats"]]
 
             skatersStats.sort(key=lambda x: x["name"])
             skatersStats.sort(key=lambda x: (x["goals"] + x["assists"], x["goals"], x["assists"]),
                               reverse=True)
 
-            # Skaters stats in format: last name (team) | goals+assists | TOI: MM:SS
-            skatersHeader = "*Skaters:*\n"
-
-            def format_skater_stats(stats):
-                return (f"""{stats["name"]} ({stats["team"]}) | {str(stats["goals"])}""" +
-                        f"""+{str(stats["assists"])} | TOI: {stats["timeOnIce"]}""")
-
-            skatersTexts = [format_skater_stats(
-                stats) for stats in skatersStats]
-
             # Goalies
-            goalies = [
-                player for player in players if "goalieStats" in player["stats"]]
-            goaliesStats = []
-            for goalie in goalies:
-                stats = {
-                    "name": goalie["lastName"],
-                    "team": goalie["team"],
-                    "saves": goalie["stats"]["goalieStats"]["saves"],
-                    "shots": goalie["stats"]["goalieStats"]["shots"],
-                    "timeOnIce": goalie["stats"]["goalieStats"]["timeOnIce"]
-                }
-                goaliesStats.append(stats)
+            goaliesStats = [{
+                "name": goalie["lastName"],
+                "team": goalie["team"],
+                "saves": goalie["stats"]["goalieStats"]["saves"],
+                "shots": goalie["stats"]["goalieStats"]["shots"],
+                "timeOnIce": goalie["stats"]["goalieStats"]["timeOnIce"]
+            } for goalie in players if "goalieStats" in goalie["stats"]]
 
             goaliesStats.sort(key=lambda x: x["name"])
             goaliesStats.sort(key=lambda x: (
                 x["saves"], x["shots"]), reverse=True)
 
-            # Goalies stats in format: last name (team) | saves/shots | TOI: MM:SS
-            goaliesHeader = "*Goalies:*\n"
+            # Skaters stats in format: last name (team) | goals+assists | TOI: MM:SS
+            def format_skater_stats(stats):
+                return (f"""{stats["name"]} ({stats["team"]}) | {str(stats["goals"])}""" +
+                        f"""+{str(stats["assists"])} | TOI: {stats["timeOnIce"]}""")
 
+            # Goalies stats in format: last name (team) | saves/shots | TOI: MM:SS
             def format_goalie_stats(stats):
                 return (f"""{stats["name"]} ({stats["team"]}) | {str(stats["saves"])}""" +
                         f"""/{str(stats["shots"])} | TOI: {stats["timeOnIce"]}""")
 
+            skatersHeader = "*Skaters:*\n"
+            goaliesHeader = "*Goalies:*\n"
+
+            skatersTexts = [format_skater_stats(
+                stats) for stats in skatersStats]
             goaliesTexts = [format_goalie_stats(
                 stats) for stats in goaliesStats]
 

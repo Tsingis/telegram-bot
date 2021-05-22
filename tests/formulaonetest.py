@@ -7,7 +7,7 @@ class FormulaOneTest(unittest.TestCase):
 
     f1Advanced = FormulaOneAdvanced()
 
-    def test_date_is_right_type(self):
+    def test_dates_are_datetime(self):
         races = self.f1Advanced.races
         for race in races:
             self.assertIsInstance(race["raceTime"], datetime)

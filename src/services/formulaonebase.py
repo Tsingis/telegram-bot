@@ -21,30 +21,30 @@ class FormulaOne():
             res = requests.get(self.CALENDAR_URL)
             if (res.status_code == 200):
                 calendar = Calendar.from_ical(res.content)
-                events = [self.event_to_dict(event)
+                events = [self._event_to_dict(event)
                           for event in calendar.walk("VEVENT")]
-                qualifs = self.filter_events_by_type(events, ["qualifying"])
-                races = self.filter_events_by_type(events, ["race"])
-                raceWeekends = self.events_to_race_weekends(qualifs, races)
+                qualifs = self._filter_events_by_type(events, ["qualifying"])
+                races = self._filter_events_by_type(events, ["race"])
+                raceWeekends = self._events_to_race_weekends(qualifs, races)
                 return raceWeekends
             res.raise_for_status()
         except requests.exceptions.HTTPError:
             logger.exception(
                 f"Error getting data for url: {self.CALENDAR_URL}")
 
-    def event_to_dict(self, event):
+    def _event_to_dict(self, event):
         uid = str(event["UID"])
         return {
             "id": uid.split("@")[-1].strip(),
             "type": uid.split("@")[0].strip(),
             "startTime": event["DTSTART"].dt,
             "endTime": event["DTEND"].dt,
-            "summary": self.format_text_encoding(event["SUMMARY"]),
+            "summary": self._format_text_encoding(event["SUMMARY"]),
             "description": str(event["DESCRIPTION"]).strip(),
             "location": str(event["LOCATION"]).strip()
         }
 
-    def events_to_race_weekends(self, qualifs, races):
+    def _events_to_race_weekends(self, qualifs, races):
         raceWeekends = []
         for index, race in enumerate(races):
             qualif = next((
@@ -54,29 +54,29 @@ class FormulaOne():
             raceWeekend = {
                 "raceNumber": index + 1,
                 "raceName": race["summary"].split("-")[0].strip(),
-                "qualifyingTime": self.format_date_utc(qualif["startTime"]),
-                "raceTime": self.format_date_utc(race["startTime"]),
-                "raceUrl": self.find_race_url(race["description"]),
+                "qualifyingTime": self._format_date_utc(qualif["startTime"]),
+                "raceTime": self._format_date_utc(race["startTime"]),
+                "raceUrl": self._find_race_url(race["description"]),
                 "location": race["location"],
             }
             raceWeekends.append(raceWeekend)
         return raceWeekends
 
-    def filter_events_by_type(self, events, types):
+    def _filter_events_by_type(self, events, types):
         return [
             event for event in events
             if any(keyword.lower() in event["type"].lower() for keyword in types)
         ]
 
-    def find_race_url(self, text):
+    def _find_race_url(self, text):
         pattern = "https://www.formula1.com/en/racing"
         return next((word for word in text.split(" ") if word.startswith(pattern)), pattern)
 
-    def format_text_encoding(self, text):
+    def _format_text_encoding(self, text):
         normalized = unicodedata.normalize("NFKD", text)
         return normalized.encode("ascii", "ignore").decode("utf-8")
 
-    def format_date_utc(self, date):
+    def _format_date_utc(self, date):
         dateTzAdjust = convert_timezone(date=date, sourceTz="Europe/London")
         date = dateTzAdjust.strftime(self.datePattern)
         return datetime.strptime(date, self.datePattern)

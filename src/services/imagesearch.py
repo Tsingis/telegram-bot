@@ -17,7 +17,7 @@ class ImageSearch:
     # Search image url with given keyword
     def search_random_image(self, keyword):
         try:
-            data = self.get_data(keyword)
+            data = self._get_data(keyword)
             if ("items" in data):
                 image = choice([result["link"] for result in data["items"]])
                 return image
@@ -25,7 +25,7 @@ class ImageSearch:
             logger.exception(f"Error getting image with keyword: {keyword}")
 
     # Get image data
-    def get_data(self, keyword):
+    def _get_data(self, keyword):
         url = "https://www.googleapis.com/customsearch/v1"
         params = {
             "key": self.GOOGLE_API_KEY,

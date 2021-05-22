@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 # Run webhook
 def webhook(event, context):
     logger.info(f"Event: {event}")
-    bot = set_bot()
-    if (event.get("httpMethod") == "POST" and event.get("body")):
+    if (event["httpMethod"] == "POST" and event["body"]):
         logger.info("Message received")
-        update = telegram.Update.de_json(json.loads(event.get("body")), bot)
+        bot = set_bot()
+        update = telegram.Update.de_json(json.loads(event["body"]), bot)
         chatId = update.message.chat.id
         msg = Message(bot, chatId)
         text = update.message.text
@@ -37,8 +37,8 @@ def webhook(event, context):
 # Set webhook
 def set_webhook(event, context):
     logger.info(f"Event: {event}")
+    url = f"""https://{event["headers"]["Host"]}/{event["requestContext"]["stage"]}/"""
     bot = set_bot()
-    url = f"""https://{event.get("headers").get("Host")}/{event.get("requestContext").get("stage")}/"""
     webhook = bot.set_webhook(url)
 
     if (webhook):
