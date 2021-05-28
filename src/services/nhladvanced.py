@@ -316,25 +316,29 @@ class NHLAdvanced(NHLBase):
                 "top": (15, 280), "bottom": (15, 405)}
 
             # Round 2
-            if (len(bracket) > 8):
+            if ("I" in bracket.keys()):
                 bracket["I"]["location"] = {
                     "top": (1000, 350), "bottom": (1000, 120)}
+            if ("J" in bracket.keys()):
                 bracket["J"]["location"] = {
                     "top": (1000, 800), "bottom": (1000, 570)}
+            if ("K" in bracket.keys()):
                 bracket["K"]["location"] = {
                     "top": (185, 800), "bottom": (185, 570)}
+            if ("L" in bracket.keys()):
                 bracket["L"]["location"] = {
                     "top": (185, 350), "bottom": (185, 120)}
 
-            # Round 3, Conference finals
-            if (len(bracket) > 12):
+            # Round 3
+            if ("M" in bracket.keys()):
                 bracket["M"]["location"] = {
                     "top": (835, 235), "bottom": (835, 675)}
+            if ("N" in bracket.keys()):
                 bracket["N"]["location"] = {
                     "top": (355, 235), "bottom": (355, 675)}
 
             # Round 4, Stanley cup final
-            if (len(bracket) > 14):
+            if ("O" in bracket.keys()):
                 bracket["O"]["location"] = {
                     "top": (665, 450), "bottom": (530, 450)}
 
