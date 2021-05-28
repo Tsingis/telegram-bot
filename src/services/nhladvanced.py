@@ -352,14 +352,12 @@ class NHLAdvanced(NHLBase):
                 if (key == "O"):
                     textLocX = 665
                     textLocY = 560
-                    status = value["status"]
                 else:
-                    status = value["status"]
                     textLocX = value["location"]["top"][0] + 70
                     textLocY = int((value["location"]["top"]
                                    [1] + value["location"]["bottom"][1] + 90) / 2)
 
-                insert_status_to_bracket(status, (textLocX, textLocY))
+                insert_status_to_bracket(value["status"], (textLocX, textLocY))
 
             # Create in-memory image
             filename = f"{self.season}.png"
