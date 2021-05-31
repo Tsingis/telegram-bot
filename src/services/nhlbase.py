@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class NHLBase:
-    BASE_URL = "https://statsapi.web.nhl.com/api/v1/"
+    BASE_URL = "https://statsapi.web.nhl.com/api/v1"
 
     def __init__(self, date=datetime.utcnow()):
         self.targetTimezone = "Europe/Helsinki"
@@ -19,7 +19,7 @@ class NHLBase:
     # Get player basic info
     def get_player(self, playerId):
         try:
-            data = self._get_data(self.BASE_URL + f"people/{playerId}")
+            data = self._get_data(f"{self.BASE_URL}/people/{playerId}")
             player = {
                 "id": playerId,
                 "name": data["people"][0]["fullName"],
@@ -35,7 +35,7 @@ class NHLBase:
     def get_player_season_stats(self, playerId):
         try:
             data = self._get_data(
-                self.BASE_URL + f"people/{playerId}/stats?stats=statsSingleSeason&season={self.season}")
+                f"{self.BASE_URL}/people/{playerId}/stats?stats=statsSingleSeason&season={self.season}")
             stats = data["stats"][0]["splits"][0]["stat"]
             return stats
         except Exception:
@@ -44,7 +44,7 @@ class NHLBase:
     # Get teams with ids and abbreviations
     def get_teams(self):
         try:
-            data = self._get_data(self.BASE_URL + "teams")
+            data = self._get_data(f"{self.BASE_URL}/teams")
             teams = {
                 team["name"]: {"id": team["id"], "shortName": team["abbreviation"]} for team in data["teams"]
                 if team["active"] and "firstYearOfPlay" in team}
@@ -55,7 +55,7 @@ class NHLBase:
     # Get game info for each match on given date
     def get_games(self, date):
         try:
-            data = self._get_data(self.BASE_URL + f"schedule?date={date}")
+            data = self._get_data(f"{self.BASE_URL}/schedule?date={date}")
             games = [
                 {
                     "id": game["gamePk"],
@@ -71,7 +71,7 @@ class NHLBase:
     # Get data from each match by gameId
     def get_games_linescore(self, gameId):
         try:
-            data = self._get_data(self.BASE_URL + f"game/{gameId}/linescore")
+            data = self._get_data(f"{self.BASE_URL}/game/{gameId}/linescore")
             return data
         except Exception:
             logger.exception(
@@ -80,7 +80,7 @@ class NHLBase:
     # Get data from each match by gameId
     def get_games_boxscore(self, gameId):
         try:
-            data = self._get_data(self.BASE_URL + f"game/{gameId}/boxscore")
+            data = self._get_data(f"{self.BASE_URL}/game/{gameId}/boxscore")
             return data
         except Exception:
             logger.exception(
@@ -89,7 +89,7 @@ class NHLBase:
     # Get rosters with teamId
     def get_roster(self, teamId):
         try:
-            data = self._get_data(self.BASE_URL + f"teams/{teamId}/roster")
+            data = self._get_data(f"{self.BASE_URL}/teams/{teamId}/roster")
             roster = [{
                 "id": player["person"]["id"],
                 "name": player["person"]["fullName"]
@@ -103,7 +103,7 @@ class NHLBase:
         try:
             teams = self.get_teams()
             data = self._get_data(
-                self.BASE_URL + f"standings/byDivision?date={date}")
+                f"{self.BASE_URL}/standings/byDivision?date={date}")
             # Get divisions
             divs = [
                 {
@@ -136,7 +136,7 @@ class NHLBase:
         try:
             teams = self.get_teams()
             data = self._get_data(
-                self.BASE_URL + f"standings/wildCard?date={date}")
+                f"{self.BASE_URL}/standings/wildCard?date={date}")
             # Get top five wildcards on default from each conference
             wilds = [{
                 "conference": conf["conference"]["name"],
@@ -157,7 +157,7 @@ class NHLBase:
     def get_playoffs(self):
         try:
             playoffs = self._get_data(
-                self.BASE_URL + f"tournaments/playoffs?expand=round.series,schedule.game.seriesSummary&season={self.season}")
+                f"{self.BASE_URL}/tournaments/playoffs?expand=round.series,schedule.seriesSummary&season={self.season}")
             return playoffs
         except Exception:
             logger.exception(
