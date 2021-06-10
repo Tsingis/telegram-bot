@@ -23,6 +23,7 @@ class FormulaOne():
                 calendar = Calendar.from_ical(res.content)
                 events = [self._event_to_dict(event)
                           for event in calendar.walk("VEVENT")]
+                events = self._filter_cancelled_events(events)
                 qualifs = self._filter_events_by_type(events, ["qualifying"])
                 races = self._filter_events_by_type(events, ["race"])
                 raceWeekends = self._events_to_race_weekends(qualifs, races)
@@ -36,6 +37,7 @@ class FormulaOne():
         uid = str(event["UID"])
         return {
             "id": uid.split("@")[-1].strip(),
+            "status": str(event["STATUS"]).strip(),
             "type": uid.split("@")[0].strip(),
             "startTime": event["DTSTART"].dt,
             "endTime": event["DTEND"].dt,
@@ -61,6 +63,11 @@ class FormulaOne():
             }
             raceWeekends.append(raceWeekend)
         return raceWeekends
+
+    def _filter_cancelled_events(self, events):
+        return [
+            event for event in events if event["status"].lower() != "cancelled"
+        ]
 
     def _filter_events_by_type(self, events, types):
         return [

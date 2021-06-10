@@ -388,11 +388,6 @@ class NHLAdvanced(NHLBase):
 
             # Insert teams into bracket
             for key, value in bracket.items():
-                insert_team_to_bracket(
-                    value["matchup"]["top"], value["location"]["top"])
-                insert_team_to_bracket(
-                    value["matchup"]["bottom"], value["location"]["bottom"])
-
                 if (key == "O"):
                     textLocX = 665
                     textLocY = 560
@@ -401,6 +396,10 @@ class NHLAdvanced(NHLBase):
                     textLocY = int((value["location"]["top"]
                                    [1] + value["location"]["bottom"][1] + 90) / 2)
 
+                insert_team_to_bracket(
+                    value["matchup"]["top"], value["location"]["top"])
+                insert_team_to_bracket(
+                    value["matchup"]["bottom"], value["location"]["bottom"])
                 insert_status_to_bracket(value["status"], (textLocX, textLocY))
 
             # Create in-memory image
