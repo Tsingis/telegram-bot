@@ -1,3 +1,4 @@
+import os
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from .nhlbase import NHLBase
@@ -8,11 +9,14 @@ logger = logging.getLogger(__name__)
 
 
 class NHLPlayoffs(NHLBase):
+    ENVIRONMENT = os.environ["ENVIRONMENT"]
+
     def __init__(self):
         super().__init__()
         self.teams = self.get_teams()
         self.bracketImg = Image.open("static/playoffs_template.png")
         self.font = "static/seguibl.ttf"
+        self.saveImg = True if self.ENVIRONMENT == "LOCAL" else False
 
     # Creates playoff bracket for current season
     def get_bracket(self):
@@ -130,8 +134,9 @@ class NHLPlayoffs(NHLBase):
             file.name = filename
             self.bracketImg.save(file, "PNG")
             file.seek(0)
-            # test = Image.open(file)
-            # test.save(f"{filename}")
+            if (self.saveImg):
+                img = Image.open(file)
+                img.save(f"{filename}")
             return file
         except Exception:
             logger.exception("Error getting playoff bracket")
