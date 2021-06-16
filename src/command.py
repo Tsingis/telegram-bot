@@ -4,6 +4,7 @@ from .services.imagesearch import ImageSearch
 from .services.weathersearch import WeatherSearch
 from .services.nhladvanced import NHLAdvanced
 from .services.nhlextra import NHLExtra
+from .services.nhlplayoffs import NHLPlayoffs
 from .logger import logging
 
 
@@ -46,6 +47,7 @@ class Command():
         if (text.startswith("/nhl")):
             self.nhlAdvanced = NHLAdvanced()
             self.nhlExtra = NHLExtra()
+            self.nhlPlayoffs = NHLPlayoffs()
         if (text.startswith("/f1")):
             self.f1Advanced = FormulaOneAdvanced()
 
@@ -205,7 +207,7 @@ class Command():
 
     # NHL playoff bracket
     def nhl_playoffs(self):
-        bracketImg = self.nhlAdvanced.get_bracket()
+        bracketImg = self.nhlPlayoffs.get_bracket()
         if (bracketImg is not None):
             return Response(image=bracketImg, type=ResponseType.IMAGE)
         return Response(text="Playoff bracket not available")
