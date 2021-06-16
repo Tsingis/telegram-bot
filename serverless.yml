@@ -12,7 +12,7 @@ provider:
     GOOGLE_API: ${env:GOOGLE_API}
     OPENWEATHER_API: ${env:OPENWEATHER_API}
     CSE_ID: ${env:CSE_ID}
-    ENVIRONMENT: DEV
+    ENVIRONMENT: TEST
 functions:
   webhook:
     handler: handler.webhook
