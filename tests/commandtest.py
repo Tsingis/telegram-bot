@@ -7,17 +7,17 @@ from src.command import Command, ResponseType
 class CommandTest(unittest.TestCase):
 
     @data(
-        "/bot",
-        "/weather helsinki",
-        "/search icecream",
-        "/f1results",
-        "/f1standings",
-        "/f1info",
-        "/nhlresults",
-        "/nhlstandings",
-        "/nhlinfo",
-        "/nhlplayers",
-        "/nhlplayerinfo connor mcdavid",
+        # "/bot",
+        # "/weather helsinki",
+        # "/search icecream",
+        # "/f1results",
+        # "/f1standings",
+        # "/f1info",
+        # "/nhlresults",
+        # "/nhlstandings",
+        # "/nhlinfo",
+        # "/nhlplayers",
+        # "/nhlplayerinfo connor mcdavid",
         "/nhlplayoffs"
     )
     def test_bot_command(self, cmdText, printMsg=True):
