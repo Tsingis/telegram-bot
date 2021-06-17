@@ -10,12 +10,12 @@ logger = logging.getLogger(__name__)
 
 class NHLPlayoffs(NHLBase):
     ENVIRONMENT = os.environ["ENVIRONMENT"]
+    BRACKET_IMG = Image.open("static/playoffs_template.png")
+    BRACKET_FONT = "static/seguibl.ttf"
 
     def __init__(self):
         super().__init__()
         self.teams = self.get_teams()
-        self.bracketImg = Image.open("static/playoffs_template.png")
-        self.font = "static/seguibl.ttf"
         self.saveImg = True if self.ENVIRONMENT == "LOCAL" else False
 
     # Creates playoff bracket for current season
@@ -85,7 +85,7 @@ class NHLPlayoffs(NHLBase):
                     "bottom": bracket["G"]["winner"]
                 }
 
-            # Round 3
+            # Round 3, Conference/Semi finals
             if ("M" in bracket.keys()):
                 bracket["M"]["location"] = {
                     "top": (835, 235), "bottom": (835, 675)}
@@ -129,14 +129,13 @@ class NHLPlayoffs(NHLBase):
                     value["status"], (textLocX, textLocY))
 
             # Create in-memory image
-            filename = f"{self.season}.png"
             file = BytesIO()
-            file.name = filename
-            self.bracketImg.save(file, "PNG")
+            self.BRACKET_IMG.save(file, "PNG")
             file.seek(0)
             if (self.saveImg):
+                file.name = f"NHL{self.season}.png"
                 img = Image.open(file)
-                img.save(f"{filename}")
+                img.save(file.name)
             return file
         except Exception:
             logger.exception("Error getting playoff bracket")
@@ -145,11 +144,11 @@ class NHLPlayoffs(NHLBase):
         teamImg = Image.open(f"static/NHL_logos/{team}.gif")
         width, height = teamImg.size
         teamImg = teamImg.resize((int(0.9 * width), int(0.9 * height)))
-        self.bracketImg.paste(teamImg, location)
+        self.BRACKET_IMG.paste(teamImg, location)
 
     def _insert_status_to_bracket(self, status, location):
-        font = ImageFont.truetype(self.font, 22)
-        textImg = ImageDraw.Draw(self.bracketImg)
+        font = ImageFont.truetype(self.BRACKET_FONT, 22)
+        textImg = ImageDraw.Draw(self.BRACKET_IMG)
         textImg.text(location, status, anchor="mm",
                      font=font, fill=(0, 0, 0))
 
