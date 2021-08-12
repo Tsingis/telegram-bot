@@ -1,7 +1,7 @@
 import requests
 import googlemaps
 import os
-from ..logger import logging
+from ...logger import logging
 
 
 logger = logging.getLogger(__name__)

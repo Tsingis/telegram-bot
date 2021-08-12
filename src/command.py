@@ -1,10 +1,10 @@
 from enum import Enum
-from .services.formulaoneadvanced import FormulaOneAdvanced
-from .services.imagesearch import ImageSearch
-from .services.weathersearch import WeatherSearch
-from .services.nhladvanced import NHLAdvanced
-from .services.nhlextra import NHLExtra
-from .services.nhlplayoffs import NHLPlayoffs
+from .services.formula.formulaoneadvanced import FormulaOneAdvanced
+from .services.other.imagesearch import ImageSearch
+from .services.other.weathersearch import WeatherSearch
+from .services.nhl.nhladvanced import NHLAdvanced
+from .services.nhl.nhlextra import NHLExtra
+from .services.nhl.nhlplayoffs import NHLPlayoffs
 from .logger import logging
 
 

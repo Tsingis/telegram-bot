@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime
-from src.services.formulaoneadvanced import FormulaOneAdvanced
+from src.services.formula.formulaoneadvanced import FormulaOneAdvanced
 
 
 class FormulaOneTest(unittest.TestCase):

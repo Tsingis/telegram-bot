@@ -3,8 +3,8 @@ import requests
 from datetime import datetime
 from icalendar import Calendar
 import unicodedata
-from .common import convert_timezone
-from ..logger import logging
+from ..common import convert_timezone
+from ...logger import logging
 
 
 logger = logging.getLogger(__name__)

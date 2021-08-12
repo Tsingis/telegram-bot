@@ -1,7 +1,7 @@
 import pandas as pd
 from .nhlbase import NHLBase
-from .common import set_soup
-from ..logger import logging
+from ..common import set_soup
+from ...logger import logging
 
 
 logger = logging.getLogger(__name__)

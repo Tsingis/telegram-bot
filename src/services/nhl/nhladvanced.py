@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from .nhlbase import NHLBase
-from .common import convert_timezone
-from ..logger import logging
+from ..common import convert_timezone
+from ...logger import logging
 
 
 logger = logging.getLogger(__name__)

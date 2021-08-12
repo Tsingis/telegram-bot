@@ -1,7 +1,7 @@
 import os
 import requests
 from random import choice
-from ..logger import logging
+from ...logger import logging
 
 
 logger = logging.getLogger(__name__)
