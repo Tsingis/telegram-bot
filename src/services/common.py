@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def set_soup(url, targetEncoding="latin-1"):
     try:
         res = requests.get(url)
-        if (res.status_code == 200):
+        if res.status_code == 200:
             text = res.text.encode(targetEncoding)
             return BeautifulSoup(text, "html.parser")
         res.raise_for_status()
@@ -20,14 +20,14 @@ def set_soup(url, targetEncoding="latin-1"):
 
 
 # Convert date between timezones
-def convert_timezone(date, sourceTz=None, targetTz=None):
-    if (sourceTz is None):
-        sourceTz = tz.tzutc()
+def convert_timezone(date, source_tz=None, target_tz=None):
+    if source_tz is None:
+        source_tz = tz.tzutc()
     else:
-        sourceTz = tz.gettz(sourceTz)
-    if (targetTz is None):
-        targetTz = tz.tzutc()
+        source_tz = tz.gettz(source_tz)
+    if target_tz is None:
+        target_tz = tz.tzutc()
     else:
-        targetTz = tz.gettz(targetTz)
-    date = date.replace(tzinfo=sourceTz)
-    return date.astimezone(targetTz)
+        target_tz = tz.gettz(target_tz)
+    date = date.replace(tzinfo=source_tz)
+    return date.astimezone(target_tz)

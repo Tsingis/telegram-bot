@@ -5,18 +5,18 @@ from src.services.formula.formulaoneadvanced import FormulaOneAdvanced
 
 class FormulaOneTest(unittest.TestCase):
 
-    f1Advanced = FormulaOneAdvanced()
+    f1_advanced = FormulaOneAdvanced()
 
     def test_dates_are_datetime(self):
-        races = self.f1Advanced.races
+        races = self.f1_advanced.race_weekends
         for race in races:
             self.assertIsInstance(race["raceTime"], datetime)
             self.assertIsInstance(race["qualifyingTime"], datetime)
 
     def test_upcoming_race_exists(self):
-        race = self.f1Advanced.get_upcoming()
+        race = self.f1_advanced.get_upcoming()
         self.assertIsNotNone(race)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

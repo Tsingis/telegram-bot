@@ -13,7 +13,7 @@ class NHLExtra(NHLBase):
 
     # Get player contract info for current season
     def get_player_contract(self, name):
-        name = name.replace(" ", "-").replace("\'", "").lower()
+        name = name.replace(" ", "-").replace("'", "").lower()
         url = f"https://www.capfriendly.com/players/{name}"
         try:
             soup = set_soup(url, targetEncoding="utf-8")
@@ -21,33 +21,25 @@ class NHLExtra(NHLBase):
             # Find table of current contract
             table = soup.find("table", {"class": "cntrct fixed tbl"})
 
-            # Put data into dataframe
             data = pd.read_html(table.prettify(), flavor="bs4", header=0)[0]
-
-            # Alter season column format
-            data["SEASON"] = data["SEASON"].apply(
-                lambda x: x.replace("-", "20"))
-
-            # Filter for current season
-            seasonMask = data["SEASON"] == self.season
+            data["SEASON"] = data["SEASON"].apply(lambda x: x.replace("-", "20"))
+            season_mask = data["SEASON"] == self.season
 
             # Get length, cap hit and total salary of current contract
             contract = {
-                "length": f"{data.index[seasonMask].values[0] + 1}/{len(data) - 1}",
-                "capHit": data["CAP HIT"][seasonMask].values[0],
-                "totalSalary": data["TOTAL SALARY"][seasonMask].values[0],
+                "length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
+                "capHit": data["CAP HIT"][season_mask].values[0],
+                "totalSalary": data["TOTAL SALARY"][season_mask].values[0],
             }
-            return {
-                "contract": contract,
-                "url": url
-            }
+            return {"contract": contract, "url": url}
         except Exception:
-            logger.exception(
-                f"Error getting player contract for player: {name}")
+            logger.exception(f"Error getting player contract for player: {name}")
 
     def format_player_contract(self, data):
         header = "Contract:\n"
-        contract = (f"""Year: {data["contract"]["length"]} | """ +
-                    f"""Cap hit: {data["contract"]["capHit"]} | """ +
-                    f"""Total: {data["contract"]["totalSalary"]}""")
+        contract = (
+            f"""Year: {data["contract"]["length"]} | """
+            + f"""Cap hit: {data["contract"]["capHit"]} | """
+            + f"""Total: {data["contract"]["totalSalary"]}"""
+        )
         return header + contract + f"""\n[Details]({data["url"]})"""
