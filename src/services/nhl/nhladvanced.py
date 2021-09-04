@@ -291,29 +291,31 @@ class NHLAdvanced(NHLBase):
     def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
         header = f"""{data["name"]} #{data["number"]} {data["position"]} for {data["team"]}\n"""
-        if data["position"] == "Goalie":
-            goalie = (
-                f"""GP: {data["stats"]["games"]} | """
-                f"""W: {data["stats"]["wins"]} | """
-                f"""L: {data["stats"]["losses"]} | """
-                f"""OT: {data["stats"]["ot"]} | """
-                f"""Sv: {data["stats"]["saves"]} | """
-                f"""Sv%: {round(data["stats"]["savePercentage"] * 100, 2)} | """
-                f"""GA: {data["stats"]["goalsAgainst"]} | """
-                f"""GAA: {round(data["stats"]["goalAgainstAverage"], 2)} | """
-                f"""SO: {data["stats"]["shutouts"]}"""
-            )
-            stats = goalie
-        else:
-            skater = (
-                f"""GP: {data["stats"]["games"]} | """
-                f"""G: {data["stats"]["goals"]} | """
-                f"""A: {data["stats"]["assists"]} | """
-                f"""P: {data["stats"]["points"]} | """
-                f"""Sh%: {round(data["stats"]["shotPct"], 2)} | """
-                f"""+/-: {data["stats"]["plusMinus"]} | """
-                f"""PIM: {data["stats"]["pim"]} | """
-                f"""TOI/G: {data["stats"]["timeOnIcePerGame"]}"""
-            )
-            stats = skater
-        return header + stats + f"\n[Details]({url})"
+        if data["stats"] is not None:
+            if data["position"] == "Goalie":
+                goalie = (
+                    f"""GP: {data["stats"]["games"]} | """
+                    f"""W: {data["stats"]["wins"]} | """
+                    f"""L: {data["stats"]["losses"]} | """
+                    f"""OT: {data["stats"]["ot"]} | """
+                    f"""Sv: {data["stats"]["saves"]} | """
+                    f"""Sv%: {round(data["stats"]["savePercentage"] * 100, 2)} | """
+                    f"""GA: {data["stats"]["goalsAgainst"]} | """
+                    f"""GAA: {round(data["stats"]["goalAgainstAverage"], 2)} | """
+                    f"""SO: {data["stats"]["shutouts"]}"""
+                )
+                stats = goalie
+            else:
+                skater = (
+                    f"""GP: {data["stats"]["games"]} | """
+                    f"""G: {data["stats"]["goals"]} | """
+                    f"""A: {data["stats"]["assists"]} | """
+                    f"""P: {data["stats"]["points"]} | """
+                    f"""Sh%: {round(data["stats"]["shotPct"], 2)} | """
+                    f"""+/-: {data["stats"]["plusMinus"]} | """
+                    f"""PIM: {data["stats"]["pim"]} | """
+                    f"""TOI/G: {data["stats"]["timeOnIcePerGame"]}"""
+                )
+                stats = skater
+            return header + stats + f"\n[Details]({url})"
+        return header + f"[Details]({url})"
