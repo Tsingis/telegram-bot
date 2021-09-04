@@ -19,7 +19,7 @@ class NHLExtra(NHLBase):
             table = soup.find("table", {"class": "cntrct fixed tbl"})
 
             data = []
-            rows = table.find_all("tr")[1:-1]
+            rows = table.find_all("tr")[1:-1]  # Skip header and total rows
             for row in rows:
                 cells = row.find_all("td")
                 data.append(
