@@ -34,8 +34,6 @@ custom:
 package:
   patterns:
     - "!node_modules/**"
-    - "!.vscode/**"
     - "!.github/**"
     - "!tests/**"
     - "!.env*"
-    - "!maintest.py"
