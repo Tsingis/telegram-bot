@@ -1,4 +1,3 @@
-import pandas as pd
 from .nhlbase import NHLBase
 from ..common import set_soup
 from ...logger import logging
@@ -17,20 +16,30 @@ class NHLExtra(NHLBase):
         url = f"https://www.capfriendly.com/players/{name}"
         try:
             soup = set_soup(url, targetEncoding="utf-8")
-
-            # Find table of current contract
             table = soup.find("table", {"class": "cntrct fixed tbl"})
 
-            data = pd.read_html(table.prettify(), flavor="bs4", header=0)[0]
-            data["SEASON"] = data["SEASON"].apply(lambda x: x.replace("-", "20"))
-            season_mask = data["SEASON"] == self.season
+            data = []
+            rows = table.find_all("tr")[1:-1]
+            for row in rows:
+                cells = row.find_all("td")
+                data.append(
+                    {
+                        "season": cells[0].text.replace("-", "20"),
+                        "capHit": cells[2].text,
+                        "totalSalary": cells[7].text,
+                    }
+                )
 
-            # Get length, cap hit and total salary of current contract
-            contract = {
-                "length": f"{data.index[season_mask].values[0] + 1}/{len(data) - 1}",
-                "capHit": data["CAP HIT"][season_mask].values[0],
-                "totalSalary": data["TOTAL SALARY"][season_mask].values[0],
-            }
+            contract = next(
+                {
+                    "yearStatus": f"{i+1}/{len(data)}",
+                    "capHit": item["capHit"],
+                    "totalSalary": item["totalSalary"],
+                }
+                for i, item in enumerate(data)
+                if item["season"] == self.season
+            )
+
             return {"contract": contract, "url": url}
         except Exception:
             logger.exception(f"Error getting player contract for player: {name}")
@@ -38,7 +47,7 @@ class NHLExtra(NHLBase):
     def format_player_contract(self, data):
         header = "Contract:\n"
         contract = (
-            f"""Year: {data["contract"]["length"]} | """
+            f"""Year: {data["contract"]["yearStatus"]} | """
             + f"""Cap hit: {data["contract"]["capHit"]} | """
             + f"""Total: {data["contract"]["totalSalary"]}"""
         )
