@@ -8,11 +8,11 @@ logger = logging.getLogger(__name__)
 
 
 # Set soup for site
-def set_soup(url, targetEncoding="latin-1"):
+def set_soup(url, target_encoding="latin-1"):
     try:
         res = requests.get(url)
         if res.status_code == 200:
-            text = res.text.encode(targetEncoding)
+            text = res.text.encode(target_encoding)
             return BeautifulSoup(text, "html.parser")
         res.raise_for_status()
     except Exception:

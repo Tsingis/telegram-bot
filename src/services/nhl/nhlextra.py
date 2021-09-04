@@ -15,7 +15,7 @@ class NHLExtra(NHLBase):
         name = name.replace(" ", "-").replace("'", "").lower()
         url = f"https://www.capfriendly.com/players/{name}"
         try:
-            soup = set_soup(url, targetEncoding="utf-8")
+            soup = set_soup(url, target_encoding="utf-8")
             table = soup.find("table", {"class": "cntrct fixed tbl"})
 
             data = []
