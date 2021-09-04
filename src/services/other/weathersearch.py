@@ -1,7 +1,7 @@
 import requests
 import googlemaps
 import os
-from ..logger import logging
+from ...logger import logging
 
 
 logger = logging.getLogger(__name__)
@@ -18,11 +18,13 @@ class WeatherSearch:
     def get_info(self, location):
         try:
             coords = self._get_coords(location)
-            url = ("https://api.openweathermap.org/data/2.5/weather?" +
-                   f"""lat={coords["lat"]}&lon={coords["lng"]}""" +
-                   f"&units=metric&appid={self.OPENWEATHER_API_KEY}")
+            url = (
+                "https://api.openweathermap.org/data/2.5/weather?"
+                + f"""lat={coords["lat"]}&lon={coords["lng"]}"""
+                + f"&units=metric&appid={self.OPENWEATHER_API_KEY}"
+            )
             res = requests.get(url)
-            if (res.status_code == 200):
+            if res.status_code == 200:
                 data = res.json()
                 info = {
                     "description": data["weather"][0]["description"],
@@ -31,21 +33,20 @@ class WeatherSearch:
                     "humidity": int(round(data["main"]["humidity"], 0)),
                     "pressure": int(round(data["main"]["pressure"], 0)),
                     "clouds": int(round(data["clouds"]["all"], 0)),
-                    "icon": data["weather"][0]["icon"]
+                    "icon": data["weather"][0]["icon"],
                 }
 
-                if ("snow" in data):
+                if "snow" in data:
                     info["precipType"] = "snow"
                     info["amount"] = round(data["snow"]["1h"], 2)
 
-                if ("rain" in data):
+                if "rain" in data:
                     info["precipType"] = "rain"
                     info["amount"] = round(data["rain"]["1h"], 2)
                 return info
             res.raise_for_status()
         except requests.exceptions.HTTPError:
-            logger.exception(
-                f"Error getting info for location: {location}")
+            logger.exception(f"Error getting info for location: {location}")
 
     def format_info(self, data, location):
         info = {
@@ -57,7 +58,7 @@ class WeatherSearch:
             "Clouds": str(data["clouds"]) + " %",
         }
 
-        if ("precipType" in data):
+        if "precipType" in data:
             info["Precip"] = data["precipType"]
             info["Amount"] = str(data["amount"]) + " mm/h"
 
@@ -77,5 +78,4 @@ class WeatherSearch:
             result = self.gmaps.geocode(location)
             return result[0]["geometry"]["location"]
         except Exception:
-            logger.exception(
-                f"Error getting coordinates for location: {location}")
+            logger.exception(f"Error getting coordinates for location: {location}")

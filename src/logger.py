@@ -2,9 +2,8 @@ import logging
 import json
 
 
-# Set up logging
 logger = logging.getLogger()
-if (logger.handlers):
+if logger.handlers:
     for handler in logger.handlers:
         logger.removeHandler(handler)
 
@@ -14,9 +13,6 @@ logging.basicConfig(level=logging.INFO, format=logFormat)
 OK_RESPONSE = {
     "statusCode": 200,
     "headers": {"Content-Type": "application/json"},
-    "body": json.dumps("Ok!")
+    "body": json.dumps("Ok!"),
 }
-ERROR_RESPONSE = {
-    "statusCode": 400,
-    "body": json.dumps("Something went wrong!")
-}
+ERROR_RESPONSE = {"statusCode": 400, "body": json.dumps("Something went wrong!")}

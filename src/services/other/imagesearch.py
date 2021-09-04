@@ -1,7 +1,7 @@
 import os
 import requests
 from random import choice
-from ..logger import logging
+from ...logger import logging
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class ImageSearch:
     def search_random_image(self, keyword):
         try:
             data = self._get_data(keyword)
-            if ("items" in data):
+            if "items" in data:
                 image = choice([result["link"] for result in data["items"]])
                 return image
         except Exception:
@@ -32,11 +32,11 @@ class ImageSearch:
             "cx": self.CSE_ID,
             "searchType": "image",
             "lr": "lang_fi",
-            "q": keyword
+            "q": keyword,
         }
         try:
             res = requests.get(url, params)
-            if (res.status_code == 200):
+            if res.status_code == 200:
                 return res.json()
             res.raise_for_status()
         except requests.exceptions.HTTPError:
