@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-     - name: Install setuptools
+      - name: Install setuptools
         run: sudo apt-get install -y python3-setuptools
       - name: Install Dependencies
         run: npm install
