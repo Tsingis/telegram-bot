@@ -26,11 +26,12 @@ class ImageSearch:
 
     # Get image data
     def _get_data(self, keyword):
-        url = "https://www.googleapis.com/customsearch/v1"
+        url = "https://customsearch.googleapis.com/customsearch/v1"
         params = {
             "key": self.GOOGLE_API_KEY,
             "cx": self.CSE_ID,
             "searchType": "image",
+            "hl": "fi",
             "lr": "lang_fi",
             "q": keyword,
         }
