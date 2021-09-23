@@ -31,6 +31,7 @@ class ImageSearch:
             "key": self.GOOGLE_API_KEY,
             "cx": self.CSE_ID,
             "searchType": "image",
+            "hl": "fi",
             "lr": "lang_fi",
             "q": keyword,
         }
