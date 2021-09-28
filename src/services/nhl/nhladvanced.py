@@ -187,7 +187,9 @@ class NHLAdvanced(NHLBase):
                     "stats": player["stats"],
                 }
                 for player in playersData
-                if "nationality" in player["person"] and player["stats"]
+                if "nationality" in player["person"]
+                and "currentTeam" in player["person"]
+                and player["stats"]
             ]
             return players
         except Exception:
