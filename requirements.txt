@@ -1,7 +1,7 @@
-beautifulsoup4
-googlemaps
-icalendar
-Pillow
-python-dateutil
-python-telegram-bot
-requests
+beautifulsoup4==4.9.3
+googlemaps==4.5.3
+icalendar==4.0.7
+Pillow==8.3.1
+python-dateutil==2.8.2
+python-telegram-bot==13.7
+requests==2.26.0
