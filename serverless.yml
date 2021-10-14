@@ -2,7 +2,7 @@ service: telegram-bot-test
 
 provider:
   name: aws
-  runtime: python3.9
+  runtime: python3.8
   region: eu-north-1
   memorySize: 256
   timeout: 15
@@ -29,8 +29,8 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: true
-    dockerImage: mlupin/docker-lambda:python3.9
+    dockerizePip: non-linux
+    dockerImage: mlupin/docker-lambda:python3.8-build
 
 package:
   patterns:
