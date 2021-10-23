@@ -292,7 +292,9 @@ class NHLAdvanced(NHLBase):
 
     def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
-        header = f"""{data["name"]} #{data["number"]} {data["position"]} for {data["team"]}\n"""
+        header = (
+            f"""{data["team"]} {data["position"]} #{data["number"]} {data["name"]}\n"""
+        )
         if data["stats"] is not None:
             if data["position"] == "Goalie":
                 goalie = (
