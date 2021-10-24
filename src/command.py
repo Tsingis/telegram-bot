@@ -170,7 +170,7 @@ class Command:
     # NHL latest match results
     def nhl_results(self):
         text = "No matches yesterday"
-        url = "https://www.livetulokset.com/jaakiekko/"
+        url = "https://www.nhl.com/scores/"
         results = self.nhl_advanced.get_results()
         if results is not None:
             text = f"*Results:*\n{self.nhl_advanced.format_results(results)}\n[Details]({url})"
