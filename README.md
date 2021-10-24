@@ -10,3 +10,10 @@
 **How it works:**
 
 ![alt text](https://i.imgur.com/Kn0MwHS.png)
+
+**Requirements:**
+
+- Python 3.9
+- AWS Account
+- Node.js 14.x
+- Serverless Framework
