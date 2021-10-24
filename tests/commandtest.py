@@ -13,6 +13,7 @@ class CommandTest(unittest.TestCase):
         "/f1standings",
         "/f1info",
         "/nhlresults",
+        "/nhlscoring 15",
         "/nhlstandings",
         "/nhlinfo",
         "/nhlplayers",
