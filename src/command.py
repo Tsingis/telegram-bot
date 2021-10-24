@@ -34,6 +34,7 @@ class Command:
     NHL_INFO_CMD = "/nhlinfo"
     NHL_STANDINGS_CMD = "/nhlstandings"
     NHL_RESULTS_CMD = "/nhlresults"
+    NHL_SCORING_CMD = "/nhlscoring"
     NHL_PLAYERS_STATS_CMD = "/nhlplayers"
     NHL_PLAYER_INFO_CMD = "/nhlplayerinfo"
     NHL_PLAYOFFS_CMD = "/nhlplayoffs"
@@ -64,6 +65,8 @@ class Command:
             return self.f1_standings()
         if self.text.startswith(self.F1_RESULTS_CMD):
             return self.f1_results()
+        if self.text.startswith(self.NHL_SCORING_CMD):
+            return self.nhl_scoring()
         if self.text.startswith(self.NHL_INFO_CMD):
             return self.nhl_info()
         if self.text.startswith(self.NHL_STANDINGS_CMD):
@@ -91,6 +94,7 @@ class Command:
             self.NHL_INFO_CMD,
             self.NHL_STANDINGS_CMD,
             self.NHL_RESULTS_CMD,
+            self.NHL_SCORING_CMD + " <amount>",
             self.NHL_PLAYERS_STATS_CMD + " <nationality> or <team>",
             self.NHL_PLAYER_INFO_CMD + " <player name>",
             self.NHL_PLAYOFFS_CMD,
@@ -174,6 +178,21 @@ class Command:
         results = self.nhl_advanced.get_results()
         if results is not None:
             text = f"*Results:*\n{self.nhl_advanced.format_results(results)}\n[Details]({url})"
+        return Response(text=text)
+
+    # NHL scoring leaders
+    def nhl_scoring(self):
+        text = "Scoring leaders not available"
+        url = "http://www.nhl.com/stats/skaters"
+        try:
+            amount = int(self.text.split(self.NHL_SCORING_CMD)[-1].strip())
+            if amount < 5:
+                amount = 5
+            info = self.nhl_extra.get_scoring_leaders(amount)
+        except ValueError:
+            info = self.nhl_extra.get_scoring_leaders()
+        if info is not None:
+            text = f"{self.nhl_extra.format_scoring_leaders(info)}\n[Details]({url})"
         return Response(text=text)
 
     # NHL stats for players of given nationality or team from latest round
