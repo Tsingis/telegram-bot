@@ -188,9 +188,12 @@ class Command:
             amount = int(self.text.split(self.NHL_SCORING_CMD)[-1].strip())
             if amount < 5:
                 amount = 5
-            info = self.nhl_extra.get_scoring_leaders(amount)
         except ValueError:
-            info = self.nhl_extra.get_scoring_leaders()
+            logger.info(
+                "Failed to parse input for scoring leaders. Using default value."
+            )
+            amount = 10
+        info = self.nhl_extra.get_scoring_leaders(amount)
         if info is not None:
             text = f"{self.nhl_extra.format_scoring_leaders(info)}\n[Details]({url})"
         return Response(text=text)
