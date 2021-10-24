@@ -10,11 +10,3 @@
 **How it works:**
 
 ![alt text](https://i.imgur.com/Kn0MwHS.png)
-
-**More info:**
-
-- Guide for general bot [here](https://github.com/jonatasbaldin/serverless-telegram-bot).
-
-- Useful instructions on how to package and deploy with serverless [here](https://serverless.com/blog/serverless-python-packaging/).
-
-- More about Lambdas [here](https://aws.amazon.com/lambda/).
