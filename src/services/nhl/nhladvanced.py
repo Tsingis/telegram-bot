@@ -32,11 +32,11 @@ class NHLAdvanced(NHLBase):
                 info = {
                     "homeTeam": {
                         "name": game["teams"]["home"]["team"]["name"],
-                        "goals": str(game["teams"]["home"]["goals"]),
+                        "goals": game["teams"]["home"]["goals"],
                     },
                     "awayTeam": {
                         "name": game["teams"]["away"]["team"]["name"],
-                        "goals": str(game["teams"]["away"]["goals"]),
+                        "goals": game["teams"]["away"]["goals"],
                     },
                     "period": period,
                 }
@@ -167,8 +167,6 @@ class NHLAdvanced(NHLBase):
             games = [self.get_games_boxscore(game_id) for game_id in game_ids]
             player_ids = [game["teams"]["away"]["players"] for game in games]
             player_ids.extend([game["teams"]["home"]["players"] for game in games])
-
-            # Data for each player
             playersData = [
                 elem
                 for player in player_ids
@@ -202,7 +200,6 @@ class NHLAdvanced(NHLBase):
             if player["nationality"] == filter or player["team"] == filter
         ]
         if len(players) > 0:
-            # Skaters
             skaters_stats = [
                 {
                     "name": skater["lastName"],
@@ -221,7 +218,6 @@ class NHLAdvanced(NHLBase):
                 reverse=True,
             )
 
-            # Goalies
             goalies_stats = [
                 {
                     "name": goalie["lastName"],
@@ -240,15 +236,15 @@ class NHLAdvanced(NHLBase):
             # Skaters stats in format: last name (team) | goals+assists | TOI: MM:SS
             def format_skater_stats(stats):
                 return (
-                    f"""{stats["name"]} ({stats["team"]}) | {str(stats["goals"])}"""
-                    + f"""+{str(stats["assists"])} | TOI: {stats["timeOnIce"]}"""
+                    f"""{stats["name"]} ({stats["team"]}) | {stats["goals"]}"""
+                    + f"""+{stats["assists"]} | TOI: {stats["timeOnIce"]}"""
                 )
 
             # Goalies stats in format: last name (team) | saves/shots | TOI: MM:SS
             def format_goalie_stats(stats):
                 return (
-                    f"""{stats["name"]} ({stats["team"]}) | {str(stats["saves"])}"""
-                    + f"""/{str(stats["shots"])} | TOI: {stats["timeOnIce"]}"""
+                    f"""{stats["name"]} ({stats["team"]}) | {stats["saves"]}"""
+                    + f"""/{stats["shots"]} | TOI: {stats["timeOnIce"]}"""
                 )
 
             skaters_header = "*Skaters:*\n"

@@ -89,7 +89,7 @@ class Command:
             self.IMAGE_SEARCH_CMD + " <keyword>",
             self.WEATHER_SEARCH_CMD + " <location>",
             self.F1_INFO_CMD,
-            self.F1_STANDINGS_CMD + " <'driver'> or <'team'>",
+            self.F1_STANDINGS_CMD,
             self.F1_RESULTS_CMD,
             self.NHL_INFO_CMD,
             self.NHL_STANDINGS_CMD,
@@ -137,12 +137,10 @@ class Command:
     # F1 standings
     def f1_standings(self):
         text = "Standings not available"
-        parameter = self.text.split(self.F1_STANDINGS_CMD)[-1].strip().upper()
-        if parameter == "TEAM":
-            standings = self.f1_advanced.get_team_standings(amount=10)
-        else:
-            standings = self.f1_advanced.get_driver_standings(amount=10)
-        if standings is not None:
+        team_standings = self.f1_advanced.get_team_standings(amount=10)
+        driver_standings = self.f1_advanced.get_driver_standings(amount=10)
+        if team_standings is not None and driver_standings is not None:
+            standings = team_standings | driver_standings
             text = self.f1_advanced.format_standings(standings)
         return Response(text=text)
 
