@@ -17,19 +17,16 @@ class NHLExtra(NHLBase):
         try:
             soup = set_soup(url, target_encoding="utf-8")
             table = soup.find("table", {"class": "cntrct fixed tbl"})
-
-            data = []
             rows = table.find_all("tr")[1:-1]  # Skip header and total rows
-            for row in rows:
-                cells = row.find_all("td")
-                data.append(
-                    {
-                        "season": cells[0].text.replace("-", "20"),
-                        "capHit": cells[2].text,
-                        "totalSalary": cells[7].text,
-                    }
-                )
-
+            contract_rows = [row.find_all("td") for row in rows]
+            data = [
+                {
+                    "season": cols[0].text.replace("-", "20"),
+                    "capHit": cols[2].text,
+                    "totalSalary": cols[7].text,
+                }
+                for cols in contract_rows
+            ]
             contract = next(
                 {
                     "yearStatus": f"{i+1}/{len(data)}",
@@ -39,7 +36,6 @@ class NHLExtra(NHLBase):
                 for i, item in enumerate(data)
                 if item["season"] == self.season
             )
-
             return {"contract": contract, "url": url}
         except Exception:
             logger.exception(f"Error getting player contract for player: {name}")
