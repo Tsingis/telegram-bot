@@ -23,25 +23,22 @@ class FormulaOneAdvanced(FormulaOne):
         url = f"{self.BASE_URL}/en/results.html/{self.date.year}/races.html"
         try:
             results_table = self._find_table(url)
-
-            # Get race url
             results_href = results_table.find_all("a")[-1]["href"]
             results_url = self.BASE_URL + results_href
 
-            # Get drivers
             results_table = self._find_table(results_url)
-            drivers = results_table.find_all("tr")[1 : amount + 1]
-
-            # Get position, name and time for each driver
-            results = []
-            for driver in drivers:
-                row = [col.text.strip() for col in driver.find_all("td")]
-                result = {
-                    "name": str(row[3][-3:]),
-                    "position": str(row[1]),
-                    "time": str(row[-3]),
+            rows = results_table.find_all("tr")[1 : amount + 1]
+            driver_rows = [
+                [cell.text.strip() for cell in row.find_all("td")] for row in rows
+            ]
+            results = [
+                {
+                    "name": row[3],
+                    "position": int(row[1]),
+                    "time": row[-3],
                 }
-                results.append(result)
+                for row in driver_rows
+            ]
             return {"results": results, "url": results_url}
         except Exception:
             logger.exception("Error getting race results")
@@ -52,29 +49,29 @@ class FormulaOneAdvanced(FormulaOne):
         header = f"Results for {race}:"
         details = f"\n[Details]({url})"
         formatted_results = [
-            f"""{result["position"]}. {result["name"]} {result["time"]}"""
+            f"""{result["position"]}. {result["name"][-3:]} {result["time"]}"""
             for result in data["results"]
         ]
         return f"*{header}*\n" + "\n".join(formatted_results) + details
 
     # Gets top drivers from overall standings and url for more details. Default top 5
-    def get_driver_standings(self, amount: int = 5):
+    def get_driver_standings(self, amount=5):
         url = f"{self.BASE_URL}/en/results.html/{self.date.year}/drivers.html"
         try:
             table = self._find_table(url)
-            drivers = table.find_all("tr")[1 : amount + 1]
-
-            # Get position, name and points for each driver
-            standings = []
-            for driver in drivers:
-                row = [col.text.strip() for col in driver.find_all("td")]
-                standing = {
-                    "name": row[2][-3:],
-                    "position": row[1],
-                    "points": row[-2],
+            rows = table.find_all("tr")[1 : amount + 1]
+            driver_rows = [
+                [cell.text.strip() for cell in row.find_all("td")] for row in rows
+            ]
+            standings = [
+                {
+                    "driver": row[2],
+                    "position": int(row[1]),
+                    "points": self._format_number(float(row[-2])),
                 }
-                standings.append(standing)
-            return {"standings": standings, "url": url}
+                for row in driver_rows
+            ]
+            return {"driverStandings": standings, "driverUrl": url}
         except Exception:
             logger.exception("Error getting driver standings")
 
@@ -83,40 +80,56 @@ class FormulaOneAdvanced(FormulaOne):
         url = f"{self.BASE_URL}/en/results.html/{self.date.year}/team.html"
         try:
             table = self._find_table(url)
-            teams = table.find_all("tr")[1 : amount + 1]
-
-            # Get position, name and points for each team
-            standings = []
-            for team in teams:
-                row = [col.text.strip() for col in team.find_all("td")]
-                team_name_parts = row[2].split(" ")
-                standing = {
-                    "name": " ".join(team_name_parts[:2])
-                    if len(team_name_parts) > 2
-                    else team_name_parts[0],
-                    "position": row[1],
-                    "points": row[-2],
+            rows = table.find_all("tr")[1 : amount + 1]
+            team_rows = [
+                [cell.text.strip() for cell in row.find_all("td")] for row in rows
+            ]
+            standings = [
+                {
+                    "team": row[2],
+                    "position": int(row[1]),
+                    "points": self._format_number(float(row[-2])),
                 }
-                standings.append(standing)
-            return {"standings": standings, "url": url}
+                for row in team_rows
+            ]
+            return {"teamStandings": standings, "teamUrl": url}
         except Exception:
             logger.exception("Error getting team standings")
 
     def format_standings(self, data):
-        url = data["url"]
         upcoming = self.get_upcoming()
         race_number = upcoming["raceNumber"]
         if self.date <= upcoming["raceTime"]:
             race_number -= 1
 
-        header = f"""Standings: {race_number}/{self.races_amount}"""
-        details = f"""\n[Details]({url})"""
+        header = f"""Standings {race_number}/{self.races_amount}"""
+        driver_details = f"""\n[Details]({data["driverUrl"]})"""
+        team_details = f"""\n[Details]({data["teamUrl"]})"""
 
-        formatted_standings = [
-            f"""{result["position"]}. {result["name"]} - {result["points"]}"""
-            for result in data["standings"]
+        for standing in data["teamStandings"]:
+            team_name_parts = standing["team"].split(" ")
+            if len(team_name_parts) > 2:
+                standing["team"] = " ".join(team_name_parts[:2])
+            else:
+                standing["team"] = team_name_parts[0]
+
+        driver_standings = [
+            f"""{result["position"]}. {result["driver"][-3:]} - {result["points"]}"""
+            for result in data["driverStandings"]
         ]
-        return f"*{header}*\n" + "\n".join(formatted_standings) + details
+        team_standings = [
+            f"""{result["position"]}. {result["team"]} - {result["points"]}"""
+            for result in data["teamStandings"]
+        ]
+        formatted_standings = (
+            "*Drivers*:\n"
+            + "\n".join(driver_standings)
+            + driver_details
+            + "\n\n*Teams*:\n"
+            + "\n".join(team_standings)
+            + team_details
+        )
+        return f"*{header}*\n" + formatted_standings
 
     # Gets info for the upcoming race
     def get_upcoming(self):
@@ -154,7 +167,6 @@ class FormulaOneAdvanced(FormulaOne):
         except Exception:
             logger.exception("Error getting circuit image")
 
-    # Find table from page
     def _find_table(self, url):
         try:
             soup = set_soup(url)
@@ -162,8 +174,12 @@ class FormulaOneAdvanced(FormulaOne):
         except Exception:
             logger.exception("Error finding table")
 
-    # Formats date with given input and output patterns
+    # Formats date with specific input and output patterns
     def _format_date(self, date):
         pattern = "%a %B %d at %H:%M"
         date = convert_timezone(date=date, target_tz="Europe/Helsinki")
         return datetime.strftime(date, pattern)
+
+    # Formats floating number without insignificant trailing zeroes
+    def _format_number(self, number):
+        return f"{number:g}"
