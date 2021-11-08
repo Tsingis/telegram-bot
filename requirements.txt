@@ -3,5 +3,5 @@ googlemaps==4.5.3
 icalendar==4.0.9
 Pillow==8.4.0
 python-dateutil==2.8.2
-python-telegram-bot==13.7
+python-telegram-bot==13.8.1
 requests==2.26.0
