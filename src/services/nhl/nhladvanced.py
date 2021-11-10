@@ -25,7 +25,10 @@ class NHLAdvanced(NHLBase):
                     and game["currentPeriodTimeRemaining"] == "Final"
                 ):
                     period = game["currentPeriodOrdinal"]
-                elif game["currentPeriod"] == 0:
+                elif game["currentPeriod"] == 0 or (
+                    game["currentPeriod"] == 1
+                    and game["currentPeriodTimeRemaining"] == "20:00"
+                ):
                     period = "Not started"
                 else:
                     period = "Live"

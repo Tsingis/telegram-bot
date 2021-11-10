@@ -41,49 +41,50 @@ class Command:
 
     def __init__(self, text):
         self.text = text
-        if text.startswith(self.IMAGE_SEARCH_CMD):
+        if self.text.startswith(self.IMAGE_SEARCH_CMD):
             self.img_search = ImageSearch()
-        if text.startswith(self.WEATHER_SEARCH_CMD):
+        if self.text.startswith(self.WEATHER_SEARCH_CMD):
             self.weather_search = WeatherSearch()
-        if text.startswith("/nhl"):
+        if self.text.startswith("/nhl"):
             self.nhl_advanced = NHLAdvanced()
             self.nhl_extra = NHLExtra()
             self.nhl_playoffs = NHLPlayoffs()
-        if text.startswith("/f1"):
+        if self.text.startswith("/f1"):
             self.f1_advanced = FormulaOneAdvanced()
+        self.response = self._command_response()
 
-    def response(self):
+    def _command_response(self):
         if self.text.startswith(self.AVAILABLE_CMD):
-            return self.available_commands()
+            return self._available_commands()
         if self.text.startswith(self.IMAGE_SEARCH_CMD):
-            return self.search_img()
+            return self._search_img()
         if self.text.startswith(self.WEATHER_SEARCH_CMD):
-            return self.search_weather()
+            return self._search_weather()
         if self.text.startswith(self.F1_INFO_CMD):
-            return self.f1_info()
+            return self._f1_info()
         if self.text.startswith(self.F1_STANDINGS_CMD):
-            return self.f1_standings()
+            return self._f1_standings()
         if self.text.startswith(self.F1_RESULTS_CMD):
-            return self.f1_results()
+            return self._f1_results()
         if self.text.startswith(self.NHL_SCORING_CMD):
-            return self.nhl_scoring()
+            return self._nhl_scoring()
         if self.text.startswith(self.NHL_INFO_CMD):
-            return self.nhl_info()
+            return self._nhl_info()
         if self.text.startswith(self.NHL_STANDINGS_CMD):
-            return self.nhl_standings()
+            return self._nhl_standings()
         if self.text.startswith(self.NHL_RESULTS_CMD):
-            return self.nhl_results()
+            return self._nhl_results()
         if self.text.startswith(self.NHL_PLAYERS_STATS_CMD):
-            return self.nhl_players_stats()
+            return self._nhl_players_stats()
         if self.text.startswith(self.NHL_PLAYER_INFO_CMD):
-            return self.nhl_player_info()
+            return self._nhl_player_info()
         if self.text.startswith(self.NHL_PLAYOFFS_CMD):
-            return self.nhl_playoffs_bracket()
+            return self._nhl_playoffs_bracket()
         else:
             logging.info(f"Invalid command received: {self.text}")
 
     # Available bot commands
-    def available_commands(self):
+    def _available_commands(self):
         header = "*Available commands:*\n"
         cmds = [
             self.IMAGE_SEARCH_CMD + " <keyword>",
@@ -102,7 +103,7 @@ class Command:
         return Response(text=header + "\n".join(cmds))
 
     # Random Google search image by keyword
-    def search_img(self):
+    def _search_img(self):
         keyword = self.text.split(self.IMAGE_SEARCH_CMD)[-1].strip()
         img = self.img_search.search_random_image(keyword)
         if img is not None:
@@ -110,7 +111,7 @@ class Command:
         return Response(text="No search results")
 
     # Weather info by location
-    def search_weather(self):
+    def _search_weather(self):
         text = "Weather data not available"
         location = self.text.split(self.WEATHER_SEARCH_CMD)[-1].strip()
         info = self.weather_search.get_info(location)
@@ -122,7 +123,7 @@ class Command:
         return Response(text=text)
 
     # F1 upcoming race
-    def f1_info(self):
+    def _f1_info(self):
         text = "Race info not available"
         info = self.f1_advanced.get_upcoming()
         if info is not None:
@@ -135,7 +136,7 @@ class Command:
         return Response(text=text)
 
     # F1 standings
-    def f1_standings(self):
+    def _f1_standings(self):
         text = "Standings not available"
         team_standings = self.f1_advanced.get_team_standings(amount=10)
         driver_standings = self.f1_advanced.get_driver_standings(amount=10)
@@ -145,7 +146,7 @@ class Command:
         return Response(text=text)
 
     # F1 latest race results
-    def f1_results(self):
+    def _f1_results(self):
         text = "Results not available"
         results = self.f1_advanced.get_results()
         if results is not None:
@@ -153,7 +154,7 @@ class Command:
         return Response(text=text)
 
     # NHL upcoming matches
-    def nhl_info(self):
+    def _nhl_info(self):
         text = "No upcoming games tomorrow"
         info = self.nhl_advanced.get_upcoming()
         if info is not None:
@@ -161,7 +162,7 @@ class Command:
         return Response(text=text)
 
     # NHL standings
-    def nhl_standings(self):
+    def _nhl_standings(self):
         text = "Standings not available"
         url = "https://www.nhl.com/standings/"
         standings = self.nhl_advanced.get_standings()
@@ -170,7 +171,7 @@ class Command:
         return Response(text=text)
 
     # NHL latest match results
-    def nhl_results(self):
+    def _nhl_results(self):
         text = "No matches yesterday"
         url = "https://www.nhl.com/scores/"
         results = self.nhl_advanced.get_results()
@@ -179,7 +180,7 @@ class Command:
         return Response(text=text)
 
     # NHL scoring leaders
-    def nhl_scoring(self):
+    def _nhl_scoring(self):
         text = "Scoring leaders not available"
         url = "http://www.nhl.com/stats/skaters"
         try:
@@ -197,7 +198,7 @@ class Command:
         return Response(text=text)
 
     # NHL stats for players of given nationality or team from latest round
-    def nhl_players_stats(self):
+    def _nhl_players_stats(self):
         text = "Players stats not available"
         filter_word = self.text.split(self.NHL_PLAYERS_STATS_CMD)[-1].strip().upper()
         stats = self.nhl_advanced.get_players_stats()
@@ -209,7 +210,7 @@ class Command:
         return Response(text=text)
 
     # NHL player stats by player name
-    def nhl_player_info(self):
+    def _nhl_player_info(self):
         player_name = self.text.split(self.NHL_PLAYER_INFO_CMD)[-1].strip().lower()
         stats = self.nhl_advanced.get_player_stats(player_name)
         contract = self.nhl_extra.get_player_contract(player_name)
@@ -223,7 +224,7 @@ class Command:
         return Response(text=text)
 
     # NHL playoff bracket
-    def nhl_playoffs_bracket(self):
+    def _nhl_playoffs_bracket(self):
         bracket_img = self.nhl_playoffs.get_bracket()
         if bracket_img is not None:
             return Response(image=bracket_img, type=ResponseType.IMAGE)

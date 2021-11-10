@@ -16,7 +16,7 @@ class NHLExtra(NHLBase):
         url = f"https://www.capfriendly.com/players/{name}"
         try:
             soup = set_soup(url, target_encoding="utf-8")
-            table = soup.find("table", {"class": "cntrct fixed tbl"})
+            table = soup.find("table", {"class": "cntrct fixed"})
             rows = table.find_all("tr")[1:-1]  # Skip header and total rows
             contract_rows = [row.find_all("td") for row in rows]
             data = [

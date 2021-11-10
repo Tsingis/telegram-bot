@@ -9,7 +9,7 @@
 
 **How it works:**
 
-![alt text](https://i.imgur.com/Kn0MwHS.png)
+![alt text](https://i.imgur.com/wrmkLbD.png)
 
 **Requirements:**
 

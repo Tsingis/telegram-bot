@@ -22,7 +22,7 @@ class CommandTest(unittest.TestCase):
     )
     def test_bot_command(self, cmdText, printMsg=True):
         cmd = Command(cmdText)
-        msg = cmd.response()
+        msg = cmd.response
         self.assertIsNotNone(msg)
         if msg.type == ResponseType.TEXT:
             self.assertIsNotNone(msg.text)
