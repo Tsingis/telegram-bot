@@ -21,7 +21,7 @@ def webhook(event, context):
         text = update.message.text
         if text and text.startswith("/"):
             cmd = Command(text)
-            res = cmd.response()
+            res = cmd.response
             if res is not None:
                 logger.info(f"Command received: {text}")
                 if res.type == ResponseType.TEXT:
