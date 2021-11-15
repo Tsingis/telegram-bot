@@ -39,17 +39,6 @@ def set_soup(url, target_encoding="latin-1"):
         logger.exception(f"Error setting soup with url: {url}")
 
 
-def find_table(url, html_class):
-    """
-    Gets html table with specific class
-    """
-    try:
-        soup = set_soup(url)
-        return soup.find("table", {"class": html_class})
-    except Exception:
-        logger.exception("Error finding table")
-
-
 def format_date(date, pattern, target_tz="Europe/Helsinki"):
     """
     Formats date with specific output pattern and timezone

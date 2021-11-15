@@ -1,5 +1,5 @@
 from datetime import datetime
-from ..common import convert_timezone, get
+from ..common import get, convert_timezone
 from ...logger import logging
 
 
@@ -14,6 +14,7 @@ class NHLBase:
         self.date = convert_timezone(date=date, target_tz=self.targetTimezone)
         year = self.date.year
         self.season = f"{year-1}{year}" if self.date.month < 9 else f"{year}{year+1}"
+        self.teams = self._get_teams()
 
     def get_player(self, player_id):
         try:
@@ -38,19 +39,6 @@ class NHLBase:
             return stats
         except Exception:
             logger.exception(f"Error getting player stats with id: {player_id}")
-
-    def get_teams(self):
-        try:
-            url = f"{self.BASE_URL}/teams"
-            data = get(url).json()
-            teams = {
-                team["name"]: {"id": team["id"], "shortName": team["abbreviation"]}
-                for team in data["teams"]
-                if team["active"] and "firstYearOfPlay" in team
-            }
-            return teams
-        except Exception:
-            logger.exception("Error getting teams")
 
     def get_games(self, date):
         try:
@@ -101,7 +89,6 @@ class NHLBase:
     def get_division_leaders(self, date, amount=3):
         try:
             url = f"{self.BASE_URL}/standings/byDivision?date={date}"
-            teams = self.get_teams()
             data = get(url).json()
             # Get divisions
             divs = [
@@ -119,7 +106,7 @@ class NHLBase:
                     "division": div["division"],
                     "teams": [
                         {
-                            "name": teams[team["team"]["name"]]["shortName"],
+                            "name": self.teams[team["team"]["name"]]["shortName"],
                             "points": team["points"],
                             "games": team["gamesPlayed"],
                         }
@@ -135,7 +122,6 @@ class NHLBase:
     def get_wildcards(self, date, amount=5):
         try:
             url = f"{self.BASE_URL}/standings/wildCard?date={date}"
-            teams = self.get_teams()
             data = get(url).json()
             # Get top five wildcards on default from each conference
             wilds = [
@@ -143,7 +129,7 @@ class NHLBase:
                     "conference": conf["conference"]["name"],
                     "teams": [
                         {
-                            "name": teams[wild["team"]["name"]]["shortName"],
+                            "name": self.teams[wild["team"]["name"]]["shortName"],
                             "points": wild["points"],
                             "games": wild["gamesPlayed"],
                         }
@@ -163,3 +149,16 @@ class NHLBase:
             return playoffs
         except Exception:
             logger.exception(f"Error getting playoffs for season {self.season}")
+
+    def _get_teams(self):
+        try:
+            url = f"{self.BASE_URL}/teams"
+            data = get(url).json()
+            teams = {
+                team["name"]: {"id": team["id"], "shortName": team["abbreviation"]}
+                for team in data["teams"]
+                if team["active"] and "firstYearOfPlay" in team
+            }
+            return teams
+        except Exception:
+            logger.exception("Error getting teams")

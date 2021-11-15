@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 class NHLAdvanced(NHLBase):
     def __init__(self):
         super().__init__()
-        self.teams = self.get_teams()
 
     def get_results(self):
         """

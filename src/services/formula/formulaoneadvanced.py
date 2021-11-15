@@ -1,6 +1,6 @@
 from datetime import datetime
 from .formulaonebase import FormulaOneBase
-from ..common import set_soup, find_table
+from ..common import set_soup
 from ...logger import logging
 
 
@@ -21,12 +21,13 @@ class FormulaOneAdvanced(FormulaOneBase):
         """
         url = f"{self.BASE_URL}/en/results.html/{self.date.year}/races.html"
         try:
-            results_table = find_table(url, "resultsarchive-table")
-            results_href = results_table.find_all("a")[-1]["href"]
+            soup = set_soup(url)
+            races_table = soup.find("table", {"class": "resultsarchive-table"})
+            results_href = races_table.find_all("a")[-1]["href"]
             results_url = self.BASE_URL + results_href
-
-            results_table = find_table(results_url, "resultsarchive-table")
-            rows = results_table.find_all("tr")[1 : amount + 1]
+            soup = set_soup(results_url)
+            table = soup.find("table", {"class": "resultsarchive-table"})
+            rows = table.find_all("tr")[1 : amount + 1]
             driver_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
             ]
@@ -48,7 +49,8 @@ class FormulaOneAdvanced(FormulaOneBase):
         """
         url = f"{self.BASE_URL}/en/results.html/{self.date.year}/drivers.html"
         try:
-            table = find_table(url, "resultsarchive-table")
+            soup = set_soup(url)
+            table = soup.find("table", {"class": "resultsarchive-table"})
             rows = table.find_all("tr")[1 : amount + 1]
             driver_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
@@ -71,7 +73,8 @@ class FormulaOneAdvanced(FormulaOneBase):
         """
         url = f"{self.BASE_URL}/en/results.html/{self.date.year}/team.html"
         try:
-            table = find_table(url, "resultsarchive-table")
+            soup = set_soup(url)
+            table = soup.find("table", {"class": "resultsarchive-table"})
             rows = table.find_all("tr")[1 : amount + 1]
             team_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
