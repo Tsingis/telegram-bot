@@ -7,20 +7,38 @@ from ..logger import logging
 logger = logging.getLogger(__name__)
 
 
-# Set soup for site
-def set_soup(url, target_encoding="latin-1"):
+def get(url, params={}):
+    """
+    HTTP GET request with or without parameters
+    """
     try:
-        res = requests.get(url)
+        if params:
+            res = requests.get(url, params)
+        else:
+            res = requests.get(url)
         if res.status_code == 200:
-            text = res.text.encode(target_encoding)
-            return BeautifulSoup(text, "html.parser")
+            return res
         res.raise_for_status()
+    except requests.exceptions.HTTPError:
+        logger.exception(f"Error getting data with url: {url}")
+
+
+def set_soup(url, target_encoding="latin-1"):
+    """
+    Set soup for given url
+    """
+    try:
+        res = get(url)
+        text = res.text.encode(target_encoding)
+        return BeautifulSoup(text, "html.parser")
     except Exception:
         logger.exception(f"Error setting soup with url: {url}")
 
 
-# Convert date between timezones
 def convert_timezone(date, source_tz=None, target_tz=None):
+    """
+    Convert date between timezones
+    """
     if source_tz is None:
         source_tz = tz.tzutc()
     else:

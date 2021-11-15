@@ -1,6 +1,6 @@
-import requests
-import googlemaps
 import os
+import googlemaps
+from ..common import get
 from ...logger import logging
 
 
@@ -23,29 +23,26 @@ class WeatherSearch:
                 + f"""lat={coords["lat"]}&lon={coords["lng"]}"""
                 + f"&units=metric&appid={self.OPENWEATHER_API_KEY}"
             )
-            res = requests.get(url)
-            if res.status_code == 200:
-                data = res.json()
-                info = {
-                    "description": data["weather"][0]["description"],
-                    "temperature": round(data["main"]["temp"], 1),
-                    "wind": round(data["wind"]["speed"], 2),
-                    "humidity": int(round(data["main"]["humidity"], 0)),
-                    "pressure": int(round(data["main"]["pressure"], 0)),
-                    "clouds": int(round(data["clouds"]["all"], 0)),
-                    "icon": data["weather"][0]["icon"],
-                }
+            data = get(url).json()
+            info = {
+                "description": data["weather"][0]["description"],
+                "temperature": round(data["main"]["temp"], 1),
+                "wind": round(data["wind"]["speed"], 2),
+                "humidity": int(round(data["main"]["humidity"], 0)),
+                "pressure": int(round(data["main"]["pressure"], 0)),
+                "clouds": int(round(data["clouds"]["all"], 0)),
+                "icon": data["weather"][0]["icon"],
+            }
 
-                if "snow" in data:
-                    info["precipType"] = "snow"
-                    info["amount"] = round(data["snow"]["1h"], 2)
+            if "snow" in data:
+                info["precipType"] = "snow"
+                info["amount"] = round(data["snow"]["1h"], 2)
 
-                if "rain" in data:
-                    info["precipType"] = "rain"
-                    info["amount"] = round(data["rain"]["1h"], 2)
-                return info
-            res.raise_for_status()
-        except requests.exceptions.HTTPError:
+            if "rain" in data:
+                info["precipType"] = "rain"
+                info["amount"] = round(data["rain"]["1h"], 2)
+            return info
+        except Exception:
             logger.exception(f"Error getting info for location: {location}")
 
     def format_info(self, data, location):

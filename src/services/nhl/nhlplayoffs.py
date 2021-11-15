@@ -15,11 +15,12 @@ class NHLPlayoffs(NHLBase):
 
     def __init__(self):
         super().__init__()
-        self.teams = self.get_teams()
         self.save_img = True if self.ENVIRONMENT == "LOCAL" else False
 
-    # Creates playoff bracket for current season
     def get_bracket(self):
+        """
+        Creates playoff bracket image for current season
+        """
         try:
             playoffs = self.get_playoffs()
             series = [

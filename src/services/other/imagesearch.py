@@ -1,6 +1,6 @@
 import os
-import requests
 from random import choice
+from ..common import get
 from ...logger import logging
 
 
@@ -35,10 +35,5 @@ class ImageSearch:
             "lr": "lang_fi",
             "q": keyword,
         }
-        try:
-            res = requests.get(url, params)
-            if res.status_code == 200:
-                return res.json()
-            res.raise_for_status()
-        except requests.exceptions.HTTPError:
-            logger.exception("Error getting image search data")
+        data = get(url, params).json()
+        return data
