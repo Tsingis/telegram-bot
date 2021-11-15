@@ -13,7 +13,6 @@ class FormulaOneAdvanced(FormulaOneBase):
     def __init__(self, date=datetime.utcnow()):
         super().__init__()
         self.date = date
-        self.date_pattern = "%a %B %d at %H:%M"
 
     def get_results(self, amount=3):
         """

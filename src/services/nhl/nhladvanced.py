@@ -14,7 +14,7 @@ class NHLAdvanced(NHLBase):
         """
         Match results from the latest round
         """
-        date = (self.date - timedelta(days=1)).strftime("%Y-%m-%d")
+        date = self.date - timedelta(days=1)
         try:
             game_ids = [game["id"] for game in self.get_games(date)]
             games = [self.get_games_linescore(game_id) for game_id in game_ids]
@@ -56,9 +56,8 @@ class NHLAdvanced(NHLBase):
         """
         Upcoming matches and times
         """
-        date = self.date.strftime("%Y-%m-%d")
         try:
-            games = self.get_games(date)
+            games = self.get_games(self.date)
             for game in games:
                 game["homeTeam"] = self.teams[game["homeTeam"]]["shortName"]
                 game["awayTeam"] = self.teams[game["awayTeam"]]["shortName"]
@@ -71,12 +70,11 @@ class NHLAdvanced(NHLBase):
         Current standings in Wild Card format
         """
         try:
-            date = self.date.strftime("%Y-%m-%d")
-            wildcards = self.get_wildcards(date)
+            wildcards = self.get_wildcards(self.date)
             if len(wildcards) > 0:
-                division_leaders = self.get_division_leaders(date)
+                division_leaders = self.get_division_leaders(self.date)
             else:
-                division_leaders = self.get_division_leaders(date, amount=5)
+                division_leaders = self.get_division_leaders(self.date, amount=5)
             standings = {"divisionLeaders": division_leaders, "wildcards": wildcards}
             return standings
         except Exception:
@@ -86,7 +84,7 @@ class NHLAdvanced(NHLBase):
         """
         Player statistics from the latest round
         """
-        date = (self.date - timedelta(days=1)).strftime("%Y-%m-%d")
+        date = self.date - timedelta(days=1)
         try:
             game_ids = [game["id"] for game in self.get_games(date)]
             games = [self.get_games_boxscore(game_id) for game_id in game_ids]

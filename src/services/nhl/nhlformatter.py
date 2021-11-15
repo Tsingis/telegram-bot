@@ -32,7 +32,7 @@ class NHLFormatter(NHLBase):
             # Format times to HH:MM
             date = datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
             time = datetime.strftime(
-                convert_timezone(date=date, target_tz=self.targetTimezone), "%H:%M"
+                convert_timezone(date=date, target_tz=self.target_timezone), "%H:%M"
             )
             if game["status"] == "Postponed":
                 results.append(f"""{game["homeTeam"]} - {game["awayTeam"]} Postponed""")

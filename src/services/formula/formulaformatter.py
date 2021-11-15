@@ -5,6 +5,7 @@ from ..common import format_date, format_number
 class FormulaOneFormatter(FormulaOneAdvanced):
     def __init__(self):
         super().__init__()
+        self.date_pattern = "%a %B %d at %H:%M"
 
     def format_results(self, data):
         url = data["url"]
