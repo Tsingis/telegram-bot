@@ -1,4 +1,6 @@
 import requests
+import unicodedata
+from datetime import datetime
 from bs4 import BeautifulSoup
 from dateutil import tz
 from ..logger import logging
@@ -7,8 +9,26 @@ from ..logger import logging
 logger = logging.getLogger(__name__)
 
 
-# Set soup for site
+def get(url, params={}):
+    """
+    HTTP GET request with or without parameters
+    """
+    try:
+        if params:
+            res = requests.get(url, params)
+        else:
+            res = requests.get(url)
+        if res.status_code == 200:
+            return res
+        res.raise_for_status()
+    except requests.exceptions.HTTPError:
+        logger.exception(f"Error getting data with url: {url}")
+
+
 def set_soup(url, target_encoding="latin-1"):
+    """
+    Set soup for given url
+    """
     try:
         res = requests.get(url)
         if res.status_code == 200:
@@ -19,8 +39,36 @@ def set_soup(url, target_encoding="latin-1"):
         logger.exception(f"Error setting soup with url: {url}")
 
 
-# Convert date between timezones
+def find_table(url, html_class):
+    """
+    Gets html table with specific class
+    """
+    try:
+        soup = set_soup(url)
+        return soup.find("table", {"class": html_class})
+    except Exception:
+        logger.exception("Error finding table")
+
+
+def format_date(date, pattern, target_tz="Europe/Helsinki"):
+    """
+    Formats date with specific output pattern and timezone
+    """
+    date = convert_timezone(date=date, target_tz=target_tz)
+    return datetime.strftime(date, pattern)
+
+
+def format_number(number):
+    """
+    Formats floating number without insignificant trailing zeroes
+    """
+    return f"{number:g}"
+
+
 def convert_timezone(date, source_tz=None, target_tz=None):
+    """
+    Convert date between timezones
+    """
     if source_tz is None:
         source_tz = tz.tzutc()
     else:
@@ -31,3 +79,9 @@ def convert_timezone(date, source_tz=None, target_tz=None):
         target_tz = tz.gettz(target_tz)
     date = date.replace(tzinfo=source_tz)
     return date.astimezone(target_tz)
+
+
+def normalize_text_encoding(text):
+    """Normalizes text encoding"""
+    normalized = unicodedata.normalize("NFKD", text)
+    return normalized.encode("ascii", "ignore").decode("utf-8")

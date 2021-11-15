@@ -1,4 +1,5 @@
 from .formulaoneadvanced import FormulaOneAdvanced
+from ..common import format_date, format_number
 
 
 class FormulaOneFormatter(FormulaOneAdvanced):
@@ -34,11 +35,11 @@ class FormulaOneFormatter(FormulaOneAdvanced):
                 standing["team"] = team_name_parts[0]
 
         driver_standings = [
-            f"""{result["position"]}. {result["driver"][-3:]} - {result["points"]}"""
+            f"""{result["position"]}. {result["driver"][-3:]} - {format_number(result["points"])}"""
             for result in data["driverStandings"]
         ]
         team_standings = [
-            f"""{result["position"]}. {result["team"]} - {result["points"]}"""
+            f"""{result["position"]}. {result["team"]} - {format_number(result["points"])}"""
             for result in data["teamStandings"]
         ]
         formatted_standings = (
@@ -52,8 +53,8 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         return f"*{header}*\n" + formatted_standings
 
     def format_upcoming(self, data):
-        data["qualifyingTime"] = self._format_date(data["qualifyingTime"])
-        data["raceTime"] = self._format_date(data["raceTime"])
+        data["qualifyingTime"] = format_date(data["qualifyingTime"], self.date_pattern)
+        data["raceTime"] = format_date(data["raceTime"], self.date_pattern)
         header = f"""Upcoming race: {data["raceNumber"]}/{self.races_amount}"""
         formatted_race_info = (
             f"""{data["raceName"]}\n"""

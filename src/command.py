@@ -100,7 +100,7 @@ class Command:
             self.NHL_STANDINGS_CMD,
             self.NHL_RESULTS_CMD,
             self.NHL_SCORING_CMD + " <amount>",
-            self.NHL_PLAYERS_STATS_CMD + " <nationality> or <team>",
+            self.NHL_PLAYERS_STATS_CMD + " <nationality or team>",
             self.NHL_PLAYER_INFO_CMD + " <player name>",
             self.NHL_PLAYOFFS_CMD,
         ]

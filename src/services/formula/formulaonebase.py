@@ -1,8 +1,6 @@
-import requests
 from datetime import datetime
 from icalendar import Calendar
-import unicodedata
-from ..common import convert_timezone
+from ..common import get, convert_timezone, normalize_text_encoding
 from ...logger import logging
 
 
@@ -13,26 +11,28 @@ class FormulaOneBase:
     CALENDAR_URL = "http://www.formula1.com/calendar/Formula_1_Official_Calendar.ics"
 
     def __init__(self):
-        pass
+        self.race_weekends = self._get_race_weekends()
+        self.races_amount = len(self.race_weekends)
 
-    def get_race_weekends(self):
+    def _get_race_weekends(self):
+        """
+        Parse and combine scheduled qualifying and race events to race weekends
+        """
         try:
-            res = requests.get(self.CALENDAR_URL)
-            if res.status_code == 200:
-                calendar = Calendar.from_ical(res.content)
-                all_events = [
-                    self._event_to_dict(event) for event in calendar.walk("VEVENT")
-                ]
-                events = sorted(
-                    self._filter_cancelled_events(all_events),
-                    key=lambda x: x["startTime"],
-                )
-                qualifs = self._filter_events_by_type(events, ["qualifying"])
-                races = self._filter_events_by_type(events, ["race"])
-                race_weekends = self._events_to_race_weekends(qualifs, races)
-                return race_weekends
-            res.raise_for_status()
-        except requests.exceptions.HTTPError:
+            res = get(self.CALENDAR_URL)
+            calendar = Calendar.from_ical(res.content)
+            all_events = [
+                self._event_to_dict(event) for event in calendar.walk("VEVENT")
+            ]
+            events = sorted(
+                self._filter_cancelled_events(all_events),
+                key=lambda x: x["startTime"],
+            )
+            qualifs = self._filter_events_by_type(events, ["qualifying"])
+            races = self._filter_events_by_type(events, ["race"])
+            race_weekends = self._events_to_race_weekends(qualifs, races)
+            return race_weekends
+        except Exception:
             logger.exception(f"Error getting data for url: {self.CALENDAR_URL}")
 
     def _event_to_dict(self, event):
@@ -43,7 +43,7 @@ class FormulaOneBase:
             "type": uid.split("@")[0].strip(),
             "startTime": event["DTSTART"].dt,
             "endTime": event["DTEND"].dt,
-            "summary": self._format_text_encoding(event["SUMMARY"]),
+            "summary": normalize_text_encoding(event["SUMMARY"]),
             "description": str(event["DESCRIPTION"]).strip(),
             "location": str(event["LOCATION"]).strip(),
         }
@@ -82,10 +82,6 @@ class FormulaOneBase:
         return next(
             (word for word in text.split(" ") if word.startswith(pattern)), pattern
         )
-
-    def _format_text_encoding(self, text):
-        normalized = unicodedata.normalize("NFKD", text)
-        return normalized.encode("ascii", "ignore").decode("utf-8")
 
     def _format_date_utc(self, date):
         date_pattern = "%Y-%m-%dT%H:%M:%S.%f"

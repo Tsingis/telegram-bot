@@ -12,7 +12,7 @@ class NHLExtra(NHLBase):
 
     def get_player_contract(self, name):
         """
-        Player contract info for current season
+        Player contract info for current season from Capfriendly
         """
         name = name.replace(" ", "-").replace("'", "").lower()
         url = f"https://www.capfriendly.com/players/{name}"
@@ -44,7 +44,7 @@ class NHLExtra(NHLBase):
 
     def get_scoring_leaders(self, amount=10):
         """
-        Scoring leaders for current season
+        Scoring leaders for current season from Quanthockey
         """
         try:
             season = f"{self.season[:4]}-{self.season[-2:]}"
