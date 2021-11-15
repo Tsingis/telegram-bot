@@ -20,10 +20,13 @@ class FormulaOne:
             res = requests.get(self.CALENDAR_URL)
             if res.status_code == 200:
                 calendar = Calendar.from_ical(res.content)
-                events = [
+                all_events = [
                     self._event_to_dict(event) for event in calendar.walk("VEVENT")
                 ]
-                events = self._filter_cancelled_events(events)
+                events = sorted(
+                    self._filter_cancelled_events(all_events),
+                    key=lambda x: x["startTime"],
+                )
                 qualifs = self._filter_events_by_type(events, ["qualifying"])
                 races = self._filter_events_by_type(events, ["race"])
                 race_weekends = self._events_to_race_weekends(qualifs, races)

@@ -13,9 +13,7 @@ class FormulaOneAdvanced(FormulaOne):
     def __init__(self, date=datetime.utcnow()):
         super().__init__()
         self.date = date
-        self.race_weekends = sorted(
-            self.get_race_weekends(), key=lambda x: x["raceTime"]
-        )
+        self.race_weekends = self.get_race_weekends()
         self.races_amount = len(self.race_weekends)
 
     # Gets top drivers from the latest race and url for more details. Default top 3
