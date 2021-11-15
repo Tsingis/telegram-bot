@@ -1,4 +1,5 @@
 import unittest
+from io import BytesIO
 from ddt import ddt, data
 from src.command import Command
 
@@ -20,17 +21,20 @@ class CommandTest(unittest.TestCase):
         "/nhlplayerinfo connor mcdavid",
         "/nhlplayoffs",
     )
-    def test_bot_command(self, command_text, print_enabled=True):
+    def test_bot_command(self, command_text, print_response=True):
         cmd = Command(command_text)
         res = cmd.response
 
-        if print_enabled:
+        if print_response:
             self._print_response(res, command_text)
 
         if res.text is not None:
             text = res.text.lower()
-            self.assertFalse(text.startswith("no")) and self.assertNotIn(
-                "available", text
+            self.assertFalse(text.startswith("no") and "available" in text)
+
+        if res.image is not None:
+            self.assertTrue(
+                isinstance(res.image, str) or isinstance(res.image, BytesIO)
             )
 
     def _print_response(self, res, command_text):
