@@ -14,7 +14,7 @@ class FormulaOneAdvanced(FormulaOneBase):
         super().__init__()
         self.date = date
 
-    def get_results(self, amount=3):
+    def get_results(self, amount=10):
         """
         Gets top drivers from the latest race and url for more details
         """
