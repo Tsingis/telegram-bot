@@ -27,7 +27,7 @@ class NHLPlayoffs(NHLBase):
                 serie
                 for round in playoffs["rounds"]
                 for serie in round["series"]
-                if "matchup_teams" in serie and serie["round"]["number"] > 0
+                if "matchupTeams" in serie and serie["round"]["number"] > 0
             ]
             bracket = {
                 serie["seriesCode"]: self._get_matchup_info(serie) for serie in series
@@ -151,7 +151,7 @@ class NHLPlayoffs(NHLBase):
         text_img.text(location, status, anchor="mm", font=font, fill=(0, 0, 0))
 
     def _get_matchup_info(self, series):
-        teams = [team for team in series["matchup_teams"]]
+        teams = [team for team in series["matchupTeams"]]
         top_team = next(team["team"]["name"] for team in teams if team["seed"]["isTop"])
         bottom_team = next(
             team["team"]["name"] for team in teams if not team["seed"]["isTop"]
