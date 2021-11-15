@@ -1,5 +1,6 @@
 from enum import Enum
 from .services.formula.formulaoneadvanced import FormulaOneAdvanced
+from .services.formula.formulaformatter import FormulaOneFormatter
 from .services.other.imagesearch import ImageSearch
 from .services.other.weathersearch import WeatherSearch
 from .services.nhl.nhladvanced import NHLAdvanced
@@ -53,6 +54,7 @@ class Command:
             self.nhl_formatter = NHLFormatter()
         if self.text.startswith("/f1"):
             self.f1_advanced = FormulaOneAdvanced()
+            self.f1_formatter = FormulaOneFormatter()
         self.response = self._command_response()
 
     def _command_response(self):
@@ -129,7 +131,7 @@ class Command:
         text = "Race info not available"
         info = self.f1_advanced.get_upcoming()
         if info is not None:
-            text = self.f1_advanced.format_upcoming(info)
+            text = self.f1_formatter.format_upcoming(info)
             circuit_img = self.f1_advanced.find_circuit_image(info["raceUrl"])
             if circuit_img is not None:
                 return Response(
@@ -144,7 +146,7 @@ class Command:
         driver_standings = self.f1_advanced.get_driver_standings(amount=10)
         if team_standings is not None and driver_standings is not None:
             standings = team_standings | driver_standings
-            text = self.f1_advanced.format_standings(standings)
+            text = self.f1_formatter.format_standings(standings)
         return Response(text=text)
 
     # F1 latest race results
@@ -152,7 +154,7 @@ class Command:
         text = "Results not available"
         results = self.f1_advanced.get_results()
         if results is not None:
-            text = self.f1_advanced.format_results(results)
+            text = self.f1_formatter.format_results(results)
         return Response(text=text)
 
     # NHL upcoming matches

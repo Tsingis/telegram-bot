@@ -1,5 +1,5 @@
 from datetime import datetime
-from .formulaonebase import FormulaOne
+from .formulaonebase import FormulaOneBase
 from ..common import convert_timezone, set_soup
 from ...logger import logging
 
@@ -7,7 +7,7 @@ from ...logger import logging
 logger = logging.getLogger(__name__)
 
 
-class FormulaOneAdvanced(FormulaOne):
+class FormulaOneAdvanced(FormulaOneBase):
     BASE_URL = "https://www.formula1.com"
 
     def __init__(self, date=datetime.utcnow()):
@@ -40,17 +40,6 @@ class FormulaOneAdvanced(FormulaOne):
             return {"results": results, "url": results_url}
         except Exception:
             logger.exception("Error getting race results")
-
-    def format_results(self, data):
-        url = data["url"]
-        race = url.split("/")[-2].replace("-", " ").title()
-        header = f"Results for {race}:"
-        details = f"\n[Details]({url})"
-        formatted_results = [
-            f"""{result["position"]}. {result["name"][-3:]} {result["time"]}"""
-            for result in data["results"]
-        ]
-        return f"*{header}*\n" + "\n".join(formatted_results) + details
 
     # Gets top drivers from overall standings and url for more details. Default top 5
     def get_driver_standings(self, amount=5):
@@ -94,41 +83,6 @@ class FormulaOneAdvanced(FormulaOne):
         except Exception:
             logger.exception("Error getting team standings")
 
-    def format_standings(self, data):
-        upcoming = self.get_upcoming()
-        race_number = upcoming["raceNumber"]
-        if self.date <= upcoming["raceTime"]:
-            race_number -= 1
-
-        header = f"""Standings {race_number}/{self.races_amount}"""
-        driver_details = f"""\n[Details]({data["driverUrl"]})"""
-        team_details = f"""\n[Details]({data["teamUrl"]})"""
-
-        for standing in data["teamStandings"]:
-            team_name_parts = standing["team"].split(" ")
-            if len(team_name_parts) > 2:
-                standing["team"] = " ".join(team_name_parts[:2])
-            else:
-                standing["team"] = team_name_parts[0]
-
-        driver_standings = [
-            f"""{result["position"]}. {result["driver"][-3:]} - {result["points"]}"""
-            for result in data["driverStandings"]
-        ]
-        team_standings = [
-            f"""{result["position"]}. {result["team"]} - {result["points"]}"""
-            for result in data["teamStandings"]
-        ]
-        formatted_standings = (
-            "*Drivers*:\n"
-            + "\n".join(driver_standings)
-            + driver_details
-            + "\n\n*Teams*:\n"
-            + "\n".join(team_standings)
-            + team_details
-        )
-        return f"*{header}*\n" + formatted_standings
-
     # Gets info for the upcoming race
     def get_upcoming(self):
         try:
@@ -139,18 +93,6 @@ class FormulaOneAdvanced(FormulaOne):
             return race
         except Exception:
             logger.exception("Error getting upcoming race")
-
-    def format_upcoming(self, data):
-        data["qualifyingTime"] = self._format_date(data["qualifyingTime"])
-        data["raceTime"] = self._format_date(data["raceTime"])
-        header = f"""Upcoming race: {data["raceNumber"]}/{self.races_amount}"""
-        formatted_race_info = (
-            f"""{data["raceName"]}\n"""
-            + f"""{data["location"]}\n"""
-            + f"""Qualifying on {data["qualifyingTime"]}\n"""
-            + f"""Race on {data["raceTime"]}"""
-        )
-        return f"*{header}*\n" + formatted_race_info
 
     def find_circuit_image(self, url):
         try:

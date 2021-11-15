@@ -9,7 +9,7 @@ from ...logger import logging
 logger = logging.getLogger(__name__)
 
 
-class FormulaOne:
+class FormulaOneBase:
     CALENDAR_URL = "http://www.formula1.com/calendar/Formula_1_Official_Calendar.ics"
 
     def __init__(self):
