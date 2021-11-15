@@ -236,4 +236,4 @@ class Command:
         bracket_img = self.nhl_playoffs.get_bracket()
         if bracket_img is not None:
             return Response(image=bracket_img, type=ResponseType.IMAGE)
-        return Response(text="No playoff bracket available")
+        return Response(text="No playoffs bracket available")
