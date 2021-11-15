@@ -16,10 +16,10 @@ class NHLBase:
         year = self.date.year
         self.season = f"{year-1}{year}" if self.date.month < 9 else f"{year}{year+1}"
 
-    # Get player basic info
     def get_player(self, player_id):
         try:
-            data = self._get_data(f"{self.BASE_URL}/people/{player_id}")
+            url = f"{self.BASE_URL}/people/{player_id}"
+            data = self._get_data(url)
             player = {
                 "id": player_id,
                 "name": data["people"][0]["fullName"],
@@ -31,21 +31,19 @@ class NHLBase:
         except Exception:
             logger.exception(f"Error getting player with id: {player_id}")
 
-    # Get player's regular season stats
     def get_player_season_stats(self, player_id):
         try:
-            data = self._get_data(
-                f"{self.BASE_URL}/people/{player_id}/stats?stats=statsSingleSeason&season={self.season}"
-            )
+            url = f"{self.BASE_URL}/people/{player_id}/stats?stats=statsSingleSeason&season={self.season}"
+            data = self._get_data(url)
             stats = data["stats"][0]["splits"][0]["stat"]
             return stats
         except Exception:
             logger.exception(f"Error getting player stats with id: {player_id}")
 
-    # Get teams with ids and abbreviations
     def get_teams(self):
         try:
-            data = self._get_data(f"{self.BASE_URL}/teams")
+            url = f"{self.BASE_URL}/teams"
+            data = self._get_data(url)
             teams = {
                 team["name"]: {"id": team["id"], "shortName": team["abbreviation"]}
                 for team in data["teams"]
@@ -55,10 +53,10 @@ class NHLBase:
         except Exception:
             logger.exception("Error getting teams")
 
-    # Get game info for each match on given date
     def get_games(self, date):
         try:
-            data = self._get_data(f"{self.BASE_URL}/schedule?date={date}")
+            url = f"{self.BASE_URL}/schedule?date={date}"
+            data = self._get_data(url)
             games = [
                 {
                     "id": game["gamePk"],
@@ -73,26 +71,26 @@ class NHLBase:
         except Exception:
             logger.exception(f"Error getting games for date: {date}")
 
-    # Get data from each match by gameId
-    def get_games_linescore(self, gameId):
+    def get_games_linescore(self, game_id):
         try:
-            data = self._get_data(f"{self.BASE_URL}/game/{gameId}/linescore")
+            url = f"{self.BASE_URL}/game/{game_id}/linescore"
+            data = self._get_data(url)
             return data
         except Exception:
-            logger.exception(f"Error getting games linescore with game id: {gameId}")
+            logger.exception(f"Error getting games linescore with game id: {game_id}")
 
-    # Get data from each match by gameId
-    def get_games_boxscore(self, gameId):
+    def get_games_boxscore(self, game_id):
         try:
-            data = self._get_data(f"{self.BASE_URL}/game/{gameId}/boxscore")
+            url = f"{self.BASE_URL}/game/{game_id}/boxscore"
+            data = self._get_data(url)
             return data
         except Exception:
-            logger.exception(f"Error getting games boxscore with game id: {gameId}")
+            logger.exception(f"Error getting games boxscore with game id: {game_id}")
 
-    # Get rosters with teamId
     def get_roster(self, teamId):
         try:
-            data = self._get_data(f"{self.BASE_URL}/teams/{teamId}/roster")
+            url = f"{self.BASE_URL}/teams/{teamId}/roster"
+            data = self._get_data(url)
             roster = [
                 {"id": player["person"]["id"], "name": player["person"]["fullName"]}
                 for player in data["roster"]
@@ -101,11 +99,11 @@ class NHLBase:
         except Exception:
             logger.exception(f"Error getting rosters with team id: {teamId}")
 
-    # Get division leaders
     def get_division_leaders(self, date, amount=3):
         try:
+            url = f"{self.BASE_URL}/standings/byDivision?date={date}"
             teams = self.get_teams()
-            data = self._get_data(f"{self.BASE_URL}/standings/byDivision?date={date}")
+            data = self._get_data(url)
             # Get divisions
             divs = [
                 {
@@ -135,11 +133,11 @@ class NHLBase:
         except Exception:
             logger.exception(f"Error getting division leaders for date {date}")
 
-    # Get wildcards
     def get_wildcards(self, date, amount=5):
         try:
+            url = f"{self.BASE_URL}/standings/wildCard?date={date}"
             teams = self.get_teams()
-            data = self._get_data(f"{self.BASE_URL}/standings/wildCard?date={date}")
+            data = self._get_data(url)
             # Get top five wildcards on default from each conference
             wilds = [
                 {
@@ -159,17 +157,14 @@ class NHLBase:
         except Exception:
             logger.exception(f"Error getting wildcards for date {date}")
 
-    # Get playoffs info
     def get_playoffs(self):
         try:
-            playoffs = self._get_data(
-                f"{self.BASE_URL}/tournaments/playoffs?expand=round.series,schedule.seriesSummary&season={self.season}"
-            )
+            url = f"{self.BASE_URL}/tournaments/playoffs?expand=round.series,schedule.seriesSummary&season={self.season}"
+            playoffs = self._get_data(url)
             return playoffs
         except Exception:
             logger.exception(f"Error getting playoffs for season {self.season}")
 
-    # Get JSON formatted data from given url
     def _get_data(self, url):
         try:
             res = requests.get(url)
