@@ -10,8 +10,10 @@ class NHLExtra(NHLBase):
     def __init__(self):
         super().__init__()
 
-    # Get player contract info for current season
     def get_player_contract(self, name):
+        """
+        Player contract info for current season
+        """
         name = name.replace(" ", "-").replace("'", "").lower()
         url = f"https://www.capfriendly.com/players/{name}"
         try:
@@ -40,16 +42,10 @@ class NHLExtra(NHLBase):
         except Exception:
             logger.exception(f"Error getting player contract for player: {name}")
 
-    def format_player_contract(self, data):
-        header = "Contract:\n"
-        contract = (
-            f"""Year: {data["contract"]["yearStatus"]} | """
-            + f"""Cap hit: {data["contract"]["capHit"]} | """
-            + f"""Total: {data["contract"]["totalSalary"]}"""
-        )
-        return header + contract + f"""\n[Details]({data["url"]})"""
-
     def get_scoring_leaders(self, amount=10):
+        """
+        Scoring leaders for current season
+        """
         try:
             season = f"{self.season[:4]}-{self.season[-2:]}"
             url = f"https://www.quanthockey.com/nhl/seasons/{season}-nhl-players-stats.html"
@@ -72,13 +68,3 @@ class NHLExtra(NHLBase):
             return data
         except Exception:
             logger.exception("Error getting scoring leaders")
-
-    def format_scoring_leaders(self, data):
-        leaders = [
-            (
-                f"""{player["rank"]}. {player["name"].split(" ")[-1]} ({player["team"]})"""
-                + f""" | {player["goals"]}+{player["assists"]}={player["points"]}"""
-            )
-            for player in data
-        ]
-        return "\n".join(leaders)

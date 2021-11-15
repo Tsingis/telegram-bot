@@ -5,6 +5,7 @@ from .services.other.weathersearch import WeatherSearch
 from .services.nhl.nhladvanced import NHLAdvanced
 from .services.nhl.nhlextra import NHLExtra
 from .services.nhl.nhlplayoffs import NHLPlayoffs
+from .services.nhl.nhlformatter import NHLFormatter
 from .logger import logging
 
 
@@ -49,6 +50,7 @@ class Command:
             self.nhl_advanced = NHLAdvanced()
             self.nhl_extra = NHLExtra()
             self.nhl_playoffs = NHLPlayoffs()
+            self.nhl_formatter = NHLFormatter()
         if self.text.startswith("/f1"):
             self.f1_advanced = FormulaOneAdvanced()
         self.response = self._command_response()
@@ -158,7 +160,7 @@ class Command:
         text = "No upcoming games tomorrow"
         info = self.nhl_advanced.get_upcoming()
         if info is not None:
-            text = f"*Upcoming matches:*\n{self.nhl_advanced.format_upcoming(info)}"
+            text = f"*Upcoming matches:*\n{self.nhl_formatter.format_upcoming(info)}"
         return Response(text=text)
 
     # NHL standings
@@ -167,7 +169,9 @@ class Command:
         url = "https://www.nhl.com/standings/"
         standings = self.nhl_advanced.get_standings()
         if standings is not None:
-            text = self.nhl_advanced.format_standings(standings) + f"\n[Details]({url})"
+            text = (
+                self.nhl_formatter.format_standings(standings) + f"\n[Details]({url})"
+            )
         return Response(text=text)
 
     # NHL latest match results
@@ -176,7 +180,7 @@ class Command:
         url = "https://www.nhl.com/scores/"
         results = self.nhl_advanced.get_results()
         if results is not None:
-            text = f"*Results:*\n{self.nhl_advanced.format_results(results)}\n[Details]({url})"
+            text = f"*Results:*\n{self.nhl_formatter.format_results(results)}\n[Details]({url})"
         return Response(text=text)
 
     # NHL scoring leaders
@@ -194,7 +198,9 @@ class Command:
             amount = 10
         info = self.nhl_extra.get_scoring_leaders(amount)
         if info is not None:
-            text = f"{self.nhl_extra.format_scoring_leaders(info)}\n[Details]({url})"
+            text = (
+                f"{self.nhl_formatter.format_scoring_leaders(info)}\n[Details]({url})"
+            )
         return Response(text=text)
 
     # NHL stats for players of given nationality or team from latest round
@@ -204,9 +210,9 @@ class Command:
         stats = self.nhl_advanced.get_players_stats()
         if stats is not None:
             if not filter_word:
-                text = self.nhl_advanced.format_players_stats(stats)
+                text = self.nhl_formatter.format_players_stats(stats)
             else:
-                text = self.nhl_advanced.format_players_stats(stats, filter_word)
+                text = self.nhl_formatter.format_players_stats(stats, filter_word)
         return Response(text=text)
 
     # NHL player stats by player name
@@ -216,9 +222,9 @@ class Command:
         contract = self.nhl_extra.get_player_contract(player_name)
         text = ""
         if stats is not None:
-            text += self.nhl_advanced.format_player_stats(stats)
+            text += self.nhl_formatter.format_player_stats(stats)
         if contract is not None:
-            text += "\n" + self.nhl_extra.format_player_contract(contract)
+            text += "\n" + self.nhl_formatter.format_player_contract(contract)
         if not text:
             text = "Player info not available"
         return Response(text=text)
