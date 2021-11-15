@@ -11,7 +11,6 @@ class NHLFormatter(NHLBase):
         results = []
         for game in data:
             period = game["period"]
-            # If period is other than OT, SO, Not started or Live use empty string
             if (
                 period != "OT"
                 and period != "SO"
@@ -29,7 +28,6 @@ class NHLFormatter(NHLBase):
     def format_upcoming(self, data):
         results = []
         for game in data:
-            # Format times to HH:MM
             date = datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
             time = datetime.strftime(
                 convert_timezone(date=date, target_tz=self.target_timezone), "%H:%M"

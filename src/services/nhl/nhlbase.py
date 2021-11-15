@@ -15,7 +15,7 @@ class NHLBase:
         self.date = convert_timezone(date=date, target_tz=self.target_timezone)
         year = self.date.year
         self.season = f"{year-1}{year}" if self.date.month < 9 else f"{year}{year+1}"
-        self.teams = self._get_teams()
+        self.teams = self.get_teams()
 
     def get_player(self, player_id):
         try:
@@ -76,9 +76,9 @@ class NHLBase:
         except Exception:
             logger.exception(f"Error getting games boxscore with game id: {game_id}")
 
-    def get_roster(self, teamId):
+    def get_roster(self, team_id):
         try:
-            url = f"{self.BASE_URL}/teams/{teamId}/roster"
+            url = f"{self.BASE_URL}/teams/{team_id}/roster"
             data = get(url).json()
             roster = [
                 {"id": player["person"]["id"], "name": player["person"]["fullName"]}
@@ -86,14 +86,13 @@ class NHLBase:
             ]
             return roster
         except Exception:
-            logger.exception(f"Error getting rosters with team id: {teamId}")
+            logger.exception(f"Error getting rosters with team id: {team_id}")
 
     def get_division_leaders(self, date, amount=3):
         try:
             date = date.strftime(self.date_format)
             url = f"{self.BASE_URL}/standings/byDivision?date={date}"
             data = get(url).json()
-            # Get divisions
             divs = [
                 {
                     "conference": div["conference"]["name"],
@@ -102,7 +101,6 @@ class NHLBase:
                 }
                 for div in data["records"]
             ]
-            # Get top three leaders on default from each division
             leaders = [
                 {
                     "conference": div["conference"],
@@ -127,7 +125,6 @@ class NHLBase:
             date = date.strftime(self.date_format)
             url = f"{self.BASE_URL}/standings/wildCard?date={date}"
             data = get(url).json()
-            # Get top five wildcards on default from each conference
             wilds = [
                 {
                     "conference": conf["conference"]["name"],
@@ -154,7 +151,7 @@ class NHLBase:
         except Exception:
             logger.exception(f"Error getting playoffs for season {self.season}")
 
-    def _get_teams(self):
+    def get_teams(self):
         try:
             url = f"{self.BASE_URL}/teams"
             data = get(url).json()
