@@ -1,6 +1,6 @@
 import unittest
 from ddt import ddt, data
-from src.command import Command, ResponseType
+from src.command import Command
 
 
 @ddt
@@ -20,26 +20,27 @@ class CommandTest(unittest.TestCase):
         "/nhlplayerinfo connor mcdavid",
         "/nhlplayoffs",
     )
-    def test_bot_command(self, cmdText, printMsg=True):
-        cmd = Command(cmdText)
-        msg = cmd.response
-        self.assertIsNotNone(msg)
-        if msg.type == ResponseType.TEXT:
-            self.assertIsNotNone(msg.text)
-        if msg.type == ResponseType.IMAGE:
-            self.assertIsNotNone(msg.image)
-        if msg.type == ResponseType.TEXT_AND_IMAGE:
-            self.assertIsNotNone(msg.text)
-            self.assertIsNotNone(msg.image)
+    def test_bot_command(self, command_text, print_enabled=True):
+        cmd = Command(command_text)
+        res = cmd.response
 
-        if printMsg:
-            print("COMMAND: " + cmdText)
-            print()
-            if msg.text is not None:
-                print(msg.text)
-            if msg.image is not None:
-                print(msg.image)
-            print("\n\n")
+        if print_enabled:
+            self._print_response(res, command_text)
+
+        if res.text is not None:
+            text = res.text.lower()
+            self.assertFalse(text.startswith("no")) and self.assertNotIn(
+                "available", text
+            )
+
+    def _print_response(self, res, command_text):
+        print("COMMAND: " + command_text)
+        print()
+        if res.text is not None:
+            print(res.text)
+        if res.image is not None:
+            print(res.image)
+        print("\n\n")
 
 
 if __name__ == "__main__":

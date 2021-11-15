@@ -112,11 +112,11 @@ class Command:
         img = self.img_search.search_random_image(keyword)
         if img is not None:
             return Response(image=img, type=ResponseType.IMAGE)
-        return Response(text="No search results")
+        return Response(text="No search results available")
 
     # Weather info by location
     def _search_weather(self):
-        text = "Weather data not available"
+        text = "No weather data available"
         location = self.text.split(self.WEATHER_SEARCH_CMD)[-1].strip()
         info = self.weather_search.get_info(location)
         if info is not None:
@@ -128,7 +128,7 @@ class Command:
 
     # F1 upcoming race
     def _f1_info(self):
-        text = "Race info not available"
+        text = "No race info available"
         info = self.f1_advanced.get_upcoming()
         if info is not None:
             text = self.f1_formatter.format_upcoming(info)
@@ -141,7 +141,7 @@ class Command:
 
     # F1 standings
     def _f1_standings(self):
-        text = "Standings not available"
+        text = "No standings available"
         team_standings = self.f1_advanced.get_team_standings(amount=10)
         driver_standings = self.f1_advanced.get_driver_standings(amount=10)
         if team_standings is not None and driver_standings is not None:
@@ -151,7 +151,7 @@ class Command:
 
     # F1 latest race results
     def _f1_results(self):
-        text = "Results not available"
+        text = "No results available"
         results = self.f1_advanced.get_results()
         if results is not None:
             text = self.f1_formatter.format_results(results)
@@ -159,7 +159,7 @@ class Command:
 
     # NHL upcoming matches
     def _nhl_info(self):
-        text = "No upcoming games tomorrow"
+        text = "No upcoming games available"
         info = self.nhl_advanced.get_upcoming()
         if info is not None:
             text = f"*Upcoming matches:*\n{self.nhl_formatter.format_upcoming(info)}"
@@ -167,7 +167,7 @@ class Command:
 
     # NHL standings
     def _nhl_standings(self):
-        text = "Standings not available"
+        text = "No standings available"
         url = "https://www.nhl.com/standings/"
         standings = self.nhl_advanced.get_standings()
         if standings is not None:
@@ -178,7 +178,7 @@ class Command:
 
     # NHL latest match results
     def _nhl_results(self):
-        text = "No matches yesterday"
+        text = "No games available"
         url = "https://www.nhl.com/scores/"
         results = self.nhl_advanced.get_results()
         if results is not None:
@@ -187,7 +187,7 @@ class Command:
 
     # NHL scoring leaders
     def _nhl_scoring(self):
-        text = "Scoring leaders not available"
+        text = "No scoring leaders available"
         url = "http://www.nhl.com/stats/skaters"
         try:
             amount = int(self.text.split(self.NHL_SCORING_CMD)[-1].strip())
@@ -207,7 +207,7 @@ class Command:
 
     # NHL stats for players of given nationality or team from latest round
     def _nhl_players_stats(self):
-        text = "Players stats not available"
+        text = "No players' stats available"
         filter_word = self.text.split(self.NHL_PLAYERS_STATS_CMD)[-1].strip().upper()
         stats = self.nhl_advanced.get_players_stats()
         if stats is not None:
@@ -228,7 +228,7 @@ class Command:
         if contract is not None:
             text += "\n" + self.nhl_formatter.format_player_contract(contract)
         if not text:
-            text = "Player info not available"
+            text = "No player info available"
         return Response(text=text)
 
     # NHL playoff bracket
@@ -236,4 +236,4 @@ class Command:
         bracket_img = self.nhl_playoffs.get_bracket()
         if bracket_img is not None:
             return Response(image=bracket_img, type=ResponseType.IMAGE)
-        return Response(text="Playoff bracket not available")
+        return Response(text="No playoff bracket available")

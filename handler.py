@@ -16,8 +16,8 @@ def webhook(event, context):
         logger.info("Message received")
         bot = set_bot()
         update = telegram.Update.de_json(json.loads(event["body"]), bot)
-        chatId = update.message.chat.id
-        msg = Message(bot, chatId)
+        chat_id = update.message.chat.id
+        msg = Message(bot, chat_id)
         text = update.message.text
         if text and text.startswith("/"):
             cmd = Command(text)
