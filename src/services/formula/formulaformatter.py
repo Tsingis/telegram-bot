@@ -1,10 +1,12 @@
+from datetime import datetime
 from .formulaoneadvanced import FormulaOneAdvanced
-from ..common import format_date, format_number
+from ..common import convert_timezone
 
 
 class FormulaOneFormatter(FormulaOneAdvanced):
     def __init__(self):
         super().__init__()
+        self.target_timezone = "Europe/Helsinki"
         self.date_pattern = "%a %B %d at %H:%M"
 
     def format_results(self, data):
@@ -36,11 +38,11 @@ class FormulaOneFormatter(FormulaOneAdvanced):
                 standing["team"] = team_name_parts[0]
 
         driver_standings = [
-            f"""{result["position"]}. {result["driver"][-3:]} - {format_number(result["points"])}"""
+            f"""{result["position"]}. {result["driver"][-3:]} - {self._format_number(result["points"])}"""
             for result in data["driverStandings"]
         ]
         team_standings = [
-            f"""{result["position"]}. {result["team"]} - {format_number(result["points"])}"""
+            f"""{result["position"]}. {result["team"]} - {self._format_number(result["points"])}"""
             for result in data["teamStandings"]
         ]
         formatted_standings = (
@@ -54,8 +56,8 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         return f"*{header}*\n" + formatted_standings
 
     def format_upcoming(self, data):
-        data["qualifyingTime"] = format_date(data["qualifyingTime"], self.date_pattern)
-        data["raceTime"] = format_date(data["raceTime"], self.date_pattern)
+        data["qualifyingTime"] = self._format_date(data["qualifyingTime"])
+        data["raceTime"] = self._format_date(data["raceTime"])
         header = f"""Upcoming race: {data["raceNumber"]}/{self.races_amount}"""
         formatted_race_info = (
             f"""{data["raceName"]}\n"""
@@ -64,3 +66,13 @@ class FormulaOneFormatter(FormulaOneAdvanced):
             + f"""Race on {data["raceTime"]}"""
         )
         return f"*{header}*\n" + formatted_race_info
+
+    def _format_date(self, date):
+        date = convert_timezone(date=date, target_tz=self.target_timezone)
+        return datetime.strftime(date, self.date_pattern)
+
+    def _format_number(self, number):
+        """
+        Formats floating number without insignificant trailing zeroes
+        """
+        return f"{number:g}"

@@ -1,6 +1,7 @@
 from datetime import datetime
 from icalendar import Calendar
-from ..common import get, convert_timezone, normalize_text_encoding
+import unicodedata
+from ..common import get, convert_timezone
 from ...logger import logging
 
 
@@ -11,6 +12,8 @@ class FormulaOneBase:
     CALENDAR_URL = "http://www.formula1.com/calendar/Formula_1_Official_Calendar.ics"
 
     def __init__(self):
+        self.source_timezone = "Europe/London"
+        self.source_datetime_pattern = "%Y-%m-%dT%H:%M:%S.%f"
         self.race_weekends = self._get_race_weekends()
         self.races_amount = len(self.race_weekends)
 
@@ -43,7 +46,7 @@ class FormulaOneBase:
             "type": uid.split("@")[0].strip(),
             "startTime": event["DTSTART"].dt,
             "endTime": event["DTEND"].dt,
-            "summary": normalize_text_encoding(event["SUMMARY"]),
+            "summary": self._normalize_text_encoding(event["SUMMARY"]),
             "description": str(event["DESCRIPTION"]).strip(),
             "location": str(event["LOCATION"]).strip(),
         }
@@ -84,7 +87,10 @@ class FormulaOneBase:
         )
 
     def _format_date_utc(self, date):
-        date_pattern = "%Y-%m-%dT%H:%M:%S.%f"
-        date_tz_adjust = convert_timezone(date=date, source_tz="Europe/London")
-        date = date_tz_adjust.strftime(date_pattern)
-        return datetime.strptime(date, date_pattern)
+        date_tz_adjust = convert_timezone(date=date, source_tz=self.source_timezone)
+        date = date_tz_adjust.strftime(self.source_datetime_pattern)
+        return datetime.strptime(date, self.source_datetime_pattern)
+
+    def _normalize_text_encoding(self, text):
+        normalized = unicodedata.normalize("NFKD", text)
+        return normalized.encode("ascii", "ignore").decode("utf-8")

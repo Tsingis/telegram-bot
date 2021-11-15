@@ -10,7 +10,7 @@ class NHLBase:
     BASE_URL = "https://statsapi.web.nhl.com/api/v1"
 
     def __init__(self, date=datetime.utcnow()):
-        self.date_format = "%Y-%m-%d"
+        self.target_date_format = "%Y-%m-%d"
         self.target_timezone = "Europe/Helsinki"
         self.date = convert_timezone(date=date, target_tz=self.target_timezone)
         year = self.date.year
@@ -43,7 +43,7 @@ class NHLBase:
 
     def get_games(self, date):
         try:
-            date = date.strftime(self.date_format)
+            date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/schedule?date={date}"
             data = get(url).json()
             games = [
@@ -90,7 +90,7 @@ class NHLBase:
 
     def get_division_leaders(self, date, amount=3):
         try:
-            date = date.strftime(self.date_format)
+            date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/standings/byDivision?date={date}"
             data = get(url).json()
             divs = [
@@ -122,7 +122,7 @@ class NHLBase:
 
     def get_wildcards(self, date, amount=5):
         try:
-            date = date.strftime(self.date_format)
+            date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/standings/wildCard?date={date}"
             data = get(url).json()
             wilds = [
