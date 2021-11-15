@@ -7,7 +7,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
     def __init__(self):
         super().__init__()
         self.target_timezone = "Europe/Helsinki"
-        self.date_pattern = "%a %B %d at %H:%M"
+        self.target_datetime_pattern = "%a %B %d at %H:%M"
 
     def format_results(self, data):
         url = data["url"]
@@ -69,7 +69,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
 
     def _format_date(self, date):
         date = convert_timezone(date=date, target_tz=self.target_timezone)
-        return datetime.strftime(date, self.date_pattern)
+        return datetime.strftime(date, self.target_datetime_pattern)
 
     def _format_number(self, number):
         """
