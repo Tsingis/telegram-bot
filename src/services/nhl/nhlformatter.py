@@ -167,7 +167,7 @@ class NHLFormatter(NHLBase):
                     + "\n".join(goalies_texts)
                 )
         else:
-            return f"Players not found with {filter.upper()}"
+            return f"No players available with filter {filter.upper()}"
 
     def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
