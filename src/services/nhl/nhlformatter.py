@@ -10,18 +10,20 @@ class NHLFormatter(NHLBase):
     def format_results(self, data):
         results = []
         for game in data:
+            info = ""
             period = game["period"]
-            if (
-                period != "OT"
-                and period != "SO"
-                and period != "Not started"
-                and period != "Live"
-            ):
-                period = ""
+            status = game["status"]
+            if status in ["Postponed", "Scheduled"]:
+                info = status
+            elif status == "Final":
+                if period in ["SO", "OT"]:
+                    info = period
+            else:
+                info = f"{period} Live"
             home = game["homeTeam"]["name"]
             away = game["awayTeam"]["name"]
             results.append(
-                f"""{home} {game["homeTeam"]["goals"]} - {game["awayTeam"]["goals"]} {away} {period}""".strip()
+                f"""{home} {game["homeTeam"]["goals"]} - {game["awayTeam"]["goals"]} {away} {info}""".strip()
             )
         return "\n".join(results)
 

@@ -20,13 +20,13 @@ class NHLBase:
     def get_player(self, player_id):
         try:
             url = f"{self.BASE_URL}/people/{player_id}"
-            data = get(url).json()
+            res = get(url).json()
             player = {
                 "id": player_id,
-                "name": data["people"][0]["fullName"],
-                "team": data["people"][0]["currentTeam"]["name"],
-                "position": data["people"][0]["primaryPosition"]["name"],
-                "number": data["people"][0]["primaryNumber"],
+                "name": res["people"][0]["fullName"],
+                "team": res["people"][0]["currentTeam"]["name"],
+                "position": res["people"][0]["primaryPosition"]["name"],
+                "number": res["people"][0]["primaryNumber"],
             }
             return player
         except Exception:
@@ -35,8 +35,8 @@ class NHLBase:
     def get_player_season_stats(self, player_id):
         try:
             url = f"{self.BASE_URL}/people/{player_id}/stats?stats=statsSingleSeason&season={self.season}"
-            data = get(url).json()
-            stats = data["stats"][0]["splits"][0]["stat"]
+            res = get(url).json()
+            stats = res["stats"][0]["splits"][0]["stat"]
             return stats
         except Exception:
             logger.exception(f"Error getting player stats with id: {player_id}")
@@ -45,7 +45,7 @@ class NHLBase:
         try:
             date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/schedule?date={date}"
-            data = get(url).json()
+            res = get(url).json()
             games = [
                 {
                     "id": game["gamePk"],
@@ -54,7 +54,7 @@ class NHLBase:
                     "date": game["gameDate"],
                     "status": game["status"]["detailedState"],
                 }
-                for game in data["dates"][0]["games"]
+                for game in res["dates"][0]["games"]
             ]
             return games
         except Exception:
@@ -63,26 +63,26 @@ class NHLBase:
     def get_games_linescore(self, game_id):
         try:
             url = f"{self.BASE_URL}/game/{game_id}/linescore"
-            data = get(url).json()
-            return data
+            res = get(url).json()
+            return res
         except Exception:
             logger.exception(f"Error getting games linescore with game id: {game_id}")
 
     def get_games_boxscore(self, game_id):
         try:
             url = f"{self.BASE_URL}/game/{game_id}/boxscore"
-            data = get(url).json()
-            return data
+            res = get(url).json()
+            return res
         except Exception:
             logger.exception(f"Error getting games boxscore with game id: {game_id}")
 
     def get_roster(self, team_id):
         try:
             url = f"{self.BASE_URL}/teams/{team_id}/roster"
-            data = get(url).json()
+            res = get(url).json()
             roster = [
                 {"id": player["person"]["id"], "name": player["person"]["fullName"]}
-                for player in data["roster"]
+                for player in res["roster"]
             ]
             return roster
         except Exception:
@@ -92,14 +92,14 @@ class NHLBase:
         try:
             date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/standings/byDivision?date={date}"
-            data = get(url).json()
+            res = get(url).json()
             divs = [
                 {
                     "conference": div["conference"]["name"],
                     "division": div["division"]["name"],
                     "data": div["teamRecords"],
                 }
-                for div in data["records"]
+                for div in res["records"]
             ]
             leaders = [
                 {
@@ -124,7 +124,7 @@ class NHLBase:
         try:
             date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/standings/wildCard?date={date}"
-            data = get(url).json()
+            res = get(url).json()
             wilds = [
                 {
                     "conference": conf["conference"]["name"],
@@ -137,7 +137,7 @@ class NHLBase:
                         for wild in conf["teamRecords"][:amount]
                     ],
                 }
-                for conf in data["records"]
+                for conf in res["records"]
             ]
             return wilds
         except Exception:
@@ -146,8 +146,8 @@ class NHLBase:
     def get_playoffs(self):
         try:
             url = f"{self.BASE_URL}/tournaments/playoffs?expand=round.series,schedule.seriesSummary&season={self.season}"
-            playoffs = get(url).json()
-            return playoffs
+            res = get(url).json()
+            return res
         except Exception:
             logger.exception(f"Error getting playoffs for season {self.season}")
 
