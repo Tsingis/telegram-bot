@@ -9,7 +9,6 @@ from src.message import Message
 logger = logging.getLogger(__name__)
 
 
-# Run webhook
 def webhook(event, context):
     logger.info(f"Event: {event}")
     if event["httpMethod"] == "POST" and event["body"]:
@@ -34,7 +33,6 @@ def webhook(event, context):
     return ERROR_RESPONSE
 
 
-# Set webhook
 def set_webhook(event, context):
     logger.info(f"Event: {event}")
     url = f"""https://{event["headers"]["Host"]}/{event["requestContext"]["stage"]}/"""
@@ -47,7 +45,6 @@ def set_webhook(event, context):
     return ERROR_RESPONSE
 
 
-# Configure bot
 def set_bot():
     telegram_token = os.environ["TELEGRAM_TOKEN"]
     return telegram.Bot(telegram_token)

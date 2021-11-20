@@ -16,23 +16,12 @@ class NHLAdvanced(NHLBase):
         """
         date = self.date - timedelta(days=1)
         try:
-            game_ids = [game["id"] for game in self.get_games(date)]
-            games = [self.get_games_linescore(game_id) for game_id in game_ids]
-            data = []
-            for game in games:
-                if (
-                    "currentPeriodTimeRemaining" in game
-                    and game["currentPeriodTimeRemaining"] == "Final"
-                ):
-                    period = game["currentPeriodOrdinal"]
-                elif game["currentPeriod"] == 0 or (
-                    game["currentPeriod"] == 1
-                    and game["currentPeriodTimeRemaining"] == "20:00"
-                ):
-                    period = "Not started"
-                else:
-                    period = "Live"
-                info = {
+            games = [
+                self.get_games_linescore(game["id"]) | {"status": game["status"]}
+                for game in self.get_games(date)
+            ]
+            results = [
+                {
                     "homeTeam": {
                         "name": self.teams[game["teams"]["home"]["team"]["name"]][
                             "shortName"
@@ -45,10 +34,12 @@ class NHLAdvanced(NHLBase):
                         ],
                         "goals": game["teams"]["away"]["goals"],
                     },
-                    "period": period,
+                    "period": game["currentPeriodOrdinal"],
+                    "status": game["status"],
                 }
-                data.append(info)
-            return data
+                for game in games
+            ]
+            return results
         except Exception:
             logger.exception("Error getting results")
 
