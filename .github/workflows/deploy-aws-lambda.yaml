@@ -1,8 +1,8 @@
-name: deploy-aws-lambda-test
+name: deploy-aws-lambda-prod
 on:
   push:
     branches:
-      - test
+      - prod
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
       - name: Serverless Deploy
         run: npm run-script deploy
         env:
-          TELEGRAM_TOKEN_TEST: ${{ secrets.TELEGRAM_TOKEN_TEST }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CSE_ID: ${{ secrets.CSE_ID }}
           GOOGLE_API: ${{ secrets.GOOGLE_API }}
           OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
