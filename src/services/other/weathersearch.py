@@ -1,5 +1,4 @@
 import os
-import googlemaps
 from ..common import get
 from ...logger import logging
 
@@ -10,9 +9,10 @@ logger = logging.getLogger(__name__)
 class WeatherSearch:
     GOOGLE_API_KEY = os.environ["GOOGLE_API"]
     OPENWEATHER_API_KEY = os.environ["OPENWEATHER_API"]
+    REGION = os.environ["REGION"]
 
     def __init__(self):
-        self.gmaps = googlemaps.Client(key=self.GOOGLE_API_KEY)
+        pass
 
     # Get specific weather data for given location
     def get_info(self, location):
@@ -72,7 +72,14 @@ class WeatherSearch:
     # Get coordinates for given location
     def _get_coords(self, location):
         try:
-            result = self.gmaps.geocode(location)
-            return result[0]["geometry"]["location"]
+            url = "https://maps.googleapis.com/maps/api/geocode/json"
+            params = {
+                "key": self.GOOGLE_API_KEY,
+                "address": location,
+                "region": self.REGION.lower(),
+            }
+            data = get(url, params).json()
+            coords = data["results"][0]["geometry"]["location"]
+            return coords
         except Exception:
             logger.exception(f"Error getting coordinates for location: {location}")
