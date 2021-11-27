@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 class WeatherSearch:
     GOOGLE_API_KEY = os.environ["GOOGLE_API"]
     OPENWEATHER_API_KEY = os.environ["OPENWEATHER_API"]
+    REGION = os.environ["REGION"]
 
     def __init__(self):
         pass
@@ -75,6 +76,7 @@ class WeatherSearch:
             params = {
                 "key": self.GOOGLE_API_KEY,
                 "address": location,
+                "region": self.REGION.lower(),
             }
             data = get(url, params).json()
             coords = data["results"][0]["geometry"]["location"]

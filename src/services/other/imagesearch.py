@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 class ImageSearch:
     GOOGLE_API_KEY = os.environ["GOOGLE_API"]
     CSE_ID = os.environ["CSE_ID"]
+    REGION = os.environ["REGION"]
 
     def __init__(self):
         pass
@@ -31,8 +32,7 @@ class ImageSearch:
             "key": self.GOOGLE_API_KEY,
             "cx": self.CSE_ID,
             "searchType": "image",
-            "hl": "fi",
-            "lr": "lang_fi",
+            "hl": self.REGION.lower(),
             "q": keyword,
         }
         data = get(url, params).json()
