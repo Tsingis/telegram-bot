@@ -1,14 +1,14 @@
-name: deploy-aws-lambda-prod
+name: deploy-aws-lambda-test
 on:
   push:
     branches:
-      - prod
+      - test
 jobs:
   deploy:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x]
     steps:
       - uses: actions/checkout@master
       - uses: actions/setup-python@v2
@@ -32,7 +32,7 @@ jobs:
       - name: Serverless Deploy
         run: npm run-script deploy
         env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_TOKEN_TEST: ${{ secrets.TELEGRAM_TOKEN_TEST }}
           CSE_ID: ${{ secrets.CSE_ID }}
           GOOGLE_API: ${{ secrets.GOOGLE_API }}
           OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}

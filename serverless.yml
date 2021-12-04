@@ -1,4 +1,4 @@
-service: telegram-bot-prod
+service: telegram-bot-test
 
 provider:
   name: aws
@@ -8,12 +8,12 @@ provider:
   timeout: 15
   lambdaHashingVersion: 20201221
   environment:
-    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN_TEST}
     GOOGLE_API: ${env:GOOGLE_API}
     OPENWEATHER_API: ${env:OPENWEATHER_API}
     CSE_ID: ${env:CSE_ID}
     REGION: FI
-    ENVIRONMENT: PROD
+    ENVIRONMENT: TEST
 functions:
   webhook:
     handler: handler.webhook

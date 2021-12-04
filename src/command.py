@@ -225,8 +225,9 @@ class Command:
         text = ""
         if stats is not None:
             text += self.nhl_formatter.format_player_stats(stats)
+            text += "\n\n"
         if contract is not None:
-            text += "\n" + self.nhl_formatter.format_player_contract(contract)
+            text += self.nhl_formatter.format_player_contract(contract)
         if not text:
             text = "No player info available"
         return Response(text=text)
