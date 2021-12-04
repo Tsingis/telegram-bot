@@ -1,7 +1,7 @@
 import telegram
 import os
 import json
-from src.logger import logging, OK_RESPONSE, ERROR_RESPONSE
+from src.logger import logging
 from src.command import Command, ResponseType
 from src.message import Message
 
@@ -30,10 +30,11 @@ def webhook(event, context):
                         msg.send_image(res.image)
                     if res.type == ResponseType.TEXT_AND_IMAGE:
                         msg.send_image(res.image, res.text)
-            return OK_RESPONSE
+            return create_response(200, "Event handled")
         except Exception:
-            logger.exception("Error handling message")
-        return ERROR_RESPONSE
+            logger.exception("Error handling event")
+            return create_response(400, "Error handling event")
+    return create_response(400, "No event to handle")
 
 
 def set_webhook(event, context):
@@ -41,13 +42,22 @@ def set_webhook(event, context):
     url = f"""https://{event["headers"]["Host"]}/{event["requestContext"]["stage"]}/"""
     bot = set_bot()
     webhook = bot.set_webhook(url)
-
     if webhook:
-        return OK_RESPONSE
+        logger.info("Webhook set")
+        return create_response(200, "Webhook set")
 
-    return ERROR_RESPONSE
+    logger.error("Error setting webhook")
+    return create_response(400, "Error setting webhook")
 
 
 def set_bot():
     telegram_token = os.environ["TELEGRAM_TOKEN"]
     return telegram.Bot(telegram_token)
+
+
+def create_response(status_code, message):
+    return {
+        "statusCode": status_code,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps(message),
+    }
