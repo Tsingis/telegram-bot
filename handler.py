@@ -12,25 +12,28 @@ logger = logging.getLogger(__name__)
 def webhook(event, context):
     logger.info(f"Event: {event}")
     if event["httpMethod"] == "POST" and event["body"]:
-        logger.info("Message received")
-        bot = set_bot()
-        update = telegram.Update.de_json(json.loads(event["body"]), bot)
-        chat_id = update.message.chat.id
-        msg = Message(bot, chat_id)
-        text = update.message.text
-        if text and text.startswith("/"):
-            cmd = Command(text)
-            res = cmd.response
-            if res is not None:
-                logger.info(f"Command received: {text}")
-                if res.type == ResponseType.TEXT:
-                    msg.send_text(res.text)
-                if res.type == ResponseType.IMAGE:
-                    msg.send_image(res.image)
-                if res.type == ResponseType.TEXT_AND_IMAGE:
-                    msg.send_image(res.image, res.text)
-        return OK_RESPONSE
-    return ERROR_RESPONSE
+        try:
+            logger.info("Message received")
+            bot = set_bot()
+            update = telegram.Update.de_json(json.loads(event["body"]), bot)
+            chat_id = update.message.chat.id
+            msg = Message(bot, chat_id)
+            text = update.message.text
+            if text and text.startswith("/"):
+                cmd = Command(text)
+                res = cmd.response
+                if res is not None:
+                    logger.info(f"Command received: {text}")
+                    if res.type == ResponseType.TEXT:
+                        msg.send_text(res.text)
+                    if res.type == ResponseType.IMAGE:
+                        msg.send_image(res.image)
+                    if res.type == ResponseType.TEXT_AND_IMAGE:
+                        msg.send_image(res.image, res.text)
+            return OK_RESPONSE
+        except Exception:
+            logger.exception("Error handling message")
+        return ERROR_RESPONSE
 
 
 def set_webhook(event, context):
