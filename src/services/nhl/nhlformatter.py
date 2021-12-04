@@ -56,42 +56,42 @@ class NHLFormatter(NHLBase):
             key=lambda x: x["conference"],
         )
 
-        def format_team_info(data, type, value):
+        def format_team_info(data, type, value, left_adjust):
             return next(
                 [
                     (
                         f"""   {team["name"]} - {team["points"]} """
                         + f"""({team["record"]["wins"]}-{team["record"]["losses"]}-{team["record"]["ot"]})"""
-                    ).ljust(25, " ")
+                    ).ljust(left_adjust, " ")
                     for team in item["teams"]
                 ]
                 for item in data
                 if value in item[type]
             )
 
-        def format_header(text):
-            return [f"*{text}*".ljust(35, " ")]
+        def format_header(text, left_adjust):
+            return [f"*{text}*".ljust(left_adjust, " ")]
 
         west = (
-            format_header(divisions[0]["name"])
-            + format_team_info(leaders, "division", divisions[0]["name"])
-            + format_header(divisions[1]["name"])
-            + format_team_info(leaders, "division", divisions[1]["name"])
+            format_header(divisions[0]["name"], 0)
+            + format_team_info(leaders, "division", divisions[0]["name"], 0)
+            + format_header(divisions[1]["name"], 0)
+            + format_team_info(leaders, "division", divisions[1]["name"], 0)
         )
 
         east = (
-            format_header(divisions[2]["name"])
-            + format_team_info(leaders, "division", divisions[2]["name"])
-            + format_header(divisions[3]["name"])
-            + format_team_info(leaders, "division", divisions[3]["name"])
+            format_header(divisions[2]["name"], 25)
+            + format_team_info(leaders, "division", divisions[2]["name"], 25)
+            + format_header(divisions[3]["name"], 25)
+            + format_team_info(leaders, "division", divisions[3]["name"], 25)
         )
 
         if len(wilds) > 0:
-            west += format_header("Wild Card") + format_team_info(
-                wilds, "conference", divisions[0]["conference"]
+            west += format_header("Wild Card", 0) + format_team_info(
+                wilds, "conference", divisions[0]["conference"], 0
             )
-            east += format_header("Wild Card") + format_team_info(
-                wilds, "conference", divisions[2]["conference"]
+            east += format_header("Wild Card", 25) + format_team_info(
+                wilds, "conference", divisions[2]["conference"], 25
             )
 
         standings = "\n".join([e + w for w, e in zip(west, east)])
