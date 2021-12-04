@@ -15,5 +15,5 @@
 
 - Python 3.9
 - AWS Account
-- Node.js 14.x
+- Node.js 16.x
 - Serverless Framework
