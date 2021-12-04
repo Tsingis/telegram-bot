@@ -13,7 +13,7 @@ class Message:
         try:
             self.bot.sendMessage(
                 chat_id=self.chat_id,
-                text=self._as_code(text),
+                text=text,
                 parse_mode="Markdown",
                 disable_web_page_preview=True,
             )
@@ -26,12 +26,9 @@ class Message:
             self.bot.sendPhoto(
                 chat_id=self.chat_id,
                 photo=image,
-                caption=self._as_code(caption),
+                caption=caption,
                 parse_mode="Markdown",
             )
             logger.info("Image sent successfully")
         except Exception:
             logger.exception("Error sending image")
-
-    def _as_code(self, text):
-        return f"```{text}```"
