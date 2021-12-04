@@ -70,7 +70,7 @@ class NHLFormatter(NHLBase):
             )
 
         def format_header(text):
-            return [f"*{text}*".ljust(25, " ")]
+            return [f"*{text}*".ljust(35, " ")]
 
         west = (
             format_header(divisions[0]["name"])
