@@ -80,9 +80,9 @@ class NHLFormatter(NHLBase):
         )
 
         east = (
-            format_header(divisions[2]["name"], 25)
+            format_header(divisions[2]["name"], 35)
             + format_team_info(leaders, "division", divisions[2]["name"], 25)
-            + format_header(divisions[3]["name"], 25)
+            + format_header(divisions[3]["name"], 35)
             + format_team_info(leaders, "division", divisions[3]["name"], 25)
         )
 
@@ -90,7 +90,7 @@ class NHLFormatter(NHLBase):
             west += format_header("Wild Card", 0) + format_team_info(
                 wilds, "conference", divisions[0]["conference"], 0
             )
-            east += format_header("Wild Card", 25) + format_team_info(
+            east += format_header("Wild Card", 35) + format_team_info(
                 wilds, "conference", divisions[2]["conference"], 25
             )
 
