@@ -59,9 +59,10 @@ class NHLFormatter(NHLBase):
         def format_team_info(data, type, value):
             return next(
                 [
-                    f"""   {team["name"]} - {team["points"]}/{team["games"]}""".ljust(
-                        20, " "
-                    )
+                    (
+                        f"""   {team["name"]} - {team["points"]} """
+                        + f"""({team["record"]["wins"]}-{team["record"]["ot"]}-{team["record"]["losses"]})"""
+                    ).ljust(25, " ")
                     for team in item["teams"]
                 ]
                 for item in data

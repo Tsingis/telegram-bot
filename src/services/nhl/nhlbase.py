@@ -110,6 +110,7 @@ class NHLBase:
                             "name": self.teams[team["team"]["name"]]["shortName"],
                             "points": team["points"],
                             "games": team["gamesPlayed"],
+                            "record": team["leagueRecord"],
                         }
                         for team in div["data"][:amount]
                     ],
@@ -133,6 +134,7 @@ class NHLBase:
                             "name": self.teams[wild["team"]["name"]]["shortName"],
                             "points": wild["points"],
                             "games": wild["gamesPlayed"],
+                            "record": wild["leagueRecord"],
                         }
                         for wild in conf["teamRecords"][:amount]
                     ],
