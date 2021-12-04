@@ -61,7 +61,7 @@ class NHLFormatter(NHLBase):
                 [
                     (
                         f"""   {team["name"]} - {team["points"]} """
-                        + f"""({team["record"]["wins"]}-{team["record"]["ot"]}-{team["record"]["losses"]})"""
+                        + f"""({team["record"]["wins"]}-{team["record"]["losses"]}-{team["record"]["ot"]})"""
                     ).ljust(25, " ")
                     for team in item["teams"]
                 ]
