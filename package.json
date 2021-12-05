@@ -1,7 +1,7 @@
 {
-  "name": "telegram-bot-test",
+  "name": "telegram-bot-prod",
   "version": "1.0.0",
-  "description": "Telegram bot test",
+  "description": "Telegram bot prod",
   "devDependencies": {
     "serverless": "^2.68.0",
     "serverless-python-requirements": "^5.2.2"
