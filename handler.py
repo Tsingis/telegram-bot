@@ -30,10 +30,13 @@ def webhook(event, context):
                         msg.send_image(res.image)
                     if res.type == ResponseType.TEXT_AND_IMAGE:
                         msg.send_image(res.image, res.text)
+            logger.info("Event handled")
             return create_response(200, "Event handled")
         except Exception:
             logger.exception("Error handling event")
             return create_response(400, "Error handling event")
+
+    logger.info("No event to handle")
     return create_response(400, "No event to handle")
 
 
