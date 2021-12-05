@@ -15,7 +15,7 @@ class NHLPlayoffs(NHLBase):
 
     def __init__(self):
         super().__init__()
-        self.save_img = True if self.ENVIRONMENT == "LOCAL" else False
+        self.save_img = True if self.ENVIRONMENT.lower() == "local" else False
 
     def get_bracket(self):
         """
