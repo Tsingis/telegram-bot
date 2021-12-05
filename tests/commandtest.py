@@ -8,7 +8,7 @@ from src.command import Command
 class CommandTest(unittest.TestCase):
     @data(
         "/bot",
-        "/weather helsinki",
+        "/weather Tampere",
         "/search icecream",
         "/f1results",
         "/f1standings",
