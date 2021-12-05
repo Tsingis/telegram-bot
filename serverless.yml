@@ -9,7 +9,7 @@ provider:
   timeout: 15
   lambdaHashingVersion: 20201221
   environment:
-    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN_TEST}
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     GOOGLE_API: ${env:GOOGLE_API}
     OPENWEATHER_API: ${env:OPENWEATHER_API}
     CSE_ID: ${env:CSE_ID}
