@@ -1,7 +1,8 @@
-service: telegram-bot-test
+service: telegram-bot
 
 provider:
   name: aws
+  stage: test
   runtime: python3.9
   region: eu-north-1
   memorySize: 256
@@ -13,7 +14,7 @@ provider:
     OPENWEATHER_API: ${env:OPENWEATHER_API}
     CSE_ID: ${env:CSE_ID}
     REGION: FI
-    ENVIRONMENT: TEST
+    ENVIRONMENT: ${self:provider.stage}
 functions:
   webhook:
     handler: handler.webhook
