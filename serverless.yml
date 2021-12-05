@@ -2,7 +2,7 @@ service: telegram-bot
 
 provider:
   name: aws
-  stage: test
+  stage: prod
   runtime: python3.9
   region: eu-north-1
   memorySize: 256
