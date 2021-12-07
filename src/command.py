@@ -1,5 +1,5 @@
 from enum import Enum
-from .services.common import format_as_code, format_as_header
+from .services.common import format_as_header, escape_special_chars
 from .services.formula.formulaoneadvanced import FormulaOneAdvanced
 from .services.formula.formulaformatter import FormulaOneFormatter
 from .services.other.imagesearch import ImageSearch
@@ -105,7 +105,7 @@ class Command:
             self.NHL_PLAYOFFS_CMD,
         ]
         header = format_as_header("Available commands:")
-        text = header + "\n" + format_as_code("\n".join(cmds))
+        text = header + "\n" + escape_special_chars("\n".join(cmds))
         return Response(text=text)
 
     # Random Google search image by keyword
