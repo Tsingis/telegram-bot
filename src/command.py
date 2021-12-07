@@ -1,4 +1,5 @@
 from enum import Enum
+from .services.common import format_as_code, format_as_header
 from .services.formula.formulaoneadvanced import FormulaOneAdvanced
 from .services.formula.formulaformatter import FormulaOneFormatter
 from .services.other.imagesearch import ImageSearch
@@ -89,7 +90,6 @@ class Command:
 
     # Available bot commands
     def _available_commands(self):
-        header = "*Available commands:*\n"
         cmds = [
             self.IMAGE_SEARCH_CMD + " <keyword>",
             self.WEATHER_SEARCH_CMD + " <location>",
@@ -104,12 +104,14 @@ class Command:
             self.NHL_PLAYER_INFO_CMD + " <player name>",
             self.NHL_PLAYOFFS_CMD,
         ]
-        return Response(text=header + "\n".join(cmds))
+        header = format_as_header("Available commands:")
+        text = header + "\n" + format_as_code("\n".join(cmds))
+        return Response(text=text)
 
     # Random Google search image by keyword
     def _search_img(self):
         keyword = self.text.split(self.IMAGE_SEARCH_CMD)[-1].strip()
-        img = self.img_search.search_random_image(keyword)
+        img = self.img_search.get_random_image(keyword)
         if img is not None:
             return Response(image=img, type=ResponseType.IMAGE)
         return Response(text="No search results available")
@@ -162,33 +164,28 @@ class Command:
         text = "No upcoming games available"
         info = self.nhl_advanced.get_upcoming()
         if info is not None:
-            text = f"*Upcoming matches:*\n{self.nhl_formatter.format_upcoming(info)}"
+            text = self.nhl_formatter.format_upcoming(info)
         return Response(text=text)
 
     # NHL standings
     def _nhl_standings(self):
         text = "No standings available"
-        url = "https://www.nhl.com/standings/"
         standings = self.nhl_advanced.get_standings()
         if standings is not None:
-            text = (
-                self.nhl_formatter.format_standings(standings) + f"\n[Details]({url})"
-            )
+            text = self.nhl_formatter.format_standings(standings)
         return Response(text=text)
 
     # NHL latest match results
     def _nhl_results(self):
         text = "No games available"
-        url = "https://www.nhl.com/scores/"
         results = self.nhl_advanced.get_results()
         if results is not None:
-            text = f"*Results:*\n{self.nhl_formatter.format_results(results)}\n[Details]({url})"
+            text = self.nhl_formatter.format_results(results)
         return Response(text=text)
 
     # NHL scoring leaders
     def _nhl_scoring(self):
         text = "No scoring leaders available"
-        url = "http://www.nhl.com/stats/skaters"
         try:
             amount = int(self.text.split(self.NHL_SCORING_CMD)[-1].strip())
             if amount < 5:
@@ -200,9 +197,7 @@ class Command:
             amount = 10
         info = self.nhl_extra.get_scoring_leaders(amount)
         if info is not None:
-            text = (
-                f"{self.nhl_formatter.format_scoring_leaders(info)}\n[Details]({url})"
-            )
+            text = self.nhl_formatter.format_scoring_leaders(info)
         return Response(text=text)
 
     # NHL stats for players of given nationality or team from latest round

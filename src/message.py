@@ -14,7 +14,7 @@ class Message:
             self.bot.sendMessage(
                 chat_id=self.chat_id,
                 text=text,
-                parse_mode="Markdown",
+                parse_mode="MarkdownV2",
                 disable_web_page_preview=True,
             )
             logger.info("Text sent successfully")
@@ -27,7 +27,7 @@ class Message:
                 chat_id=self.chat_id,
                 photo=image,
                 caption=caption,
-                parse_mode="Markdown",
+                parse_mode="MarkdownV2",
             )
             logger.info("Image sent successfully")
         except Exception:

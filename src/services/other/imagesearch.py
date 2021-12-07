@@ -16,7 +16,7 @@ class ImageSearch:
         pass
 
     # Search image url with given keyword
-    def search_random_image(self, keyword):
+    def get_random_image(self, keyword):
         try:
             data = self._get_data(keyword)
             if "items" in data:

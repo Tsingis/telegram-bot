@@ -1,3 +1,4 @@
+import re
 import requests
 from bs4 import BeautifulSoup
 from dateutil import tz
@@ -49,3 +50,23 @@ def convert_timezone(date, source_tz=None, target_tz=None):
         target_tz = tz.gettz(target_tz)
     date = date.replace(tzinfo=source_tz)
     return date.astimezone(target_tz)
+
+
+def escape_special_chars(text):
+    """
+    Escapes MarkdownV2 engine special characters
+    """
+    escape_chars = r"_*[]()~`>#+-=|{}.!"
+    return re.sub(f"([{re.escape(escape_chars)}])", r"\\\1", text)
+
+
+def format_as_url(url, text="Details"):
+    return f"[{text}]({url})"
+
+
+def format_as_header(text):
+    return f"*{text}*"
+
+
+def format_as_code(text):
+    return f"```\n{text}\n```"
