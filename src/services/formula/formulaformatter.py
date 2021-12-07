@@ -7,7 +7,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
     def __init__(self):
         super().__init__()
         self.target_timezone = "Europe/Helsinki"
-        self.target_datetime_pattern = "%a %b %d at %H:%M"
+        self.target_datetime_pattern = "on %a %b %d at %H:%M"
 
     def format_results(self, data):
         url = data["url"]

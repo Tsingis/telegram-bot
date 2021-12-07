@@ -82,8 +82,8 @@ class NHLFormatter(NHLBase):
             return next(
                 [
                     (
-                        f""" {team["name"]}|{team["points"]} """
-                        + f"""({team["record"]["wins"]}-{team["record"]["losses"]}-{team["record"]["ot"]})"""
+                        f""" {team["name"]}|{team["points"]}|"""
+                        + f"""{team["record"]["wins"]}-{team["record"]["losses"]}-{team["record"]["ot"]}"""
                     ).ljust(left_adjust)
                     for team in item["teams"]
                 ]
@@ -95,7 +95,7 @@ class NHLFormatter(NHLBase):
             return [f"{text.upper()}".ljust(left_adjust)]
 
         ljust_value_west = 0
-        ljust_value_east = 18
+        ljust_value_east = 16
         west = (
             format_header(divisions[0]["name"], ljust_value_west)
             + format_team_info(
@@ -170,18 +170,18 @@ class NHLFormatter(NHLBase):
             goalies_stats.sort(key=lambda x: x["name"])
             goalies_stats.sort(key=lambda x: (x["saves"], x["shots"]), reverse=True)
 
-            # Skaters stats in format: last name (team) | goals+assists | TOI: MM:SS
+            # Skaters stats in format: last name (team)|goals+assists|TOI in MM:SS
             def format_skater_stats(stats):
                 return (
                     f"""{stats["name"]} ({stats["team"]})|{stats["goals"]}"""
-                    + f"""+{stats["assists"]}|TOI:{stats["timeOnIce"]}"""
+                    + f"""+{stats["assists"]}|{stats["timeOnIce"]}"""
                 )
 
-            # Goalies stats in format: last name (team) | saves/shots | TOI: MM:SS
+            # Goalies stats in format: last name (team)|saves/shots|TOI in MM:SS
             def format_goalie_stats(stats):
                 return (
                     f"""{stats["name"]} ({stats["team"]})|{stats["saves"]}"""
-                    + f"""/{stats["shots"]}|TOI:{stats["timeOnIce"]}"""
+                    + f"""/{stats["shots"]}|{stats["timeOnIce"]}"""
                 )
 
             skaters_header = format_as_header("Skaters") + "\n"
@@ -214,27 +214,28 @@ class NHLFormatter(NHLBase):
         if data["stats"] is not None:
             if data["position"] == "Goalie":
                 goalie = (
-                    f"""GP:{data["stats"]["games"]}|"""
-                    f"""W:{data["stats"]["wins"]}|"""
-                    f"""L:{data["stats"]["losses"]}|"""
-                    f"""OT:{data["stats"]["ot"]}|"""
-                    f"""Sv:{data["stats"]["saves"]} | """
-                    f"""Sv%:{round(data["stats"]["savePercentage"] * 100, 2)}|"""
-                    f"""GA:{data["stats"]["goalsAgainst"]}|"""
-                    f"""GAA:{round(data["stats"]["goalAgainstAverage"], 2)}|"""
-                    f"""SO:{data["stats"]["shutouts"]}"""
+                    f"""GP:{data["stats"]["games"]} """
+                    f"""W:{data["stats"]["wins"]} """
+                    f"""L:{data["stats"]["losses"]} """
+                    f"""OT:{data["stats"]["ot"]}\n"""
+                    f"""Sv:{data["stats"]["saves"]} """
+                    f"""Sv%:{round(data["stats"]["savePercentage"] * 100, 2)} """
+                    f"""SO:{data["stats"]["shutouts"]}\n"""
+                    f"""GA:{data["stats"]["goalsAgainst"]} """
+                    f"""GAA:{round(data["stats"]["goalAgainstAverage"], 2)}"""
                 )
                 stats = goalie
             else:
                 skater = (
-                    f"""GP:{data["stats"]["games"]}|"""
-                    f"""G:{data["stats"]["goals"]}|"""
-                    f"""A:{data["stats"]["assists"]}|"""
-                    f"""P:{data["stats"]["points"]}|"""
-                    f"""Sh%:{round(data["stats"]["shotPct"], 2)}|"""
-                    f"""+/-:{data["stats"]["plusMinus"]}|"""
-                    f"""PIM:{data["stats"]["pim"]}|"""
-                    f"""TOI/G:{data["stats"]["timeOnIcePerGame"]}"""
+                    f"""GP:{data["stats"]["games"]} """
+                    f"""G:{data["stats"]["goals"]} """
+                    f"""A:{data["stats"]["assists"]} """
+                    f"""P:{data["stats"]["points"]}\n"""
+                    f"""+/-:{data["stats"]["plusMinus"]} """
+                    f"""S:{data["stats"]["shots"]} """
+                    f"""S%:{round(data["stats"]["shotPct"], 2)}\n"""
+                    f"""PIM:{data["stats"]["pim"]} """
+                    f"""TOI/G: {data["stats"]["timeOnIcePerGame"]}"""
                 )
                 stats = skater
             text = (
@@ -247,9 +248,9 @@ class NHLFormatter(NHLBase):
 
     def format_player_contract(self, data):
         contract = (
-            f"""Year:{data["contract"]["yearStatus"]}|"""
-            + f"""Cap hit:{data["contract"]["capHit"]}|"""
-            + f"""Total:{data["contract"]["totalSalary"]}"""
+            f"""Year: {data["contract"]["yearStatus"]}\n"""
+            + f"""Cap hit: {data["contract"]["capHit"]}\n"""
+            + f"""Total: {data["contract"]["totalSalary"]}"""
         )
         text = (
             format_as_header("Contract:")
@@ -270,6 +271,7 @@ class NHLFormatter(NHLBase):
         url = "http://www.nhl.com/stats/skaters"
         text = (
             format_as_header("Scoring leader:")
+            + "\n"
             + format_as_code("\n".join(leaders))
             + format_as_url(url)
         )

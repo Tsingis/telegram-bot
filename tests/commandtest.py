@@ -19,6 +19,7 @@ class CommandTest(unittest.TestCase):
         "/nhlscoring 15",
         "/nhlplayers",
         "/nhlplayerinfo connor mcdavid",
+        "/nhlplayerinfo andrei vasilevskiy",
         "/nhlplayoffs",
     )
     def test_bot_command(self, command_text, print_response=True):
