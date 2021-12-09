@@ -270,7 +270,7 @@ class NHLFormatter(NHLBase):
         ]
         url = "http://www.nhl.com/stats/skaters"
         text = (
-            format_as_header("Scoring leader:")
+            format_as_header("Scoring leaders:")
             + "\n"
             + format_as_code("\n".join(leaders))
             + format_as_url(url)
