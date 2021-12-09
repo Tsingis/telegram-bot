@@ -1,6 +1,6 @@
 from datetime import datetime
 from .nhlbase import NHLBase
-from ..common import (
+from ..utils import (
     convert_timezone,
     format_as_header,
     format_as_code,

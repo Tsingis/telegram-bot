@@ -1,6 +1,6 @@
 from datetime import datetime
 from .formulaonebase import FormulaOneBase
-from ..common import set_soup
+from ..utils import set_soup
 from ...logger import logging
 
 

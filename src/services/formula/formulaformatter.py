@@ -1,6 +1,6 @@
 from datetime import datetime
 from .formulaoneadvanced import FormulaOneAdvanced
-from ..common import convert_timezone, format_as_header, format_as_code, format_as_url
+from ..utils import convert_timezone, format_as_header, format_as_code, format_as_url
 
 
 class FormulaOneFormatter(FormulaOneAdvanced):
