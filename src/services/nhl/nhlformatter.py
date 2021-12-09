@@ -1,6 +1,6 @@
 from datetime import datetime
 from .nhlbase import NHLBase
-from ..common import (
+from ..utils import (
     convert_timezone,
     format_as_header,
     format_as_code,
@@ -184,8 +184,8 @@ class NHLFormatter(NHLBase):
                     + f"""/{stats["shots"]}|{stats["timeOnIce"]}"""
                 )
 
-            skaters_header = format_as_header("Skaters") + "\n"
-            goalies_header = format_as_header("Goalies") + "\n"
+            skaters_header = format_as_header("Skaters:") + "\n"
+            goalies_header = format_as_header("Goalies:") + "\n"
 
             skaters_texts = [format_skater_stats(stats) for stats in skaters_stats]
             goalies_texts = [format_goalie_stats(stats) for stats in goalies_stats]
@@ -270,7 +270,7 @@ class NHLFormatter(NHLBase):
         ]
         url = "http://www.nhl.com/stats/skaters"
         text = (
-            format_as_header("Scoring leader:")
+            format_as_header("Scoring leaders:")
             + "\n"
             + format_as_code("\n".join(leaders))
             + format_as_url(url)

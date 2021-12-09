@@ -1,6 +1,6 @@
 import os
 from random import choice
-from ..common import get
+from ..utils import get
 from ...logger import logging
 
 

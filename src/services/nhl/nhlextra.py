@@ -1,5 +1,5 @@
 from .nhlbase import NHLBase
-from ..common import set_soup
+from ..utils import set_soup
 from ...logger import logging
 
 
