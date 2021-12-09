@@ -184,8 +184,8 @@ class NHLFormatter(NHLBase):
                     + f"""/{stats["shots"]}|{stats["timeOnIce"]}"""
                 )
 
-            skaters_header = format_as_header("Skaters") + "\n"
-            goalies_header = format_as_header("Goalies") + "\n"
+            skaters_header = format_as_header("Skaters:") + "\n"
+            goalies_header = format_as_header("Goalies:") + "\n"
 
             skaters_texts = [format_skater_stats(stats) for stats in skaters_stats]
             goalies_texts = [format_goalie_stats(stats) for stats in goalies_stats]
