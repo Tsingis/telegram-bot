@@ -59,7 +59,7 @@ class WeatherSearch:
             info["Precip"] = data["precipType"]
             info["Amount"] = str(data["amount"]) + " mm/h"
 
-        header = location.title()
+        header = f"Weather in {location.title()}:"
         body = "\n".join([f"{key}: {value}" for (key, value) in info.items()])
         return format_as_header(header) + "\n" + format_as_code(body)
 
