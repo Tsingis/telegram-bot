@@ -1,7 +1,7 @@
 from enum import Enum
 from .services.utils import format_as_header, escape_special_chars
 from .services.formula.formulaoneadvanced import FormulaOneAdvanced
-from .services.formula.formulaformatter import FormulaOneFormatter
+from .services.formula.formulaoneformatter import FormulaOneFormatter
 from .services.other.imagesearch import ImageSearch
 from .services.other.weathersearch import WeatherSearch
 from .services.nhl.nhladvanced import NHLAdvanced
