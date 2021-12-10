@@ -115,6 +115,7 @@ class FormulaOneAdvanced(FormulaOneBase):
             img_url = img_url_container.find("a")["href"]
             soup = set_soup(self.BASE_URL + img_url)
             img_container = soup.find("div", {"class": "f1-race-hub--map-container"})
-            return img_container.find("img", {"class": "lazy"})["data-src"]
+            img = img_container.find("img", {"class": "lazy"})["data-src"]
+            return img
         except Exception:
             logger.exception("Error getting circuit image")

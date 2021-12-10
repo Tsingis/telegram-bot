@@ -1,6 +1,7 @@
 import re
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 from dateutil import tz
 from ..logger import logging
 
@@ -58,6 +59,12 @@ def escape_special_chars(text):
     """
     escape_chars = r"_*[]()~`>#+-=|{}.!"
     return re.sub(f"([{re.escape(escape_chars)}])", r"\\\1", text)
+
+
+def add_timestamp_to_image(img):
+    if isinstance(img, str):
+        return f"{img}?a={datetime.utcnow().isoformat()}"
+    return img
 
 
 def format_as_url(url, text="Details"):
