@@ -21,12 +21,15 @@ class NHLBase:
         try:
             url = f"{self.BASE_URL}/people/{player_id}"
             res = get(url).json()
+            info = res["people"][0]
             player = {
                 "id": player_id,
-                "name": res["people"][0]["fullName"],
-                "team": res["people"][0]["currentTeam"]["name"],
-                "position": res["people"][0]["primaryPosition"]["name"],
-                "number": res["people"][0]["primaryNumber"],
+                "name": info["fullName"],
+                "team": info["currentTeam"]["name"],
+                "age": info["currentAge"],
+                "nationality": info["nationality"],
+                "position": info["primaryPosition"]["name"],
+                "number": info["primaryNumber"],
             }
             return player
         except Exception:
