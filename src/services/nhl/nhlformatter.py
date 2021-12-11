@@ -207,10 +207,11 @@ class NHLFormatter(NHLBase):
 
     def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
-        header = (
-            f"""{data["team"]} {data["position"]} #{data["number"]} {data["name"]}"""
+        header = f"""{data["position"]} #{data["number"]} {data["name"]}"""
+        info = f"""Team:{data["team"]} From:{data["nationality"]} Age:{data["age"]}"""
+        text = (
+            format_as_header(header) + "\n" + format_as_code(info) + format_as_url(url)
         )
-        text = format_as_header(header) + format_as_url(url)
         if data["stats"] is not None:
             if data["position"] == "Goalie":
                 goalie = (
@@ -241,6 +242,7 @@ class NHLFormatter(NHLBase):
             text = (
                 format_as_header(escape_special_chars(header))
                 + "\n"
+                + format_as_code(info)
                 + format_as_code(stats)
                 + format_as_url(url)
             )
