@@ -243,6 +243,9 @@ class NHLFormatter(NHLBase):
                 format_as_header(escape_special_chars(header))
                 + "\n"
                 + format_as_code(info)
+                + "\n"
+                + format_as_header("Stats:")
+                + "\n"
                 + format_as_code(stats)
                 + format_as_url(url)
             )
