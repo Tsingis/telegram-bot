@@ -1,5 +1,4 @@
 from .logger import logging
-from .services.utils import add_timestamp_to_image
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +25,7 @@ class Message:
         try:
             self.bot.sendPhoto(
                 chat_id=self.chat_id,
-                photo=add_timestamp_to_image(image),
+                photo=image,
                 caption=caption,
                 parse_mode="MarkdownV2",
             )

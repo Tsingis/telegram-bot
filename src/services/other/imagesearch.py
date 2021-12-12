@@ -20,7 +20,8 @@ class ImageSearch:
         try:
             data = self._get_data(keyword)
             if "items" in data:
-                image = choice([result["link"] for result in data["items"]])
+                images = [result["link"] for result in data["items"]]
+                image = choice(images)
                 return image
         except Exception:
             logger.exception(f"Error getting image with keyword: {keyword}")
@@ -32,6 +33,7 @@ class ImageSearch:
             "key": self.GOOGLE_API_KEY,
             "cx": self.CSE_ID,
             "searchType": "image",
+            "fileType": "jpg",
             "hl": self.REGION.lower(),
             "q": keyword,
         }
