@@ -116,6 +116,11 @@ class FormulaOneAdvanced(FormulaOneBase):
             soup = set_soup(self.BASE_URL + img_url)
             img_container = soup.find("div", {"class": "f1-race-hub--map-container"})
             img = img_container.find("img", {"class": "lazy"})["data-src"]
-            return img
+            return self._add_timestamp_to_image(img)
         except Exception:
             logger.exception("Error getting circuit image")
+
+    def _add_timestamp_to_image(self, img):
+        if isinstance(img, str):
+            return f"{img}?a={datetime.utcnow().isoformat()}"
+        return img
