@@ -28,7 +28,7 @@ class NHLBase:
                 "team": info["currentTeam"]["name"],
                 "age": info["currentAge"],
                 "nationality": info["nationality"],
-                "position": info["primaryPosition"]["name"],
+                "position": info["primaryPosition"]["abbreviation"],
                 "number": info["primaryNumber"],
             }
             return player
