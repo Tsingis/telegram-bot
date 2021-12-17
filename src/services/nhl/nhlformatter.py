@@ -207,7 +207,7 @@ class NHLFormatter(NHLBase):
 
     def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
-        header = f"""{data["position"]} #{data["number"]} {data["name"]}"""
+        header = f"""#{data["number"]} {data["position"]} {data["name"]}"""
         info = f"""Team:{data["team"]} From:{data["nationality"]} Age:{data["age"]}"""
         text = (
             format_as_header(header) + "\n" + format_as_code(info) + format_as_url(url)
