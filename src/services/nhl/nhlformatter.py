@@ -213,8 +213,8 @@ class NHLFormatter(NHLBase):
             format_as_header(header) + "\n" + format_as_code(info) + format_as_url(url)
         )
         if data["stats"] is not None:
-            if data["position"] == "Goalie":
-                goalie = (
+            if data["position"] == "G":
+                stats = (
                     f"""GP:{data["stats"]["games"]} """
                     f"""W:{data["stats"]["wins"]} """
                     f"""L:{data["stats"]["losses"]} """
@@ -225,9 +225,8 @@ class NHLFormatter(NHLBase):
                     f"""GA:{data["stats"]["goalsAgainst"]} """
                     f"""GAA:{round(data["stats"]["goalAgainstAverage"], 2)}"""
                 )
-                stats = goalie
             else:
-                skater = (
+                stats = (
                     f"""GP:{data["stats"]["games"]} """
                     f"""G:{data["stats"]["goals"]} """
                     f"""A:{data["stats"]["assists"]} """
@@ -238,7 +237,6 @@ class NHLFormatter(NHLBase):
                     f"""PIM:{data["stats"]["pim"]} """
                     f"""TOI/G: {data["stats"]["timeOnIcePerGame"]}"""
                 )
-                stats = skater
             text = (
                 format_as_header(escape_special_chars(header))
                 + "\n"
