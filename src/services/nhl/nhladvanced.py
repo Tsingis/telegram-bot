@@ -34,7 +34,9 @@ class NHLAdvanced(NHLBase):
                         ],
                         "goals": game["teams"]["away"]["goals"],
                     },
-                    "period": game["currentPeriodOrdinal"],
+                    "period": game["currentPeriodOrdinal"]
+                    if "currentPeriodOrdinal" in game
+                    else None,
                     "status": game["status"],
                 }
                 for game in games
