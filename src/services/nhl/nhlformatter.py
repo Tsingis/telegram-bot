@@ -78,11 +78,18 @@ class NHLFormatter(NHLBase):
             key=lambda x: x["conference"],
         )
 
+        teams = []
+        for leader in leaders:
+            teams.extend(leader["teams"])
+
+        max_points = max(teams, key=lambda x: x["points"])
+        adjust = len(str(max_points["points"]))
+
         def format_team_info(data, type, value, left_adjust):
             return next(
                 [
                     (
-                        f""" {team["name"]}|{team["points"]}|"""
+                        f""" {team["name"]} {str(team["points"]).rjust(adjust)} """
                         + f"""{team["record"]["wins"]}-{team["record"]["losses"]}-{team["record"]["ot"]}"""
                     ).ljust(left_adjust)
                     for team in item["teams"]
@@ -126,9 +133,15 @@ class NHLFormatter(NHLBase):
                 wilds, "conference", divisions[2]["conference"], ljust_value_east
             )
 
+        header = "Standings:"
         url = "https://www.nhl.com/standings/"
         standings = "\n".join([e + w for w, e in zip(west, east)])
-        return format_as_code(standings) + format_as_url(url)
+        return (
+            format_as_header(header)
+            + "\n"
+            + format_as_code(standings)
+            + format_as_url(url)
+        )
 
     def format_players_stats(self, data, filter="FIN"):
         players = [
@@ -172,16 +185,20 @@ class NHLFormatter(NHLBase):
 
             # Skaters stats in format: last name (team)|goals+assists|TOI in MM:SS
             def format_skater_stats(stats):
+                if len(stats["timeOnIce"]) < 5:
+                    stats["timeOnIce"] = "0" + stats["timeOnIce"]
                 return (
-                    f"""{stats["name"]} ({stats["team"]})|{stats["goals"]}"""
-                    + f"""+{stats["assists"]}|{stats["timeOnIce"]}"""
+                    f"""{stats["goals"]}+{stats["assists"]} {stats["timeOnIce"]} """
+                    + f"""{stats["name"]} ({stats["team"]})"""
                 )
 
             # Goalies stats in format: last name (team)|saves/shots|TOI in MM:SS
             def format_goalie_stats(stats):
+                if len(stats["timeOnIce"]) < 5:
+                    stats["timeOnIce"] = "0" + stats["timeOnIce"]
                 return (
-                    f"""{stats["name"]} ({stats["team"]})|{stats["saves"]}"""
-                    + f"""/{stats["shots"]}|{stats["timeOnIce"]}"""
+                    f"""{stats["saves"]}/{stats["shots"]} {stats["timeOnIce"]} """
+                    + f"""{stats["name"]} ({stats["team"]})"""
                 )
 
             skaters_header = format_as_header("Skaters:") + "\n"
@@ -256,10 +273,21 @@ class NHLFormatter(NHLBase):
         return text
 
     def format_scoring_leaders(self, data):
+        highest_points = max(data, key=lambda x: x["points"])
+        highest_points_len = len(str(highest_points["points"]))
+        highest_goals = max(data, key=lambda x: x["goals"])
+        highest_goals_len = len(str(highest_goals["goals"]))
+        highest_assists = max(data, key=lambda x: x["assists"])
+        highest_assists_len = len(str(highest_assists["assists"]))
+
+        adjust = highest_goals_len + highest_assists_len + 1
+
         leaders = [
             (
-                f"""{str(player["rank"]).rjust(2)}. {player["name"].split(" ")[-1]} ({player["team"]})"""
-                + f"""|{player["goals"]}+{player["assists"]}={player["points"]}"""
+                f"""{str(player["rank"]).rjust(2)}. """
+                + f"""{(str(player["goals"]) + "+" + str(player["assists"])).rjust(adjust)}"""
+                + f"""={str(player["points"]).ljust(highest_points_len)} """
+                + f"""{player["name"].split(" ")[-1]} ({player["team"]})"""
             )
             for player in data
         ]
