@@ -227,7 +227,10 @@ class NHLFormatter(NHLBase):
         header = f"""#{data["number"]} {data["position"]} {data["name"]}"""
         info = f"""Team:{data["team"]} From:{data["nationality"]} Age:{data["age"]}"""
         text = (
-            format_as_header(escape_special_chars(header)) + "\n" + format_as_code(info)
+            format_as_header(escape_special_chars(header))
+            + "\n"
+            + format_as_code(info)
+            + "\n"
         )
         if data["stats"] is not None:
             if data["position"] == "G":
