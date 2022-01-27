@@ -227,7 +227,10 @@ class NHLFormatter(NHLBase):
         header = f"""#{data["number"]} {data["position"]} {data["name"]}"""
         info = f"""Team:{data["team"]} From:{data["nationality"]} Age:{data["age"]}"""
         text = (
-            format_as_header(escape_special_chars(header)) + "\n" + format_as_code(info)
+            format_as_header(escape_special_chars(header))
+            + "\n"
+            + format_as_code(info)
+            + "\n"
         )
         if data["stats"] is not None:
             if data["position"] == "G":
@@ -252,7 +255,7 @@ class NHLFormatter(NHLBase):
                     f"""S:{data["stats"]["shots"]} """
                     f"""S%:{round(data["stats"]["shotPct"], 2)}\n"""
                     f"""PIM:{data["stats"]["pim"]} """
-                    f"""TOI/G: {data["stats"]["timeOnIcePerGame"]}"""
+                    f"""TOI/G:{data["stats"]["timeOnIcePerGame"]}"""
                 )
             text += format_as_header("Stats:") + "\n" + format_as_code(stats)
         text += format_as_url(url)
