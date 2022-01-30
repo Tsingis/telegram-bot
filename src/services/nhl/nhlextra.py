@@ -1,6 +1,7 @@
 from .nhlbase import NHLBase
 from ..utils import set_soup
 from ...logger import logging
+from re import compile
 
 
 logger = logging.getLogger(__name__)
@@ -18,7 +19,10 @@ class NHLExtra(NHLBase):
         url = f"https://www.capfriendly.com/players/{name}"
         try:
             soup = set_soup(url, target_encoding="utf-8")
-            table = soup.find("table", {"class": "cntrct fixed"})
+            table = soup.find(
+                "table",
+                {"class": compile("^cntrct fixed")},
+            )
             rows = table.find_all("tr")[1:-1]  # Skip header and total rows
             contract_rows = [row.find_all("td") for row in rows]
             data = [
