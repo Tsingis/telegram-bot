@@ -10,9 +10,8 @@ logger = logging.getLogger(__name__)
 class FormulaOneAdvanced(FormulaOneBase):
     BASE_URL = "https://www.formula1.com"
 
-    def __init__(self, date=datetime.utcnow()):
+    def __init__(self):
         super().__init__()
-        self.date = date
 
     def get_results(self, amount=10):
         """
@@ -22,10 +21,19 @@ class FormulaOneAdvanced(FormulaOneBase):
         try:
             soup = set_soup(url)
             races_table = soup.find("table", {"class": "resultsarchive-table"})
-            results_href = races_table.find_all("a")[-1]["href"]
-            results_url = self.BASE_URL + results_href
+            if races_table is None:
+                logger.warning(f"Races table not found for year {self.date.year}")
+                return
+            race_results = races_table.find_all("a")
+            if not race_results:
+                logger.warning(f"No past races found for year {self.date.year}")
+                return
+            results_url = self.BASE_URL + race_results[-1]["href"]
             soup = set_soup(results_url)
             table = soup.find("table", {"class": "resultsarchive-table"})
+            if table is None:
+                logger.warning(f"Results table not found for year {self.date.year}")
+                return
             rows = table.find_all("tr")[1 : amount + 1]
             driver_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
@@ -40,7 +48,7 @@ class FormulaOneAdvanced(FormulaOneBase):
             ]
             return {"results": results, "url": results_url}
         except Exception:
-            logger.exception("Error getting race results")
+            logger.exception(f"Error getting race results for year {self.date.year}")
 
     def get_driver_standings(self, amount=5):
         """
@@ -50,6 +58,11 @@ class FormulaOneAdvanced(FormulaOneBase):
         try:
             soup = set_soup(url)
             table = soup.find("table", {"class": "resultsarchive-table"})
+            if table is None:
+                logger.warning(
+                    f"Driver standings table not found for year {self.date.year}"
+                )
+                return
             rows = table.find_all("tr")[1 : amount + 1]
             driver_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
@@ -64,16 +77,23 @@ class FormulaOneAdvanced(FormulaOneBase):
             ]
             return {"driverStandings": standings, "driverUrl": url}
         except Exception:
-            logger.exception("Error getting driver standings")
+            logger.exception(
+                f"Error getting driver standings for year {self.date.year}"
+            )
 
     def get_team_standings(self, amount=5):
         """
         Gets top teams from overall standings and url for more details
         """
-        url = f"{self.BASE_URL}/en/results.html/{self.date.year}/team.html"
+        url = f"{self.BASE_URL}/en/results.html/{self.date.year}/teams.html"
         try:
             soup = set_soup(url)
             table = soup.find("table", {"class": "resultsarchive-table"})
+            if table is None:
+                logger.warning(
+                    f"Team standings table not found for year {self.date.year}"
+                )
+                return
             rows = table.find_all("tr")[1 : amount + 1]
             team_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
@@ -88,7 +108,7 @@ class FormulaOneAdvanced(FormulaOneBase):
             ]
             return {"teamStandings": standings, "teamUrl": url}
         except Exception:
-            logger.exception("Error getting team standings")
+            logger.exception(f"Error getting team standings {self.date.year}")
 
     def get_upcoming(self):
         """
@@ -101,7 +121,7 @@ class FormulaOneAdvanced(FormulaOneBase):
             )
             return race
         except Exception:
-            logger.exception("Error getting upcoming race")
+            logger.exception(f"Error getting upcoming race for year {self.date.year}")
 
     def find_circuit_image(self, url):
         """

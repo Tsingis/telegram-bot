@@ -43,7 +43,7 @@ class WeatherSearch:
                 info["amount"] = round(data["rain"]["1h"], 2)
             return info
         except Exception:
-            logger.exception(f"Error getting info for location: {location}")
+            logger.exception(f"Error getting info for location {location}")
 
     def format_info(self, data, location):
         info = {
@@ -68,7 +68,7 @@ class WeatherSearch:
         try:
             return f"""https://openweathermap.org/img/wn/{data["icon"]}@4x.png"""
         except Exception:
-            logger.exception(f"Error getting weather icon for data: {data}")
+            logger.exception(f"Error getting weather icon for data {data}")
 
     # Get coordinates for given location
     def _get_coords(self, location):
@@ -83,4 +83,4 @@ class WeatherSearch:
             coords = data["results"][0]["geometry"]["location"]
             return coords
         except Exception:
-            logger.exception(f"Error getting coordinates for location: {location}")
+            logger.exception(f"Error getting coordinates for location {location}")

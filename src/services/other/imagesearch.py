@@ -24,7 +24,7 @@ class ImageSearch:
                 image = choice(images)
                 return image
         except Exception:
-            logger.exception(f"Error getting image with keyword: {keyword}")
+            logger.exception(f"Error getting image with keyword {keyword}")
 
     # Get image data
     def _get_data(self, keyword):

@@ -21,7 +21,7 @@ def get(url, params={}):
             return res
         res.raise_for_status()
     except requests.exceptions.HTTPError:
-        logger.exception(f"Error getting data with url: {url}")
+        logger.exception(f"Error getting data with url {url}")
 
 
 def set_soup(url, target_encoding="latin-1"):
@@ -33,7 +33,7 @@ def set_soup(url, target_encoding="latin-1"):
         text = res.text.encode(target_encoding)
         return BeautifulSoup(text, "html.parser")
     except Exception:
-        logger.exception(f"Error setting soup with url: {url}")
+        logger.exception(f"Error setting soup with url {url}")
 
 
 def convert_timezone(date, source_tz=None, target_tz=None):

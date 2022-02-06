@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 class FormulaOneBase:
     CALENDAR_URL = "http://www.formula1.com/calendar/Formula_1_Official_Calendar.ics"
 
-    def __init__(self):
+    def __init__(self, date=datetime.utcnow()):
+        self.date = date
         self.source_timezone = "Europe/London"
         self.source_datetime_pattern = "%Y-%m-%dT%H:%M:%S.%f"
         self.race_weekends = self._get_race_weekends()
@@ -27,6 +28,9 @@ class FormulaOneBase:
             all_events = [
                 self._event_to_dict(event) for event in calendar.walk("VEVENT")
             ]
+            if not all_events:
+                logger.warning(f"No events available for year {self.date.year}")
+                return
             events = sorted(
                 self._filter_cancelled_events(all_events),
                 key=lambda x: x["startTime"],
@@ -36,7 +40,9 @@ class FormulaOneBase:
             race_weekends = self._events_to_race_weekends(qualifs, races)
             return race_weekends
         except Exception:
-            logger.exception(f"Error getting data for url: {self.CALENDAR_URL}")
+            logger.exception(
+                f"Error getting calendar data with url {self.CALENDAR_URL}"
+            )
 
     def _event_to_dict(self, event):
         uid = str(event["UID"])
