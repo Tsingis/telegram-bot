@@ -20,7 +20,6 @@ class NHLBase:
     def get_player(self, player_id):
         try:
             url = f"{self.BASE_URL}/people/{player_id}"
-            print(url)
             res = get(url).json()
             info = res["people"][0]
             player = {
@@ -101,7 +100,6 @@ class NHLBase:
         try:
             date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/standings/byDivision?date={date}"
-            print(url)
             res = get(url).json()
             divs = [
                 {
