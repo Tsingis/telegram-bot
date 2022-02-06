@@ -23,15 +23,15 @@ class NHLAdvanced(NHLBase):
             results = [
                 {
                     "homeTeam": {
-                        "name": self.teams[game["teams"]["home"]["team"]["name"]][
-                            "shortName"
-                        ],
+                        "name": self.get_team_shortname(
+                            game["teams"]["home"]["team"]["name"]
+                        ),
                         "goals": game["teams"]["home"]["goals"],
                     },
                     "awayTeam": {
-                        "name": self.teams[game["teams"]["away"]["team"]["name"]][
-                            "shortName"
-                        ],
+                        "name": self.get_team_shortname(
+                            game["teams"]["away"]["team"]["name"]
+                        ),
                         "goals": game["teams"]["away"]["goals"],
                     },
                     "period": game["currentPeriodOrdinal"]
@@ -52,8 +52,8 @@ class NHLAdvanced(NHLBase):
         try:
             games = self.get_games(self.date)
             for game in games:
-                game["homeTeam"] = self.teams[game["homeTeam"]]["shortName"]
-                game["awayTeam"] = self.teams[game["awayTeam"]]["shortName"]
+                game["homeTeam"] = self.get_team_shortname(game["homeTeam"])
+                game["awayTeam"] = self.get_team_shortname(game["awayTeam"])
             return games
         except Exception:
             logger.exception("Error getting upcoming matches")
@@ -95,9 +95,9 @@ class NHLAdvanced(NHLBase):
                     "firstName": player["person"]["firstName"],
                     "lastName": player["person"]["lastName"],
                     "nationality": player["person"]["nationality"],
-                    "team": self.teams[player["person"]["currentTeam"]["name"]][
-                        "shortName"
-                    ],
+                    "team": self.get_team_shortname(
+                        player["person"]["currentTeam"]["name"]
+                    ),
                     "stats": player["stats"],
                 }
                 for player in playersData
@@ -123,7 +123,7 @@ class NHLAdvanced(NHLBase):
                 if player["name"].lower() == name.lower()
             )
             player = self.get_player(player_id)
-            player["team"] = self.teams[player["team"]]["shortName"]
+            player["team"] = self.get_team_shortname(player["team"])
             player["stats"] = self.get_player_season_stats(player_id)
             return player
         except Exception:

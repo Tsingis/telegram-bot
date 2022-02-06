@@ -158,8 +158,8 @@ class NHLPlayoffs(NHLBase):
         )
         return {
             "matchup": {
-                "top": self.teams[top_team]["shortName"],
-                "bottom": self.teams[bottom_team]["shortName"],
+                "top": self.get_team_shortname(top_team),
+                "bottom": self.get_team_shortname(bottom_team),
             },
             "status": series["currentGame"]["seriesSummary"]["seriesStatusShort"],
             "winner": self._get_matchup_winner(teams),
@@ -168,4 +168,4 @@ class NHLPlayoffs(NHLBase):
     def _get_matchup_winner(self, matchup_teams):
         for team in matchup_teams:
             if team["seriesRecord"]["wins"] == 4:
-                return self.teams[team["team"]["name"]]["shortName"]
+                return self.get_team_shortname(team["team"]["name"])

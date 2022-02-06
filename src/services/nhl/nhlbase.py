@@ -168,3 +168,8 @@ class NHLBase:
             return teams
         except Exception:
             logger.exception("Error getting teams")
+
+    def get_team_shortname(self, name):
+        if name in self.teams:
+            return self.teams[name]["shortName"]
+        return name
