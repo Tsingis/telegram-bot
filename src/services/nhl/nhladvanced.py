@@ -127,9 +127,12 @@ class NHLAdvanced(NHLBase):
             rosters = [self.get_roster(id) for id in team_ids]
             players = [player for roster in rosters for player in roster]
             player_id = next(
-                player["id"]
-                for player in players
-                if player["name"].lower() == name.lower()
+                (
+                    player["id"]
+                    for player in players
+                    if player["name"].lower() == name.lower()
+                ),
+                None,
             )
             if player_id is None:
                 logger.warn(f"Player not found with name {name}")

@@ -115,7 +115,7 @@ class NHLBase:
                     "division": div["division"],
                     "teams": [
                         {
-                            "name": self.teams[team["team"]["name"]]["shortName"],
+                            "name": self.get_team_shortname(team["team"]["name"]),
                             "points": team["points"],
                             "games": team["gamesPlayed"],
                             "record": team["leagueRecord"],
@@ -139,7 +139,7 @@ class NHLBase:
                     "conference": conf["conference"]["name"],
                     "teams": [
                         {
-                            "name": self.teams[wild["team"]["name"]]["shortName"],
+                            "name": self.get_team_shortname(wild["team"]["name"]),
                             "points": wild["points"],
                             "games": wild["gamesPlayed"],
                             "record": wild["leagueRecord"],
