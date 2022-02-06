@@ -23,8 +23,13 @@ class NHLExtra(NHLBase):
                 "table",
                 {"class": compile("^cntrct fixed")},
             )
-            rows = table.find_all("tr")[1:-1]  # Skip header and total rows
-            contract_rows = [row.find_all("td") for row in rows]
+            if table is None:
+                logger.warning(f"Contract table not found for player {name}")
+                return
+            rows = table.find_all("tr")
+            contract_rows = [
+                row.find_all("td") for row in rows[1:-1]
+            ]  # Skip header and total rows
             data = [
                 {
                     "season": cols[0].text.replace("-", "20"),
@@ -44,7 +49,7 @@ class NHLExtra(NHLBase):
             )
             return {"contract": contract, "url": url}
         except Exception:
-            logger.exception(f"Error getting player contract for player: {name}")
+            logger.exception(f"Error getting player contract for player {name}")
 
     def get_scoring_leaders(self, amount=10):
         """
@@ -55,6 +60,9 @@ class NHLExtra(NHLBase):
             url = f"https://www.quanthockey.com/nhl/seasons/{season}-nhl-players-stats.html"
             soup = set_soup(url)
             table = soup.find("table", {"id": "statistics"})
+            if table is None:
+                logger.warning(f"Stats table not found for season {season}")
+                return
             body_rows = [row for row in table.find("tbody").find_all("tr")][:amount]
             stats = [[stats.text for stats in row.find_all("td")] for row in body_rows]
             data = [
@@ -71,4 +79,4 @@ class NHLExtra(NHLBase):
             ]
             return data
         except Exception:
-            logger.exception("Error getting scoring leaders")
+            logger.exception(f"Error getting scoring leaders for season {season}")

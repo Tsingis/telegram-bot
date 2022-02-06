@@ -20,6 +20,7 @@ class NHLBase:
     def get_player(self, player_id):
         try:
             url = f"{self.BASE_URL}/people/{player_id}"
+            print(url)
             res = get(url).json()
             info = res["people"][0]
             player = {
@@ -33,22 +34,27 @@ class NHLBase:
             }
             return player
         except Exception:
-            logger.exception(f"Error getting player with id: {player_id}")
+            logger.exception(f"Error getting player id {player_id}")
 
     def get_player_season_stats(self, player_id):
         try:
             url = f"{self.BASE_URL}/people/{player_id}/stats?stats=statsSingleSeason&season={self.season}"
             res = get(url).json()
+            if not res["stats"][0]["splits"]:
+                logger.warning(f"No season stats found for player id {player_id}")
+                return
             stats = res["stats"][0]["splits"][0]["stat"]
             return stats
         except Exception:
-            logger.exception(f"Error getting player stats with id: {player_id}")
+            logger.exception(f"Error getting season stats for player id {player_id}")
 
     def get_games(self, date):
         try:
             date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/schedule?date={date}"
             res = get(url).json()
+            if not res["dates"]:
+                return
             games = [
                 {
                     "id": game["gamePk"],
@@ -61,7 +67,7 @@ class NHLBase:
             ]
             return games
         except Exception:
-            logger.exception(f"Error getting games for date: {date}")
+            logger.exception(f"Error getting games for date {date}")
 
     def get_games_linescore(self, game_id):
         try:
@@ -69,7 +75,7 @@ class NHLBase:
             res = get(url).json()
             return res
         except Exception:
-            logger.exception(f"Error getting games linescore with game id: {game_id}")
+            logger.exception(f"Error getting games linescore with game id {game_id}")
 
     def get_games_boxscore(self, game_id):
         try:
@@ -77,7 +83,7 @@ class NHLBase:
             res = get(url).json()
             return res
         except Exception:
-            logger.exception(f"Error getting games boxscore with game id: {game_id}")
+            logger.exception(f"Error getting games boxscore with game id {game_id}")
 
     def get_roster(self, team_id):
         try:
@@ -89,12 +95,13 @@ class NHLBase:
             ]
             return roster
         except Exception:
-            logger.exception(f"Error getting rosters with team id: {team_id}")
+            logger.exception(f"Error getting rosters with team id {team_id}")
 
     def get_division_leaders(self, date, amount=3):
         try:
             date = date.strftime(self.target_date_format)
             url = f"{self.BASE_URL}/standings/byDivision?date={date}"
+            print(url)
             res = get(url).json()
             divs = [
                 {

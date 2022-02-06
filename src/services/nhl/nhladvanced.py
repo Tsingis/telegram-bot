@@ -16,9 +16,13 @@ class NHLAdvanced(NHLBase):
         """
         date = self.date - timedelta(days=1)
         try:
+            games = self.get_games(date)
+            if games is None:
+                logger.warning(f"No games found for date {date}")
+                return
             games = [
                 self.get_games_linescore(game["id"]) | {"status": game["status"]}
-                for game in self.get_games(date)
+                for game in games
             ]
             results = [
                 {
@@ -43,7 +47,7 @@ class NHLAdvanced(NHLBase):
             ]
             return results
         except Exception:
-            logger.exception("Error getting results")
+            logger.exception(f"Error getting results for date {date}")
 
     def get_upcoming(self):
         """
@@ -51,12 +55,15 @@ class NHLAdvanced(NHLBase):
         """
         try:
             games = self.get_games(self.date)
+            if games is None:
+                logger.warning(f"No games found for date {self.date}")
+                return
             for game in games:
                 game["homeTeam"] = self.get_team_shortname(game["homeTeam"])
                 game["awayTeam"] = self.get_team_shortname(game["awayTeam"])
             return games
         except Exception:
-            logger.exception("Error getting upcoming matches")
+            logger.exception(f"Error getting upcoming matches for date {self.date}")
 
     def get_standings(self):
         """
@@ -71,7 +78,7 @@ class NHLAdvanced(NHLBase):
             standings = {"divisionLeaders": division_leaders, "wildcards": wildcards}
             return standings
         except Exception:
-            logger.exception("Error getting standings")
+            logger.exception(f"Error getting standings for date {self.date}")
 
     def get_players_stats(self):
         """
@@ -87,7 +94,9 @@ class NHLAdvanced(NHLBase):
                 elem
                 for player in player_ids
                 for elem in [
-                    value for key, value in player.items() if key.startswith("ID")
+                    value
+                    for key, value in player.items()
+                    if key.lower().startswith("id")
                 ]
             ]
             players = [
@@ -107,7 +116,7 @@ class NHLAdvanced(NHLBase):
             ]
             return players
         except Exception:
-            logger.exception("Error getting players stats")
+            logger.exception(f"Error getting players stats for date {date}")
 
     def get_player_stats(self, name):
         """
@@ -122,9 +131,12 @@ class NHLAdvanced(NHLBase):
                 for player in players
                 if player["name"].lower() == name.lower()
             )
+            if player_id is None:
+                logger.warn(f"Player not found with name {name}")
+                return
             player = self.get_player(player_id)
             player["team"] = self.get_team_shortname(player["team"])
             player["stats"] = self.get_player_season_stats(player_id)
             return player
         except Exception:
-            logger.exception(f"Error getting player stats for player: {name}")
+            logger.exception(f"Error getting player stats with name {name}")
