@@ -1,6 +1,7 @@
 /node_modules
 /.serverless
 /.vscode
+/venv
 *__pycache__
 package-lock.json
 .env*
