@@ -1,9 +1,9 @@
 import telegram
 import os
 import json
-from src.logger import logging
-from src.command import Command, ResponseType
-from src.message import Message
+from .logger import logging
+from .command import Command, ResponseType
+from .message import Message
 
 
 logger = logging.getLogger(__name__)
