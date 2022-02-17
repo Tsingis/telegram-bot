@@ -32,7 +32,7 @@ class NHLFormatter(NHLBase):
                 f"""{home} {game["homeTeam"]["goals"]} - {game["awayTeam"]["goals"]} {away} {info}""".strip()
             )
 
-        url = "https://www.nhl.com/scores/"
+        url = "https://www.nhl.com/scores"
         text = (
             format_as_header("Results:")
             + "\n"
@@ -134,7 +134,7 @@ class NHLFormatter(NHLBase):
             )
 
         header = "Standings:"
-        url = "https://www.nhl.com/standings/"
+        url = "https://www.nhl.com/standings"
         standings = "\n".join([e + w for w, e in zip(west, east)])
         return (
             format_as_header(header)
@@ -294,7 +294,7 @@ class NHLFormatter(NHLBase):
             )
             for player in data
         ]
-        url = "http://www.nhl.com/stats/skaters"
+        url = "https://www.nhl.com/stats/skaters"
         text = (
             format_as_header("Scoring leaders:")
             + "\n"
