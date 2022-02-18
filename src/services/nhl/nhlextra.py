@@ -79,7 +79,9 @@ class NHLExtra(NHLBase):
         try:
             res = get(url, params).json()
             if not res["data"]:
-                logger.warning(f"No scoring info found for season {self.season}")
+                logger.warning(
+                    f"No scoring info found for season {self.season} with nationatality {nationality}"
+                )
                 return
             data = [
                 {
@@ -95,4 +97,6 @@ class NHLExtra(NHLBase):
             ]
             return data
         except Exception:
-            logger.exception(f"Error getting scoring leaders for season {self.season}")
+            logger.exception(
+                f"Error getting scoring leaders for season {self.season} with nationality {nationality}"
+            )
