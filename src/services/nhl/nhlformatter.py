@@ -147,7 +147,8 @@ class NHLFormatter(NHLBase):
         players = [
             player
             for player in data
-            if player["nationality"] == filter or player["team"] == filter
+            if player["nationality"] == filter.upper()
+            or player["team"] == filter.upper()
         ]
         if len(players) > 0:
             skaters_stats = [
