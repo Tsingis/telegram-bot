@@ -36,6 +36,24 @@ def set_soup(url, target_encoding="latin-1"):
         logger.exception(f"Error setting soup with url {url}")
 
 
+def find_first_int(strings):
+    """
+    Finds first integer in list of strings
+    """
+    for string in strings:
+        if string.strip().isdigit():
+            return int(string)
+
+
+def find_first_word(strings):
+    """
+    Finds first word in list of strings
+    """
+    for string in strings:
+        if string.strip().isalpha():
+            return string
+
+
 def convert_timezone(date, source_tz=None, target_tz=None):
     """
     Convert date between timezones

@@ -1,5 +1,10 @@
 from enum import Enum
-from .services.utils import format_as_header, escape_special_chars
+from .services.utils import (
+    format_as_header,
+    escape_special_chars,
+    find_first_int,
+    find_first_word,
+)
 from .services.formula.formulaoneadvanced import FormulaOneAdvanced
 from .services.formula.formulaoneformatter import FormulaOneFormatter
 from .services.other.imagesearch import ImageSearch
@@ -186,16 +191,12 @@ class Command:
     # NHL scoring leaders
     def _nhl_scoring(self):
         text = "No scoring leaders available"
-        try:
-            amount = int(self.text.split(self.NHL_SCORING_CMD)[-1].strip())
-            if amount < 5:
-                amount = 5
-        except ValueError:
-            logger.info(
-                "Failed to parse input for scoring leaders. Using default value."
-            )
+        filters = self.text.split(self.NHL_SCORING_CMD)[-1].strip().split(" ")
+        nationality = find_first_word(filters)
+        amount = find_first_int(filters)
+        if amount is None:
             amount = 10
-        info = self.nhl_extra.get_scoring_leaders(amount)
+        info = self.nhl_extra.get_scoring_leaders(amount, nationality)
         if info is not None:
             text = self.nhl_formatter.format_scoring_leaders(info)
         return Response(text=text)
@@ -203,7 +204,7 @@ class Command:
     # NHL stats for players of given nationality or team from latest round
     def _nhl_players_stats(self):
         text = "No players' stats available"
-        filter_word = self.text.split(self.NHL_PLAYERS_STATS_CMD)[-1].strip().upper()
+        filter_word = self.text.split(self.NHL_PLAYERS_STATS_CMD)[-1].strip()
         stats = self.nhl_advanced.get_players_stats()
         if stats is not None:
             if not filter_word:

@@ -1,8 +1,8 @@
 from .nhlbase import NHLBase
-from ..utils import set_soup
+from ..utils import set_soup, get
 from ...logger import logging
 from re import compile
-
+from json import dumps
 
 logger = logging.getLogger(__name__)
 
@@ -51,32 +51,52 @@ class NHLExtra(NHLBase):
         except Exception:
             logger.exception(f"Error getting player contract for player {name}")
 
-    def get_scoring_leaders(self, amount=10):
+    def get_scoring_leaders(self, amount=10, nationality=None):
         """
-        Scoring leaders for current season from Quanthockey
+        Scoring leaders for current season from NHL
         """
+        url = "https://api.nhle.com/stats/rest/en/skater/summary"
+        sort = [
+            {"property": "points", "direction": "DESC"},
+            {"property": "goals", "direction": "DESC"},
+            {"property": "assists", "direction": "DESC"},
+            {"property": "playerId", "direction": "ASC"},
+        ]
+        exp = (
+            f"""gameTypeId=2 and seasonId<={self.season} and seasonId>={self.season}"""
+        )
+        if nationality is not None:
+            exp += f"""and nationalityCode=\"{nationality.upper()}\""""
+        params = {
+            "isAggregate": "false",
+            "isGame": "false",
+            "sort": dumps(sort),
+            "start": 0,
+            "limit": 100,
+            "factCayenneExp": "gamesPlayed>=1",
+            "cayenneExp": exp,
+        }
         try:
-            season = f"{self.season[:4]}-{self.season[-2:]}"
-            url = f"https://www.quanthockey.com/nhl/seasons/{season}-nhl-players-stats.html"
-            soup = set_soup(url)
-            table = soup.find("table", {"id": "statistics"})
-            if table is None:
-                logger.warning(f"Stats table not found for season {season}")
+            res = get(url, params).json()
+            if not res["data"]:
+                logger.warning(
+                    f"No scoring info found for season {self.season} with nationatality {nationality}"
+                )
                 return
-            body_rows = [row for row in table.find("tbody").find_all("tr")][:amount]
-            stats = [[stats.text for stats in row.find_all("td")] for row in body_rows]
             data = [
                 {
                     "rank": idx + 1,
-                    "name": row.find_all("th")[2].text,
-                    "team": stats[idx][0],
-                    "gamesPlayed": int(stats[idx][3]),
-                    "goals": int(stats[idx][4]),
-                    "assists": int(stats[idx][5]),
-                    "points": int(stats[idx][6]),
+                    "name": player["lastName"],
+                    "team": player["teamAbbrevs"],
+                    "gamesPlayed": player["gamesPlayed"],
+                    "goals": player["goals"],
+                    "assists": player["assists"],
+                    "points": player["points"],
                 }
-                for idx, row in enumerate(body_rows)
+                for idx, player in enumerate(res["data"][:amount])
             ]
             return data
         except Exception:
-            logger.exception(f"Error getting scoring leaders for season {season}")
+            logger.exception(
+                f"Error getting scoring leaders for season {self.season} with nationality {nationality}"
+            )

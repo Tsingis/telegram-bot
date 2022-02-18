@@ -18,12 +18,14 @@ class WeatherSearch:
     def get_info(self, location):
         try:
             coords = self._get_coords(location)
-            url = (
-                "https://api.openweathermap.org/data/2.5/weather?"
-                + f"""lat={coords["lat"]}&lon={coords["lng"]}"""
-                + f"&units=metric&appid={self.OPENWEATHER_API_KEY}"
-            )
-            data = get(url).json()
+            url = "https://api.openweathermap.org/data/2.5/weather"
+            params = {
+                "lat": coords["lat"],
+                "lon": coords["lng"],
+                "units": "metric",
+                "appid": self.OPENWEATHER_API_KEY,
+            }
+            data = get(url, params).json()
             info = {
                 "description": data["weather"][0]["description"],
                 "temperature": round(data["main"]["temp"], 1),
