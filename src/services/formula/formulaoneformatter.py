@@ -69,15 +69,20 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         return text
 
     def format_upcoming(self, data):
-        data["qualifyingTime"] = self._format_date(data["qualifyingTime"])
-        data["raceTime"] = self._format_date(data["raceTime"])
+        quali = self._format_date(data["qualifyingTime"])
+        race = self._format_date(data["raceTime"])
         header = f"""Upcoming race: {data["raceNumber"]}/{self.races_amount}"""
         formatted_race_info = (
             f"""{data["raceName"]}\n"""
             + f"""{data["location"]}\n"""
-            + f"""Qualif {data["qualifyingTime"]}\n"""
-            + f"""Race {data["raceTime"]}"""
+            + f"Qualif {quali}\n"
         )
+
+        if "sprintTime" in data:
+            sprint = self._format_date(data["sprintTime"])
+            formatted_race_info += f"Sprint {sprint}\n"
+
+        formatted_race_info += f"Race {race}"
         text = format_as_header(header) + "\n" + format_as_code(formatted_race_info)
         return text
 

@@ -1,8 +1,6 @@
 import os
 from datetime import datetime
-from icalendar import Calendar
-import unicodedata
-from ..utils import get, convert_timezone
+from ..utils import get
 from ...logger import logging
 
 
@@ -10,94 +8,84 @@ logger = logging.getLogger(__name__)
 
 
 class FormulaOneBase:
+    REGION = os.environ["REGION"]
+    GOOGLE_API_KEY = os.environ["GOOGLE_API"]
     F1_CALENDAR_URL = os.environ["F1_CALENDAR_URL"]
 
     def __init__(self, date=datetime.utcnow()):
         self.date = date
-        self.source_timezone = "Europe/London"
-        self.source_datetime_pattern = "%Y-%m-%dT%H:%M:%S.%f"
+        self.source_datetime_pattern = "%Y-%m-%dT%H:%M:%SZ"
         self.race_weekends = self._get_race_weekends()
         self.races_amount = len(self.race_weekends)
 
     def _get_race_weekends(self):
         """
-        Parse and combine scheduled qualifying and race events to race weekends
+        Parse and combine scheduled qualifying, sprint and race events to race weekends
         """
         try:
             res = get(self.F1_CALENDAR_URL)
-            calendar = Calendar.from_ical(res.content)
-            all_events = [
-                self._event_to_dict(event) for event in calendar.walk("VEVENT")
-            ]
-            if not all_events:
+            data = res.json()
+            if not data:
                 logger.warning(f"No events available for year {self.date.year}")
                 return
-            events = sorted(
-                self._filter_cancelled_events(all_events),
-                key=lambda x: x["startTime"],
-            )
-            qualifs = self._filter_events_by_type(events, ["qualifying"])
-            races = self._filter_events_by_type(events, ["race"])
-            race_weekends = self._events_to_race_weekends(qualifs, races)
+            race_weekends = [
+                self._event_to_race_weekend(event) for event in data["races"]
+            ]
             return race_weekends
         except Exception:
             logger.exception(
                 f"Error getting calendar data with url {self.F1_CALENDAR_URL}"
             )
 
-    def _event_to_dict(self, event):
-        uid = str(event["UID"])
-        return {
-            "id": uid.split("@")[-1].strip(),
-            "status": str(event["STATUS"]).strip(),
-            "type": uid.split("@")[0].strip(),
-            "startTime": event["DTSTART"].dt,
-            "endTime": event["DTEND"].dt,
-            "summary": self._normalize_text_encoding(event["SUMMARY"]),
-            "description": str(event["DESCRIPTION"]).strip(),
-            "location": str(event["LOCATION"]).strip(),
+    def _event_to_race_weekend(self, event):
+        country = self._find_country(event["latitude"], event["longitude"])
+        race_weekend = {
+            "raceNumber": event["round"],
+            "raceName": event["name"],
+            "country": country,
+            "location": event["location"],
+            "qualifyingTime": self._string_to_datetime(event["sessions"]["qualifying"]),
+            "raceTime": self._string_to_datetime(event["sessions"]["gp"]),
+            "raceUrl": self._get_race_url(country),
         }
 
-    def _events_to_race_weekends(self, qualifs, races):
-        race_weekends = []
-        for index, race in enumerate(races):
-            qualif = next(
-                (qualif for qualif in qualifs if qualif["id"] == race["id"]), None
+        if not race_weekend["raceName"].lower().endswith("grand prix"):
+            race_weekend["raceName"] = race_weekend["raceName"] + " Grand Prix"
+
+        if "sprint" in event["sessions"]:
+            race_weekend["sprintTime"] = self._string_to_datetime(
+                event["sessions"]["sprint"]
             )
-            if qualif is None:
-                raise Exception("No matching race and qualifying events")
-            race_weekend = {
-                "raceNumber": index + 1,
-                "raceName": race["summary"].split("-")[0].strip(),
-                "qualifyingTime": self._format_date_utc(qualif["startTime"]),
-                "raceTime": self._format_date_utc(race["startTime"]),
-                "raceUrl": self._find_race_url(race["description"]),
-                "location": race["location"],
+
+        return race_weekend
+
+    def _get_race_url(self, country):
+        base_url = "https://www.formula1.com/en/racing"
+        return f"""{base_url}/{self.date.year}/{country.replace(" ", "_")}.html"""
+
+    def _find_country(self, lat, lng):
+        try:
+            url = "https://maps.googleapis.com/maps/api/geocode/json"
+            params = {
+                "key": self.GOOGLE_API_KEY,
+                "latlng": f"{lat},{lng}",
+                "region": self.REGION.lower(),
             }
-            race_weekends.append(race_weekend)
-        return race_weekends
+            data = get(url, params).json()
+            components = data["results"][0]["address_components"]
+            country = next(
+                (
+                    component["long_name"].title()
+                    for component in components
+                    if "country" in component["types"]
+                ),
+                None,
+            )
+            return country
+        except Exception:
+            logger.exception(
+                f"Error getting country for latitude {lat} and longitude {lng}"
+            )
 
-    def _filter_cancelled_events(self, events):
-        return [event for event in events if event["status"].lower() != "cancelled"]
-
-    def _filter_events_by_type(self, events, types):
-        return [
-            event
-            for event in events
-            if any(keyword.lower() in event["type"].lower() for keyword in types)
-        ]
-
-    def _find_race_url(self, text):
-        pattern = "https://www.formula1.com/en/racing"
-        return next(
-            (word for word in text.split(" ") if word.startswith(pattern)), pattern
-        )
-
-    def _format_date_utc(self, date):
-        date_tz_adjust = convert_timezone(date=date, source_tz=self.source_timezone)
-        date = date_tz_adjust.strftime(self.source_datetime_pattern)
+    def _string_to_datetime(self, date):
         return datetime.strptime(date, self.source_datetime_pattern)
-
-    def _normalize_text_encoding(self, text):
-        normalized = unicodedata.normalize("NFKD", text)
-        return normalized.encode("ascii", "ignore").decode("utf-8")
