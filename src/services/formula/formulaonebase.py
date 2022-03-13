@@ -42,7 +42,7 @@ class FormulaOneBase:
             return race_weekends
         except Exception:
             logger.exception(
-                f"Error getting calendar data with url {self.CALENDAR_URL}"
+                f"Error getting calendar data with url {self.F1_CALENDAR_URL}"
             )
 
     def _event_to_dict(self, event):
