@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from icalendar import Calendar
 import unicodedata
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class FormulaOneBase:
-    CALENDAR_URL = "http://www.formula1.com/calendar/Formula_1_Official_Calendar.ics"
+    F1_CALENDAR_URL = os.environ["F1_CALENDAR_URL"]
 
     def __init__(self, date=datetime.utcnow()):
         self.date = date
@@ -23,7 +24,7 @@ class FormulaOneBase:
         Parse and combine scheduled qualifying and race events to race weekends
         """
         try:
-            res = get(self.CALENDAR_URL)
+            res = get(self.F1_CALENDAR_URL)
             calendar = Calendar.from_ical(res.content)
             all_events = [
                 self._event_to_dict(event) for event in calendar.walk("VEVENT")
