@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Telegram bot test",
   "devDependencies": {
-    "serverless": "^3.7.4",
+    "serverless": "^3.7.5",
     "serverless-python-requirements": "^5.3.1"
   },
   "scripts": {
