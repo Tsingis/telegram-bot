@@ -74,7 +74,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         header = f"""Upcoming race: {data["raceNumber"]}/{self.races_amount}"""
         formatted_race_info = (
             f"""{data["raceName"]}\n"""
-            + f"""In {data["location"]}, {data["country"]}\n"""
+            + f"""{data["location"]}, {data["country"]}\n"""
             + f"Qualif {quali}\n"
         )
 
