@@ -116,7 +116,11 @@ class FormulaOneAdvanced(FormulaOneBase):
         """
         try:
             race = next(
-                (race for race in self.race_weekends if race["raceTime"] >= self.date),
+                (
+                    race
+                    for race in self.race_weekends
+                    if race["sessions"]["race"] >= self.date
+                ),
                 self.race_weekends[-1],
             )
             return race

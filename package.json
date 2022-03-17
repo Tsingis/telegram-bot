@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Telegram bot prod",
   "devDependencies": {
-    "serverless": "^3.7.5",
-    "serverless-python-requirements": "^5.3.1"
+    "serverless": "^3.7.7",
+    "serverless-python-requirements": "^5.4.0"
   },
   "scripts": {
     "deploy": "serverless deploy"
