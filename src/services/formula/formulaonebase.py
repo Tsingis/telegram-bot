@@ -40,22 +40,25 @@ class FormulaOneBase:
     def _event_to_race_weekend(self, event):
         country = self._find_country(event["latitude"], event["longitude"])
         race_weekend = {
-            "raceNumber": event["round"],
-            "raceName": event["name"],
+            "round": event["round"],
+            "name": event["name"],
             "country": country,
             "location": event["location"],
-            "qualifyingTime": self._string_to_datetime(event["sessions"]["qualifying"]),
-            "raceTime": self._string_to_datetime(event["sessions"]["gp"]),
             "raceUrl": self._get_race_url(country),
+            "sessions": {},
         }
 
-        if not race_weekend["raceName"].lower().endswith("grand prix"):
-            race_weekend["raceName"] = race_weekend["raceName"] + " Grand Prix"
+        if not race_weekend["name"].lower().endswith("grand prix"):
+            race_weekend["name"] = race_weekend["name"] + " Grand Prix"
 
-        if "sprint" in event["sessions"]:
-            race_weekend["sprintTime"] = self._string_to_datetime(
-                event["sessions"]["sprint"]
-            )
+        for session, date in event["sessions"].items():
+            if session == "gp":
+                key = "race"
+            elif session == "qualifying":
+                key = "qualif"
+            else:
+                key = session
+            race_weekend["sessions"][key] = self._string_to_datetime(date)
 
         return race_weekend
 

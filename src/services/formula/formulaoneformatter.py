@@ -28,8 +28,8 @@ class FormulaOneFormatter(FormulaOneAdvanced):
 
     def format_standings(self, data):
         upcoming = self.get_upcoming()
-        race_number = upcoming["raceNumber"]
-        if self.date <= upcoming["raceTime"]:
+        race_number = upcoming["round"]
+        if self.date <= upcoming["sessions"]["race"]:
             race_number -= 1
 
         for standing in data["teamStandings"]:
@@ -69,21 +69,13 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         return text
 
     def format_upcoming(self, data):
-        quali = self._format_date(data["qualifyingTime"])
-        race = self._format_date(data["raceTime"])
-        header = f"""Upcoming race: {data["raceNumber"]}/{self.races_amount}"""
-        formatted_race_info = (
-            f"""{data["raceName"]}\n"""
-            + f"""{data["location"]}, {data["country"]}\n"""
-            + f"Qualif {quali}\n"
-        )
+        header = f"""Upcoming race: {data["round"]}/{self.races_amount}"""
+        info = f"""{data["name"]}\n""" + f"""{data["location"]}, {data["country"]}"""
 
-        if "sprintTime" in data:
-            sprint = self._format_date(data["sprintTime"])
-            formatted_race_info += f"Sprint {sprint}\n"
+        for session, date in sorted(data["sessions"].items(), key=lambda x: x[1]):
+            info += f"\n{session.title()} {self._format_date(date)}"
 
-        formatted_race_info += f"Race {race}"
-        text = format_as_header(header) + "\n" + format_as_code(formatted_race_info)
+        text = format_as_header(header) + "\n" + format_as_code(info)
         return text
 
     def _format_date(self, date):
