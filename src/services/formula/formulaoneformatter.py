@@ -1,14 +1,13 @@
-from datetime import datetime
 from .formulaoneadvanced import FormulaOneAdvanced
-from ..utils import convert_timezone, format_as_header, format_as_code, format_as_url
+from ..utils import datetime_to_text, format_as_header, format_as_code, format_as_url
 
 
 class FormulaOneFormatter(FormulaOneAdvanced):
     def __init__(self):
         super().__init__()
-        self.target_timezone = "Europe/Helsinki"
         self.date_pattern = "%b %d"
         self.day_and_time_pattern = "%a at %H:%M"
+        self.timezone = "Europe/Helsinki"
 
     def format_results(self, data):
         url = data["url"]
@@ -73,7 +72,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         header = f"""Upcoming race: {data["round"]}/{self.races_amount}"""
         sessions = dict(sorted(data["sessions"].items(), key=lambda x: x[1]))
         first_date, last_date = min(sessions.values()), max(sessions.values())
-        date_info = f"{self._format_date(first_date, self.date_pattern)} to {self._format_date(last_date, self.date_pattern)}"
+        date_info = f"{datetime_to_text(first_date, self.date_pattern, self.timezone)} to {datetime_to_text(last_date, self.date_pattern, self.timezone)}"
 
         info = (
             f"""{data["name"]}\n"""
@@ -82,11 +81,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         )
 
         for session, date in sessions.items():
-            info += f"\n{self._format_date(date, self.day_and_time_pattern)} - {session.title()}"
+            info += f"\n{datetime_to_text(date, self.day_and_time_pattern, self.timezone)} - {session.title()}"
 
         text = format_as_header(header) + "\n" + format_as_code(info)
         return text
-
-    def _format_date(self, date, pattern):
-        date = convert_timezone(date=date, target_tz=self.target_timezone)
-        return datetime.strftime(date, pattern)

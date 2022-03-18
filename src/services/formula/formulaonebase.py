@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from ..utils import get
+from ..utils import get, text_to_datetime
 from ...logger import logging
 
 
@@ -58,7 +58,9 @@ class FormulaOneBase:
                 key = "qualif"
             else:
                 key = session
-            race_weekend["sessions"][key] = self._string_to_datetime(date)
+            race_weekend["sessions"][key] = text_to_datetime(
+                date, self.source_datetime_pattern
+            )
 
         return race_weekend
 
@@ -89,6 +91,3 @@ class FormulaOneBase:
             logger.exception(
                 f"Error getting country for latitude {lat} and longitude {lng}"
             )
-
-    def _string_to_datetime(self, date):
-        return datetime.strptime(date, self.source_datetime_pattern)

@@ -1,11 +1,11 @@
-from datetime import datetime
 from .nhlbase import NHLBase
 from ..utils import (
-    convert_timezone,
     format_as_header,
     format_as_code,
     format_as_url,
     escape_special_chars,
+    text_to_datetime,
+    datetime_to_text,
 )
 
 
@@ -44,10 +44,9 @@ class NHLFormatter(NHLBase):
     def format_upcoming(self, data):
         results = []
         for game in data:
-            date = datetime.strptime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
-            time = datetime.strftime(
-                convert_timezone(date=date, target_tz=self.target_timezone), "%H:%M"
-            )
+
+            date = text_to_datetime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
+            time = datetime_to_text(date, "%H:%M", self.timezone)
             if game["status"] == "Postponed":
                 results.append(f"""{game["homeTeam"]} - {game["awayTeam"]} Postponed""")
             else:
