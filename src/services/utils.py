@@ -1,5 +1,6 @@
 import re
 import requests
+from datetime import datetime
 from bs4 import BeautifulSoup
 from dateutil import tz
 from ..logger import logging
@@ -68,6 +69,15 @@ def convert_timezone(date, source_tz=None, target_tz=None):
         target_tz = tz.gettz(target_tz)
     date = date.replace(tzinfo=source_tz)
     return date.astimezone(target_tz)
+
+
+def text_to_datetime(text, pattern):
+    return datetime.strptime(text, pattern)
+
+
+def datetime_to_text(date, pattern, timezone=None):
+    date = convert_timezone(date=date, target_tz=timezone)
+    return datetime.strftime(date, pattern)
 
 
 def escape_special_chars(text):

@@ -1,13 +1,13 @@
-from datetime import datetime
 from .formulaoneadvanced import FormulaOneAdvanced
-from ..utils import convert_timezone, format_as_header, format_as_code, format_as_url
+from ..utils import datetime_to_text, format_as_header, format_as_code, format_as_url
 
 
 class FormulaOneFormatter(FormulaOneAdvanced):
     def __init__(self):
         super().__init__()
-        self.target_timezone = "Europe/Helsinki"
-        self.target_datetime_pattern = "on %a %b %d at %H:%M"
+        self.date_pattern = "%b %d"
+        self.day_and_time_pattern = "%a at %H:%M"
+        self.timezone = "Europe/Helsinki"
 
     def format_results(self, data):
         url = data["url"]
@@ -70,20 +70,18 @@ class FormulaOneFormatter(FormulaOneAdvanced):
 
     def format_upcoming(self, data):
         header = f"""Upcoming race: {data["round"]}/{self.races_amount}"""
-        info = f"""{data["name"]}\n""" + f"""{data["location"]}, {data["country"]}"""
+        sessions = dict(sorted(data["sessions"].items(), key=lambda x: x[1]))
+        first_date, last_date = min(sessions.values()), max(sessions.values())
+        date_info = f"{datetime_to_text(first_date, self.date_pattern, self.timezone)} to {datetime_to_text(last_date, self.date_pattern, self.timezone)}"
 
-        for session, date in sorted(data["sessions"].items(), key=lambda x: x[1]):
-            info += f"\n{session.title()} {self._format_date(date)}"
+        info = (
+            f"""{data["name"]}\n"""
+            + date_info
+            + f""" in {data["location"]}, {data["country"]}"""
+        )
+
+        for session, date in sessions.items():
+            info += f"\n{datetime_to_text(date, self.day_and_time_pattern, self.timezone)} - {session.title()}"
 
         text = format_as_header(header) + "\n" + format_as_code(info)
         return text
-
-    def _format_date(self, date):
-        date = convert_timezone(date=date, target_tz=self.target_timezone)
-        return datetime.strftime(date, self.target_datetime_pattern)
-
-    def _format_number(self, number):
-        """
-        Formats floating number without insignificant trailing zeroes
-        """
-        return f"{number:g}"
