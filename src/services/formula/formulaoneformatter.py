@@ -6,7 +6,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
     def __init__(self):
         super().__init__()
         self.date_pattern = "%b %d"
-        self.day_and_time_pattern = "%a at %H:%M"
+        self.day_and_time_pattern = "%a %H:%M"
         self.timezone = "Europe/Helsinki"
 
     def format_results(self, data):
@@ -76,8 +76,8 @@ class FormulaOneFormatter(FormulaOneAdvanced):
 
         info = (
             f"""{data["name"]}\n"""
+            + f"""{data["location"]}, {data["country"]}\n"""
             + date_info
-            + f""" in {data["location"]}, {data["country"]}"""
         )
 
         for session, date in sessions.items():
