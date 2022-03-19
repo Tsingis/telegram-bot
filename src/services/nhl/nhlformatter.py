@@ -84,56 +84,71 @@ class NHLFormatter(NHLBase):
         max_points = max(teams, key=lambda x: x["points"])
         adjust = len(str(max_points["points"]))
 
-        def format_team_info(data, type, value, left_adjust):
+        def format_team_info(data, type, value, adjust_value):
             return next(
                 [
                     (
                         f"""{team["name"]} {str(team["points"]).rjust(adjust)} """
                         + f"""{team["record"]["wins"]}-{team["record"]["losses"]}-{team["record"]["ot"]}"""
-                    ).ljust(left_adjust)
+                    ).ljust(adjust_value)
                     for team in item["teams"]
                 ]
                 for item in data
                 if value in item[type]
             )
 
-        def format_header(text, left_adjust):
-            return [f"{text.title()}".ljust(left_adjust)]
+        adjust_value_west = 16
+        adjust_value_east = 0
 
-        def format_division(division_name, teams, ljust_value):
-            division = format_header(division_name, ljust_value)
-            division.extend(
-                format_team_info(teams, "division", division_name, ljust_value)
-            )
-            return division
+        northwest = divisions[2]["name"]
+        southwest = divisions[3]["name"]
+        northeast = divisions[0]["name"]
+        southeast = divisions[1]["name"]
 
-        def format_wildcard(conference_name, teams, ljust_value):
-            division = format_header("Wild Card", ljust_value)
-            division.extend(
-                format_team_info(teams, "conference", conference_name, ljust_value)
-            )
-            return division
+        northwest_teams = format_team_info(
+            leaders, "division", northwest, adjust_value_west
+        )
+        southwest_teams = format_team_info(
+            leaders, "division", southwest, adjust_value_west
+        )
+        northeast_teams = format_team_info(
+            leaders, "division", northeast, adjust_value_east
+        )
+        southeast_teams = format_team_info(
+            leaders, "division", southeast, adjust_value_east
+        )
 
-        ljust_value_west = 0
-        ljust_value_east = 16
+        header_north = northwest.title().ljust(adjust_value_west) + northeast.title()
+        header_south = (
+            "\n" + southwest.title().ljust(adjust_value_west) + southeast.title()
+        )
 
-        northwest = format_division(divisions[0]["name"], leaders, ljust_value_west)
-        southwest = format_division(divisions[1]["name"], leaders, ljust_value_west)
-        northeast = format_division(divisions[2]["name"], leaders, ljust_value_east)
-        southeast = format_division(divisions[3]["name"], leaders, ljust_value_east)
+        teams_north = "\n".join(
+            [w + e for w, e in zip(northwest_teams, northeast_teams)]
+        )
+        teams_south = "\n".join(
+            [w + e for w, e in zip(southwest_teams, southeast_teams)]
+        )
 
-        standings = "\n".join([e + w for w, e in zip(northwest, northeast)])
-        standings += "\n\n" + "\n".join([e + w for w, e in zip(southwest, southeast)])
+        standings = (
+            header_north + "\n" + teams_north + "\n" + header_south + "\n" + teams_south
+        )
 
         if len(wilds) > 0:
-            wilds_west = format_wildcard(
-                divisions[0]["conference"], wilds, ljust_value_west
+            header_text = "Wild Card"
+            header_wilds = "\n\n" + header_text.ljust(adjust_value_west) + header_text
+
+            wilds_west_teams = format_team_info(
+                wilds, "conference", divisions[2]["conference"], adjust_value_west
             )
-            wilds_east = format_wildcard(
-                divisions[2]["conference"], wilds, ljust_value_east
+            wilds_east_teams = format_team_info(
+                wilds, "conference", divisions[0]["conference"], adjust_value_east
             )
-            standings += "\n\n" + "\n".join(
-                [e + w for w, e in zip(wilds_west, wilds_east)]
+
+            standings += (
+                header_wilds
+                + "\n"
+                + "\n".join([w + e for w, e in zip(wilds_west_teams, wilds_east_teams)])
             )
 
         header = "Standings:"
