@@ -72,16 +72,12 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         header = f"""Upcoming race: {data["round"]}/{self.races_amount}"""
         sessions = dict(sorted(data["sessions"].items(), key=lambda x: x[1]))
         first_date, last_date = min(sessions.values()), max(sessions.values())
-        date_info = f"{datetime_to_text(first_date, self.date_pattern, self.timezone)} to {datetime_to_text(last_date, self.date_pattern, self.timezone)}"
+        date_info = f"{datetime_to_text(first_date, self.date_pattern, target_tz=self.timezone)} to {datetime_to_text(last_date, self.date_pattern, target_tz=self.timezone)}"
 
-        info = (
-            f"""{data["name"]}\n"""
-            + f"""{data["location"]}, {data["country"]}\n"""
-            + date_info
-        )
+        info = f"""{data["name"]}\n""" + f"""{data["location"]}\n""" + date_info
 
         for session, date in sessions.items():
-            info += f"\n{datetime_to_text(date, self.day_and_time_pattern, self.timezone)} - {session.title()}"
+            info += f"\n{datetime_to_text(date, self.day_and_time_pattern, target_tz=self.timezone)} - {session.title()}"
 
         text = (
             format_as_header(header)

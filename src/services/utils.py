@@ -75,8 +75,8 @@ def text_to_datetime(text, pattern):
     return datetime.strptime(text, pattern)
 
 
-def datetime_to_text(date, pattern, timezone=None):
-    date = convert_timezone(date=date, target_tz=timezone)
+def datetime_to_text(date, pattern, source_tz=None, target_tz=None):
+    date = convert_timezone(date=date, source_tz=source_tz, target_tz=target_tz)
     return datetime.strftime(date, pattern)
 
 
