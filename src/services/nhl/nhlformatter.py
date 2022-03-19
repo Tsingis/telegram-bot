@@ -46,7 +46,7 @@ class NHLFormatter(NHLBase):
         for game in data:
 
             date = text_to_datetime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
-            time = datetime_to_text(date, "%H:%M", self.timezone)
+            time = datetime_to_text(date, "%H:%M", target_tz=self.timezone)
             if game["status"] == "Postponed":
                 results.append(f"""{game["homeTeam"]} - {game["awayTeam"]} Postponed""")
             else:

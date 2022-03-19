@@ -12,7 +12,6 @@ provider:
     GOOGLE_API: ${env:GOOGLE_API}
     OPENWEATHER_API: ${env:OPENWEATHER_API}
     CSE_ID: ${env:CSE_ID}
-    F1_CALENDAR_URL: ${env:F1_CALENDAR_URL}
     REGION: FI
     ENVIRONMENT: ${self:provider.stage}
 functions:

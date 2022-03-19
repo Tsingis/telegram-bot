@@ -1,6 +1,7 @@
-import os
 from datetime import datetime
-from ..utils import get, text_to_datetime
+from icalendar import Calendar
+import unicodedata
+from ..utils import get, datetime_to_text, text_to_datetime
 from ...logger import logging
 
 
@@ -8,86 +9,100 @@ logger = logging.getLogger(__name__)
 
 
 class FormulaOneBase:
-    REGION = os.environ["REGION"]
-    GOOGLE_API_KEY = os.environ["GOOGLE_API"]
-    F1_CALENDAR_URL = os.environ["F1_CALENDAR_URL"]
+    F1_CALENDAR_URL = "https://formula1.com/calendar/Formula_1_Official_Calendar.ics"
 
     def __init__(self, date=datetime.utcnow()):
         self.date = date
-        self.source_datetime_pattern = "%Y-%m-%dT%H:%M:%SZ"
+        self.source_timezone = "Europe/London"
+        self.source_datetime_pattern = "%Y%m%dT%H%M%S"
         self.race_weekends = self._get_race_weekends()
-        self.races_amount = len(self.race_weekends)
+        self.races_amount = 0 if self.race_weekends is None else len(self.race_weekends)
 
     def _get_race_weekends(self):
-        """
-        Parse and combine scheduled qualifying, sprint and race events to race weekends
-        """
         try:
             res = get(self.F1_CALENDAR_URL)
-            data = res.json()
-            if not data:
+            calendar = Calendar.from_ical(res.content)
+            events = [self._event_to_dict(event) for event in calendar.walk("VEVENT")]
+            if not events:
                 logger.warning(f"No events available for year {self.date.year}")
                 return
-            race_weekends = [
-                self._event_to_race_weekend(event) for event in data["races"]
-            ]
+            race_weekends = self._events_to_race_weekends(events)
+            if not race_weekends:
+                logger.warning(f"No race weekends available for year {self.date.year}")
+                return
             return race_weekends
         except Exception:
             logger.exception(
                 f"Error getting calendar data with url {self.F1_CALENDAR_URL}"
             )
 
-    def _event_to_race_weekend(self, event):
-        country = self._find_country(event["latitude"], event["longitude"])
-        race_weekend = {
-            "round": event["round"],
-            "name": event["name"],
-            "country": country,
-            "location": event["location"],
-            "raceUrl": self._get_race_url(country),
-            "sessions": {},
+    def _events_to_race_weekends(self, events):
+        """
+        Parse and combine scheduled events to race weekends
+        """
+        events = sorted(
+            self._filter_cancelled_events(events),
+            key=lambda x: x["startTime"],
+        )
+        race_weekends = [
+            {
+                "id": event["id"],
+                "type": event["type"],
+                "name": event["summary"].split("-")[0].strip(),
+                "raceUrl": self._find_race_url(event["description"]),
+                "location": event["location"],
+                "sessions": {"race": self._format_date_utc(event["startTime"])},
+            }
+            for event in events
+            if event["type"] == "race"
+        ]
+
+        for event in events:
+            for race_weekend in race_weekends:
+                if (
+                    race_weekend["id"] == event["id"]
+                    and race_weekend["type"] != event["type"]
+                ):
+                    race_weekend["sessions"][event["type"]] = self._format_date_utc(
+                        event["startTime"]
+                    )
+                    continue
+
+        for index, race_weekend in enumerate(race_weekends):
+            race_weekend["round"] = index + 1
+
+        return race_weekends
+
+    def _event_to_dict(self, event):
+        uid = str(event["UID"])
+        return {
+            "id": uid.split("@")[-1].strip(),
+            "status": str(event["STATUS"]).strip().lower(),
+            "type": uid.split("@")[0].strip().lower(),
+            "startTime": event["DTSTART"].dt,
+            "endTime": event["DTEND"].dt,
+            "summary": self._normalize_text_encoding(event["SUMMARY"]),
+            "description": str(event["DESCRIPTION"]).strip(),
+            "location": str(event["LOCATION"]).strip(),
         }
 
-        if not race_weekend["name"].lower().endswith("grand prix"):
-            race_weekend["name"] = race_weekend["name"] + " Grand Prix"
+    def _filter_cancelled_events(self, events):
+        return [event for event in events if event["status"] != "cancelled"]
 
-        for session, date in event["sessions"].items():
-            if session == "gp":
-                key = "race"
-            elif session == "qualifying":
-                key = "qualif"
-            else:
-                key = session
-            race_weekend["sessions"][key] = text_to_datetime(
-                date, self.source_datetime_pattern
-            )
+    def _find_race_url(self, text):
+        pattern = "https://www.formula1.com/en/racing"
+        return next(
+            (word for word in text.split(" ") if word.startswith(pattern)), pattern
+        )
 
-        return race_weekend
+    def _format_date_utc(self, date):
+        datetime_adjusted = datetime_to_text(
+            date=date,
+            pattern=self.source_datetime_pattern,
+            source_tz=self.source_timezone,
+        )
+        return text_to_datetime(datetime_adjusted, self.source_datetime_pattern)
 
-    def _get_race_url(self, country):
-        base_url = "https://www.formula1.com/en/racing"
-        return f"""{base_url}/{self.date.year}/{country.replace(" ", "_")}.html"""
-
-    def _find_country(self, lat, lng):
-        try:
-            url = "https://maps.googleapis.com/maps/api/geocode/json"
-            params = {
-                "key": self.GOOGLE_API_KEY,
-                "latlng": f"{lat},{lng}",
-                "region": self.REGION.lower(),
-            }
-            data = get(url, params).json()
-            components = data["results"][0]["address_components"]
-            country = next(
-                (
-                    component["long_name"].title()
-                    for component in components
-                    if "country" in component["types"]
-                ),
-                None,
-            )
-            return country
-        except Exception:
-            logger.exception(
-                f"Error getting country for latitude {lat} and longitude {lng}"
-            )
+    def _normalize_text_encoding(self, text):
+        normalized = unicodedata.normalize("NFKD", text)
+        return normalized.encode("ascii", "ignore").decode("utf-8")
