@@ -84,57 +84,75 @@ class NHLFormatter(NHLBase):
         max_points = max(teams, key=lambda x: x["points"])
         adjust = len(str(max_points["points"]))
 
-        def format_team_info(data, type, value, left_adjust):
+        def format_team_info(data, type, value, adjust_value):
             return next(
                 [
                     (
-                        f""" {team["name"]} {str(team["points"]).rjust(adjust)} """
+                        f"""{team["name"]} {str(team["points"]).rjust(adjust)} """
                         + f"""{team["record"]["wins"]}-{team["record"]["losses"]}-{team["record"]["ot"]}"""
-                    ).ljust(left_adjust)
+                    ).ljust(adjust_value)
                     for team in item["teams"]
                 ]
                 for item in data
                 if value in item[type]
             )
 
-        def format_header(text, left_adjust):
-            return [f"{text.upper()}".ljust(left_adjust)]
+        adjust_value_west = 16
+        adjust_value_east = 0
 
-        ljust_value_west = 0
-        ljust_value_east = 16
-        west = (
-            format_header(divisions[0]["name"], ljust_value_west)
-            + format_team_info(
-                leaders, "division", divisions[0]["name"], ljust_value_west
-            )
-            + format_header(divisions[1]["name"], ljust_value_west)
-            + format_team_info(
-                leaders, "division", divisions[1]["name"], ljust_value_west
-            )
+        northwest = divisions[2]["name"]
+        southwest = divisions[3]["name"]
+        northeast = divisions[0]["name"]
+        southeast = divisions[1]["name"]
+
+        northwest_teams = format_team_info(
+            leaders, "division", northwest, adjust_value_west
+        )
+        southwest_teams = format_team_info(
+            leaders, "division", southwest, adjust_value_west
+        )
+        northeast_teams = format_team_info(
+            leaders, "division", northeast, adjust_value_east
+        )
+        southeast_teams = format_team_info(
+            leaders, "division", southeast, adjust_value_east
         )
 
-        east = (
-            format_header(divisions[2]["name"], ljust_value_east)
-            + format_team_info(
-                leaders, "division", divisions[2]["name"], ljust_value_east
-            )
-            + format_header(divisions[3]["name"], ljust_value_east)
-            + format_team_info(
-                leaders, "division", divisions[3]["name"], ljust_value_east
-            )
+        header_north = northwest.title().ljust(adjust_value_west) + northeast.title()
+        header_south = (
+            "\n" + southwest.title().ljust(adjust_value_west) + southeast.title()
+        )
+
+        teams_north = "\n".join(
+            [w + e for w, e in zip(northwest_teams, northeast_teams)]
+        )
+        teams_south = "\n".join(
+            [w + e for w, e in zip(southwest_teams, southeast_teams)]
+        )
+
+        standings = (
+            header_north + "\n" + teams_north + "\n" + header_south + "\n" + teams_south
         )
 
         if len(wilds) > 0:
-            west += format_header("Wild Card", ljust_value_west) + format_team_info(
-                wilds, "conference", divisions[0]["conference"], ljust_value_west
+            header_text = "Wild Card"
+            header_wilds = "\n\n" + header_text.ljust(adjust_value_west) + header_text
+
+            wilds_west_teams = format_team_info(
+                wilds, "conference", divisions[2]["conference"], adjust_value_west
             )
-            east += format_header("Wild Card", ljust_value_east) + format_team_info(
-                wilds, "conference", divisions[2]["conference"], ljust_value_east
+            wilds_east_teams = format_team_info(
+                wilds, "conference", divisions[0]["conference"], adjust_value_east
+            )
+
+            standings += (
+                header_wilds
+                + "\n"
+                + "\n".join([w + e for w, e in zip(wilds_west_teams, wilds_east_teams)])
             )
 
         header = "Standings:"
         url = "https://www.nhl.com/standings"
-        standings = "\n".join([e + w for w, e in zip(west, east)])
         return (
             format_as_header(header)
             + "\n"
