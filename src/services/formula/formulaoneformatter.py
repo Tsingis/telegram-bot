@@ -83,5 +83,5 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         for session, date in sessions.items():
             info += f"\n{datetime_to_text(date, self.day_and_time_pattern, self.timezone)} - {session.title()}"
 
-        text = format_as_header(header) + "\n" + format_as_code(info)
+        text = format_as_header(header) + "\n" + format_as_code(info) + "\n" + format_as_url(data["raceUrl"])
         return text
