@@ -88,6 +88,13 @@ def escape_special_chars(text):
     return re.sub(f"([{re.escape(escape_chars)}])", r"\\\1", text)
 
 
+def format_number(number):
+    """
+    Formats floating number without insignificant trailing zeroes
+    """
+    return f"{number:g}"
+
+
 def format_as_url(url, text="Details"):
     return f"[{text}]({url})"
 
