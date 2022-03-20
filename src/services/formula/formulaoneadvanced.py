@@ -85,7 +85,7 @@ class FormulaOneAdvanced(FormulaOneBase):
         """
         Gets top teams from overall standings and url for more details
         """
-        url = f"{self.BASE_URL}/en/results.html/{self.date.year}/teams.html"
+        url = f"{self.BASE_URL}/en/results.html/{self.date.year}/team.html"
         try:
             soup = set_soup(url)
             table = soup.find("table", {"class": "resultsarchive-table"})

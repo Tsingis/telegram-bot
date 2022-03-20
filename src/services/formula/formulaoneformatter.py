@@ -1,5 +1,11 @@
 from .formulaoneadvanced import FormulaOneAdvanced
-from ..utils import datetime_to_text, format_as_header, format_as_code, format_as_url
+from ..utils import (
+    datetime_to_text,
+    format_number,
+    format_as_header,
+    format_as_code,
+    format_as_url,
+)
 
 
 class FormulaOneFormatter(FormulaOneAdvanced):
@@ -40,7 +46,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
                 standing["team"] = team_name_parts[0]
 
         driver_standings = [
-            f"""{str(result["position"]).rjust(2)}. {result["driver"][-3:]} - {self._format_number(result["points"])}"""
+            f"""{str(result["position"]).rjust(2)}. {result["driver"][-3:]} - {format_number(result["points"])}"""
             for result in data["driverStandings"]
         ]
 
@@ -48,7 +54,7 @@ class FormulaOneFormatter(FormulaOneAdvanced):
             [len(result["team"]) for result in data["teamStandings"]]
         )
         team_standings = [
-            f"""{str(result["position"]).rjust(2)}. {result["team"].ljust(longest_team_name)} - {self._format_number(result["points"])}"""
+            f"""{str(result["position"]).rjust(2)}. {result["team"].ljust(longest_team_name)} - {format_number(result["points"])}"""
             for result in data["teamStandings"]
         ]
 
