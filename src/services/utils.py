@@ -80,6 +80,12 @@ def datetime_to_text(date, pattern, source_tz=None, target_tz=None):
     return datetime.strftime(date, pattern)
 
 
+def remove_texts(text, texts_to_remove):
+    for text_to_remove in texts_to_remove:
+        text = text.replace(text_to_remove, "")
+    return text.strip()
+
+
 def escape_special_chars(text):
     """
     Escapes MarkdownV2 engine special characters

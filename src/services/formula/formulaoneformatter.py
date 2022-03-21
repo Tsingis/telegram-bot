@@ -1,6 +1,7 @@
 from .formulaoneadvanced import FormulaOneAdvanced
 from ..utils import (
     datetime_to_text,
+    remove_texts,
     format_number,
     format_as_header,
     format_as_code,
@@ -80,7 +81,8 @@ class FormulaOneFormatter(FormulaOneAdvanced):
         first_date, last_date = min(sessions.values()), max(sessions.values())
         date_info = f"{datetime_to_text(first_date, self.date_pattern, target_tz=self.timezone)} to {datetime_to_text(last_date, self.date_pattern, target_tz=self.timezone)}"
 
-        info = f"""{data["name"]}\n""" + f"""{data["location"]}\n""" + date_info
+        name = remove_texts(data["name"], ["FORMULA 1", str(self.date.year)])
+        info = f"""{name}\n""" + f"""{data["location"]}\n""" + date_info
 
         for session, date in sessions.items():
             info += f"\n{datetime_to_text(date, self.day_and_time_pattern, target_tz=self.timezone)} - {session.title()}"
