@@ -81,6 +81,8 @@ def datetime_to_text(date, pattern, source_tz=None, target_tz=None):
 
 
 def remove_texts(text, texts_to_remove):
+    if not isinstance(texts_to_remove, list):
+        texts_to_remove = [texts_to_remove]
     for text_to_remove in texts_to_remove:
         text = text.replace(text_to_remove, "")
     return text.strip()

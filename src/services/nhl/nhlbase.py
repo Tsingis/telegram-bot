@@ -119,6 +119,7 @@ class NHLBase:
                             "points": team["points"],
                             "games": team["gamesPlayed"],
                             "record": team["leagueRecord"],
+                            "streak": team["streak"]["streakCode"],
                         }
                         for team in div["data"][:amount]
                     ],
@@ -139,12 +140,13 @@ class NHLBase:
                     "conference": conf["conference"]["name"],
                     "teams": [
                         {
-                            "name": self.get_team_shortname(wild["team"]["name"]),
-                            "points": wild["points"],
-                            "games": wild["gamesPlayed"],
-                            "record": wild["leagueRecord"],
+                            "name": self.get_team_shortname(team["team"]["name"]),
+                            "points": team["points"],
+                            "games": team["gamesPlayed"],
+                            "record": team["leagueRecord"],
+                            "streak": team["streak"]["streakCode"],
                         }
-                        for wild in conf["teamRecords"][:amount]
+                        for team in conf["teamRecords"][:amount]
                     ],
                 }
                 for conf in res["records"]

@@ -17,8 +17,6 @@ class CommandTest(unittest.TestCase):
         "/nhlstandings",
         "/nhlinfo",
         "/nhlscoring",
-        "/nhlscoring 15",
-        "/nhlscoring FIN",
         "/nhlscoring 10 FIN",
         "/nhlplayers",
         "/nhlplayerinfo connor mcdavid",
@@ -33,17 +31,17 @@ class CommandTest(unittest.TestCase):
             self._print_response(res, command_text)
 
         if res.text is not None:
-            text = res.text.lower()
-            self.assertFalse(text.startswith("no") and "available" in text)
+            self.assertIsInstance(res.text, str)
+            self.assertNotEqual(res.text, "")
 
         if res.image is not None:
-            self.assertTrue(
-                isinstance(res.image, str) or isinstance(res.image, BytesIO)
-            )
+            if isinstance(res.image, str):
+                self.assertTrue(res.image.startswith("http"))
+            else:
+                self.assertIsInstance(res.image, BytesIO)
 
     def _print_response(self, res, command_text):
-        print("COMMAND: " + command_text)
-        print()
+        print(f"COMMAND: {command_text}\n")
         if res.text is not None:
             print(res.text)
         if res.image is not None:

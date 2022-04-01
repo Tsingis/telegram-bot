@@ -82,14 +82,18 @@ class NHLFormatter(NHLBase):
             teams.extend(leader["teams"])
 
         max_points = max(teams, key=lambda x: x["points"])
-        adjust = len(str(max_points["points"]))
+        points_adjust = len(str(max_points["points"]))
+
+        max_games = max(teams, key=lambda x: x["games"])
+        games_adjust = len(str(max_games["games"]))
 
         def format_team_info(data, type, value, adjust_value):
             return next(
                 [
                     (
-                        f"""{team["name"]} {str(team["points"]).rjust(adjust)} """
-                        + f"""{team["record"]["wins"]}-{team["record"]["losses"]}-{team["record"]["ot"]}"""
+                        f"""{team["name"]} """
+                        + f"""{str(team["games"]).rjust(games_adjust)} """
+                        + f"""{str(team["points"]).rjust(points_adjust)} """
                     ).ljust(adjust_value)
                     for team in item["teams"]
                 ]
@@ -97,7 +101,7 @@ class NHLFormatter(NHLBase):
                 if value in item[type]
             )
 
-        adjust_value_west = 16
+        adjust_value_west = 12
         adjust_value_east = 0
 
         northwest = divisions[2]["name"]
