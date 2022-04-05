@@ -51,7 +51,7 @@ class NHLExtra(NHLBase):
         except Exception:
             logger.exception(f"Error getting player contract for player {name}")
 
-    def get_scoring_leaders(self, amount=10, nationality=None):
+    def get_scoring_leaders(self, amount=10, filter=None):
         """
         Scoring leaders for current season from NHL
         """
@@ -65,8 +65,12 @@ class NHLExtra(NHLBase):
         exp = (
             f"""gameTypeId=2 and seasonId<={self.season} and seasonId>={self.season}"""
         )
-        if nationality is not None:
-            exp += f"""and nationalityCode=\"{nationality.upper()}\""""
+        if filter is not None:
+            franchises = self._get_franchises()
+            if filter.upper() in franchises:
+                exp += f"""and franchiseId=\"{franchises[filter.upper()]}\""""
+            else:
+                exp += f"""and nationalityCode=\"{filter.upper()}\""""
         params = {
             "isAggregate": "false",
             "isGame": "false",
@@ -80,7 +84,7 @@ class NHLExtra(NHLBase):
             res = get(url, params).json()
             if not res["data"]:
                 logger.warning(
-                    f"No scoring info found for season {self.season} with nationatality {nationality}"
+                    f"No scoring info found for season {self.season} with filter {filter.upper()}"
                 )
                 return
             data = [
@@ -98,5 +102,15 @@ class NHLExtra(NHLBase):
             return data
         except Exception:
             logger.exception(
-                f"Error getting scoring leaders for season {self.season} with nationality {nationality}"
+                f"Error getting scoring leaders for season {self.season} with filter {filter.upper()}"
             )
+
+    def _get_franchises(self):
+        url = "https://api.nhle.com/stats/rest/en/franchise"
+        res = get(url).json()
+        franchises = {
+            self.teams[team["fullName"]]["shortName"]: team["id"]
+            for team in res["data"]
+            if team["fullName"] in self.teams
+        }
+        return franchises
