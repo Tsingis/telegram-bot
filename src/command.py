@@ -192,11 +192,11 @@ class Command:
     def _nhl_scoring(self):
         text = "No scoring leaders available"
         filters = self.text.split(self.NHL_SCORING_CMD)[-1].strip().split(" ")
-        nationality = find_first_word(filters)
+        team_or_nationality = find_first_word(filters)
         amount = find_first_int(filters)
         if amount is None:
             amount = 10
-        info = self.nhl_extra.get_scoring_leaders(amount, nationality)
+        info = self.nhl_extra.get_scoring_leaders(amount, team_or_nationality)
         if info is not None:
             text = self.nhl_formatter.format_scoring_leaders(info)
         return Response(text=text)

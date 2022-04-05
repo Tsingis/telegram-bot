@@ -17,6 +17,7 @@ class CommandTest(unittest.TestCase):
         "/nhlstandings",
         "/nhlinfo",
         "/nhlscoring",
+        "/nhlscoring TBL",
         "/nhlscoring 10 FIN",
         "/nhlplayers",
         "/nhlplayerinfo connor mcdavid",
