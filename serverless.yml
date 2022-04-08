@@ -18,12 +18,16 @@ functions:
   webhook:
     handler: src/handler.webhook
     events:
-      - http: POST /
+      - httpApi:
+          method: POST
+          path: /
 
   set_webhook:
     handler: src/handler.set_webhook
     events:
-      - http: POST /set_webhook
+      - httpApi:
+          method: POST
+          path: /set_webhook
 
 plugins:
   - serverless-python-requirements
