@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def webhook(event, context):
     logger.info(f"Event: {event}")
-    if event["httpMethod"] == "POST" and event["body"]:
+    if event["requestContext"]["http"]["method"] == "POST" and event["body"]:
         try:
             logger.info("Message received")
             bot = set_bot()
@@ -42,7 +42,7 @@ def webhook(event, context):
 
 def set_webhook(event, context):
     logger.info(f"Event: {event}")
-    url = f"""https://{event["headers"]["Host"]}/{event["requestContext"]["stage"]}/"""
+    url = f"""https://{event["headers"]["host"]}"""
     bot = set_bot()
     webhook = bot.set_webhook(url)
     if webhook:
