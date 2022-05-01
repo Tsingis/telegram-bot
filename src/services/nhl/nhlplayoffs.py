@@ -24,7 +24,7 @@ class NHLPlayoffs(NHLBase):
         try:
             playoffs = self.get_playoffs()
             if "rounds" not in playoffs or not playoffs["rounds"]:
-                logger.warning(f"No playoffs available for season {self.season}")
+                logger.info(f"No playoffs available for season {self.season}")
                 return
             series = [
                 serie

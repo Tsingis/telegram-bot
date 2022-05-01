@@ -22,17 +22,17 @@ class FormulaOneAdvanced(FormulaOneBase):
             soup = set_soup(url)
             races_table = soup.find("table", {"class": "resultsarchive-table"})
             if races_table is None:
-                logger.warning(f"Races table not found for year {self.date.year}")
+                logger.info(f"Races table not found for year {self.date.year}")
                 return
             race_results = races_table.find_all("a")
             if not race_results:
-                logger.warning(f"No past races found for year {self.date.year}")
+                logger.info(f"No past races found for year {self.date.year}")
                 return
             results_url = self.BASE_URL + race_results[-1]["href"]
             soup = set_soup(results_url)
             table = soup.find("table", {"class": "resultsarchive-table"})
             if table is None:
-                logger.warning(f"Results table not found for year {self.date.year}")
+                logger.info(f"Results table not found for year {self.date.year}")
                 return
             rows = table.find_all("tr")[1 : amount + 1]
             driver_rows = [
@@ -59,7 +59,7 @@ class FormulaOneAdvanced(FormulaOneBase):
             soup = set_soup(url)
             table = soup.find("table", {"class": "resultsarchive-table"})
             if table is None:
-                logger.warning(
+                logger.info(
                     f"Driver standings table not found for year {self.date.year}"
                 )
                 return
@@ -90,9 +90,7 @@ class FormulaOneAdvanced(FormulaOneBase):
             soup = set_soup(url)
             table = soup.find("table", {"class": "resultsarchive-table"})
             if table is None:
-                logger.warning(
-                    f"Team standings table not found for year {self.date.year}"
-                )
+                logger.info(f"Team standings table not found for year {self.date.year}")
                 return
             rows = table.find_all("tr")[1 : amount + 1]
             team_rows = [
