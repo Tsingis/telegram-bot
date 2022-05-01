@@ -24,7 +24,7 @@ class NHLExtra(NHLBase):
                 {"class": compile("^cntrct fixed")},
             )
             if table is None:
-                logger.warning(f"Contract table not found for player {name}")
+                logger.info(f"Contract table not found for player {name}")
                 return
             rows = table.find_all("tr")
             contract_rows = [
@@ -83,7 +83,7 @@ class NHLExtra(NHLBase):
         try:
             res = get(url, params).json()
             if not res["data"]:
-                logger.warning(
+                logger.info(
                     f"No scoring info found for season {self.season} with filter {filter.upper()}"
                 )
                 return

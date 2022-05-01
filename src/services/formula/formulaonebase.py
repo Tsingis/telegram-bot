@@ -24,11 +24,11 @@ class FormulaOneBase:
             calendar = Calendar.from_ical(res.content)
             events = [self._event_to_dict(event) for event in calendar.walk("VEVENT")]
             if not events:
-                logger.warning(f"No events available for year {self.date.year}")
+                logger.info(f"No events available for year {self.date.year}")
                 return
             race_weekends = self._events_to_race_weekends(events)
             if not race_weekends:
-                logger.warning(f"No race weekends available for year {self.date.year}")
+                logger.info(f"No race weekends available for year {self.date.year}")
                 return
             return race_weekends
         except Exception:

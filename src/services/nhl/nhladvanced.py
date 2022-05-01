@@ -18,7 +18,7 @@ class NHLAdvanced(NHLBase):
         try:
             games = self.get_games(date)
             if games is None:
-                logger.warning(f"No games found for date {date}")
+                logger.info(f"No games found for date {date}")
                 return
             games = [
                 self.get_games_linescore(game["id"]) | {"status": game["status"]}
@@ -56,7 +56,7 @@ class NHLAdvanced(NHLBase):
         try:
             games = self.get_games(self.date)
             if games is None:
-                logger.warning(f"No games found for date {self.date}")
+                logger.info(f"No games found for date {self.date}")
                 return
             for game in games:
                 game["homeTeam"] = self.get_team_shortname(game["homeTeam"])
@@ -70,11 +70,11 @@ class NHLAdvanced(NHLBase):
         Current standings in Wild Card format
         """
         try:
-            wildcards = self.get_wildcards(self.date)
-            if len(wildcards) > 0:
-                division_leaders = self.get_division_leaders(self.date)
-            else:
-                division_leaders = self.get_division_leaders(self.date, amount=5)
+            amount = 5
+            wildcards = self.get_wildcards(self.date, amount)
+            if wildcards:
+                amount = 3
+            division_leaders = self.get_division_leaders(self.date, amount)
             standings = {"divisionLeaders": division_leaders, "wildcards": wildcards}
             return standings
         except Exception:
@@ -86,7 +86,11 @@ class NHLAdvanced(NHLBase):
         """
         date = self.date - timedelta(days=1)
         try:
-            game_ids = [game["id"] for game in self.get_games(date)]
+            games = self.get_games(date)
+            if games is None or not games:
+                logger.info(f"No games found for date {date}")
+                return
+            game_ids = [game["id"] for game in games]
             games = [self.get_games_boxscore(game_id) for game_id in game_ids]
             player_ids = [game["teams"]["away"]["players"] for game in games]
             player_ids.extend([game["teams"]["home"]["players"] for game in games])
@@ -135,7 +139,7 @@ class NHLAdvanced(NHLBase):
                 None,
             )
             if player_id is None:
-                logger.warn(f"Player not found with name {name}")
+                logger.info(f"Player not found with name {name}")
                 return
             player = self.get_player(player_id)
             player["team"] = self.get_team_shortname(player["team"])

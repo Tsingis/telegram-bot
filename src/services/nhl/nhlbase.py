@@ -40,7 +40,7 @@ class NHLBase:
             url = f"{self.BASE_URL}/people/{player_id}/stats?stats=statsSingleSeason&season={self.season}"
             res = get(url).json()
             if not res["stats"][0]["splits"]:
-                logger.warning(f"No season stats found for player id {player_id}")
+                logger.info(f"No season stats found for player id {player_id}")
                 return
             stats = res["stats"][0]["splits"][0]["stat"]
             return stats

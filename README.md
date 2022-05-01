@@ -29,7 +29,15 @@
 
 ## Requirements:
 
-- Python 3.9
 - AWS Account
+- Python 3.9
 - Node.js 16.x
 - Serverless Framework
+- Docker Desktop
+
+## Manual deployment
+
+1. Set environment variables
+2. Start Docker Desktop
+3. Run `npm install`
+4. Run `serverless deploy --aws-profile PROFILE`
