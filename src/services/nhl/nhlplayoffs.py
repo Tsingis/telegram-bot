@@ -159,12 +159,18 @@ class NHLPlayoffs(NHLBase):
         bottom_team = next(
             team["team"]["name"] for team in teams if not team["seed"]["isTop"]
         )
+        series_summary = series["currentGame"]["seriesSummary"]
+        status = (
+            series_summary["seriesStatusShort"]
+            if "seriesStatusShort" in series_summary
+            else ""
+        )
         return {
             "matchup": {
                 "top": self.get_team_shortname(top_team),
                 "bottom": self.get_team_shortname(bottom_team),
             },
-            "status": series["currentGame"]["seriesSummary"]["seriesStatusShort"],
+            "status": status,
             "winner": self._get_matchup_winner(teams),
         }
 
