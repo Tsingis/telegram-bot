@@ -16,6 +16,9 @@ def webhook(event, context):
             logger.info("Message received")
             bot = set_bot()
             update = telegram.Update.de_json(json.loads(event["body"]), bot)
+            if update is None or update.message is None:
+                logger.warning("Error handling message")
+                return create_response(400, "Error handling message")
             chat_id = update.message.chat.id
             msg = Message(bot, chat_id)
             text = update.message.text
