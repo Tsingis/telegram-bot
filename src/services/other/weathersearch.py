@@ -18,6 +18,8 @@ class WeatherSearch:
     def get_info(self, location):
         try:
             coords = self._get_coords(location)
+            if coords is None:
+                return
             url = "https://api.openweathermap.org/data/2.5/weather"
             params = {
                 "lat": coords["lat"],
@@ -82,6 +84,9 @@ class WeatherSearch:
                 "region": self.REGION.lower(),
             }
             data = get(url, params).json()
+            if not data["results"]:
+                logger.info(f"No coordinates found with {location}")
+                return
             coords = data["results"][0]["geometry"]["location"]
             return coords
         except Exception:
