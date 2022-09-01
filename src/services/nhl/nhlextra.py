@@ -84,7 +84,7 @@ class NHLExtra(NHLBase):
             res = get(url, params).json()
             if not res["data"]:
                 logger.info(
-                    f"No scoring info found for season {self.season} with filter {filter.upper()}"
+                    f"No scoring info found for season {self.season} with filter {filter}"
                 )
                 return
             data = [
