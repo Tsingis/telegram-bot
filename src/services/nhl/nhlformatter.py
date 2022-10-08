@@ -94,6 +94,7 @@ class NHLFormatter(NHLBase):
                         f"""{team["name"]} """
                         + f"""{str(team["games"]).rjust(games_adjust)} """
                         + f"""{str(team["points"]).rjust(points_adjust)} """
+                        + f"""{team["streak"] if team["streak"] is not None else ""}"""
                     ).ljust(adjust_value)
                     for team in item["teams"]
                 ]
@@ -101,7 +102,7 @@ class NHLFormatter(NHLBase):
                 if value in item[type]
             )
 
-        adjust_value_west = 12
+        adjust_value_west = 18
         adjust_value_east = 0
 
         northwest = divisions[2]["name"]

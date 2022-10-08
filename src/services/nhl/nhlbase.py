@@ -119,7 +119,9 @@ class NHLBase:
                             "points": team["points"],
                             "games": team["gamesPlayed"],
                             "record": team["leagueRecord"],
-                            "streak": team["streak"]["streakCode"],
+                            "streak": team["streak"]["streakCode"]
+                            if "streak" in team
+                            else None,
                         }
                         for team in div["data"][:amount]
                     ],
@@ -144,7 +146,9 @@ class NHLBase:
                             "points": team["points"],
                             "games": team["gamesPlayed"],
                             "record": team["leagueRecord"],
-                            "streak": team["streak"]["streakCode"],
+                            "streak": team["streak"]["streakCode"]
+                            if "streak" in team
+                            else None,
                         }
                         for team in conf["teamRecords"][:amount]
                     ],
