@@ -31,7 +31,7 @@
 
 - AWS Account
 - Python 3.9
-- Node.js 16.x
+- Node.js 18.x
 - Serverless Framework
 - Docker Desktop
 
