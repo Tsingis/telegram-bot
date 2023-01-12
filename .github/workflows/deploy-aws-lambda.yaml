@@ -33,7 +33,7 @@ jobs:
       - name: Serverless Deploy
         run: npm run-script deploy-test
         env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_TEST }}
+          TELEGRAM_TOKEN_TEST: ${{ secrets.TELEGRAM_TOKEN_TEST }}
           CSE_ID: ${{ secrets.CSE_ID }}
           GOOGLE_API: ${{ secrets.GOOGLE_API }}
           OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
