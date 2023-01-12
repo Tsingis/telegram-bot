@@ -1,6 +1,7 @@
 import telegram
 import os
 import json
+import asyncio
 from .logger import logging
 from .command import Command, ResponseType
 from .message import Message
@@ -10,6 +11,16 @@ logger = logging.getLogger(__name__)
 
 
 def webhook(event, context):
+    result = asyncio.run(webhook_async(event, context))
+    return result
+
+
+def set_webhook(event, context):
+    result = asyncio.run(set_webhook_async(event, context))
+    return result
+
+
+async def webhook_async(event, context):
     logger.info(f"Event: {event}")
     if event["requestContext"]["http"]["method"] == "POST" and event["body"]:
         try:
@@ -28,11 +39,11 @@ def webhook(event, context):
                 if res is not None:
                     logger.info(f"Command received: {text}")
                     if res.type == ResponseType.TEXT:
-                        msg.send_text(res.text)
+                        await msg.send_text(res.text)
                     if res.type == ResponseType.IMAGE:
-                        msg.send_image(res.image)
+                        await msg.send_image(res.image)
                     if res.type == ResponseType.TEXT_AND_IMAGE:
-                        msg.send_image(res.image, res.text)
+                        await msg.send_image(res.image, res.text)
             logger.info("Event handled")
             return create_response(200, "Event handled")
         except Exception:
@@ -43,11 +54,11 @@ def webhook(event, context):
     return create_response(400, "No event to handle")
 
 
-def set_webhook(event, context):
+async def set_webhook_async(event, context):
     logger.info(f"Event: {event}")
     url = f"""https://{event["headers"]["host"]}"""
     bot = set_bot()
-    webhook = bot.set_webhook(url)
+    webhook = await bot.set_webhook(url)
     if webhook:
         logger.info("Webhook set")
         return create_response(200, "Webhook set")

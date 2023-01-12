@@ -9,9 +9,9 @@ class Message:
         self.bot = bot
         self.chat_id = chat_id
 
-    def send_text(self, text):
+    async def send_text(self, text):
         try:
-            self.bot.sendMessage(
+            await self.bot.sendMessage(
                 chat_id=self.chat_id,
                 text=text,
                 parse_mode="MarkdownV2",
@@ -21,9 +21,9 @@ class Message:
         except Exception:
             logger.exception("Error sending text")
 
-    def send_image(self, image, caption=""):
+    async def send_image(self, image, caption=""):
         try:
-            self.bot.sendPhoto(
+            await self.bot.sendPhoto(
                 chat_id=self.chat_id,
                 photo=image,
                 caption=caption,
