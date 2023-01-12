@@ -1,4 +1,4 @@
-name: deploy-aws-lambda
+name: deploy-aws-lambda-test
 on:
   push:
     branches:
@@ -29,11 +29,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-north-1
+          aws-region: ${{ secrets.AWS_REGION }}
       - name: Serverless Deploy
-        run: npm run-script deploy
+        run: serverless deploy --stage test
         env:
-          TELEGRAM_TOKEN_TEST: ${{ secrets.TELEGRAM_TOKEN_TEST }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_TEST }}
           CSE_ID: ${{ secrets.CSE_ID }}
           GOOGLE_API: ${{ secrets.GOOGLE_API }}
           OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
