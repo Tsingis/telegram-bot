@@ -31,7 +31,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Serverless Deploy
-        run: serverless deploy --stage test
+        run: npm run-script deploy-test
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_TEST }}
           CSE_ID: ${{ secrets.CSE_ID }}

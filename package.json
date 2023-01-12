@@ -7,6 +7,10 @@
     "serverless-python-requirements": "^6.0.0",
     "serverless-plugin-utils": "^0.2.0"
   },
+  "scripts": {
+    "deploy-test": "serverless deploy --stage test",
+    "deploy-prod": "serverless deploy --stage prod"
+  },
   "author": "",
   "license": "ISC"
 }
