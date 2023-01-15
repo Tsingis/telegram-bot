@@ -1,7 +1,7 @@
 import os
 from random import choice
-from ..utils import get
-from ...logger import logging
+from ..common.logger import logging
+from ..common.utils import get
 
 
 logger = logging.getLogger(__name__)

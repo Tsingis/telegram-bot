@@ -1,7 +1,7 @@
 import unittest
 from io import BytesIO
 from ddt import ddt, data
-from src.command import Command
+from src.bot.command import Command
 
 
 @ddt

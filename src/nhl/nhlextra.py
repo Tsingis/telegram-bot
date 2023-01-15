@@ -1,8 +1,8 @@
+import json
+import re
 from .nhlbase import NHLBase
-from ..utils import set_soup, get
-from ...logger import logging
-from re import compile
-from json import dumps
+from ..common.utils import set_soup, get
+from ..common.logger import logging
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class NHLExtra(NHLBase):
             soup = set_soup(url, target_encoding="utf-8")
             table = soup.find(
                 "table",
-                {"class": compile("^cntrct fixed")},
+                {"class": re.compile("^cntrct fixed")},
             )
             if table is None:
                 logger.info(f"Contract table not found for player {name}")
@@ -74,7 +74,7 @@ class NHLExtra(NHLBase):
         params = {
             "isAggregate": "false",
             "isGame": "false",
-            "sort": dumps(sort),
+            "sort": json.dumps(sort),
             "start": 0,
             "limit": 100,
             "factCayenneExp": "gamesPlayed>=1",

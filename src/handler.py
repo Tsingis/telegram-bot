@@ -1,10 +1,10 @@
-import telegram
-import os
-import json
 import asyncio
-from .logger import logging
-from .command import Command, ResponseType
-from .message import Message
+import json
+import os
+import telegram
+from .bot.command import Command, ResponseType
+from .bot.message import Message
+from .common.logger import logging
 
 
 logger = logging.getLogger(__name__)

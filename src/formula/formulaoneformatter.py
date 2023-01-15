@@ -1,5 +1,5 @@
 from .formulaoneadvanced import FormulaOneAdvanced
-from ..utils import (
+from ..common.utils import (
     datetime_to_text,
     remove_texts,
     format_number,

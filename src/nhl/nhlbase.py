@@ -1,6 +1,6 @@
 from datetime import datetime
-from ..utils import get, convert_timezone, datetime_to_text
-from ...logger import logging
+from ..common.utils import get, convert_timezone, datetime_to_text
+from ..common.logger import logging
 
 
 logger = logging.getLogger(__name__)

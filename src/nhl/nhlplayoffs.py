@@ -2,7 +2,7 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from .nhlbase import NHLBase
-from ...logger import logging
+from ..common.logger import logging
 
 
 logger = logging.getLogger(__name__)

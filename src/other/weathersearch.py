@@ -1,6 +1,6 @@
 import os
-from ..utils import get, format_as_header, format_as_code
-from ...logger import logging
+from ..common.logger import logging
+from ..common.utils import get, format_as_header, format_as_code
 
 
 logger = logging.getLogger(__name__)

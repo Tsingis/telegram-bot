@@ -1,35 +1,22 @@
-from enum import Enum
-from .services.utils import (
+from .response import Response, ResponseType
+from ..common.logger import logging
+from ..common.utils import (
     format_as_header,
     escape_special_chars,
     find_first_int,
     find_first_word,
 )
-from .services.formula.formulaoneadvanced import FormulaOneAdvanced
-from .services.formula.formulaoneformatter import FormulaOneFormatter
-from .services.other.imagesearch import ImageSearch
-from .services.other.weathersearch import WeatherSearch
-from .services.nhl.nhladvanced import NHLAdvanced
-from .services.nhl.nhlextra import NHLExtra
-from .services.nhl.nhlplayoffs import NHLPlayoffs
-from .services.nhl.nhlformatter import NHLFormatter
-from .logger import logging
+from ..formula.formulaoneadvanced import FormulaOneAdvanced
+from ..formula.formulaoneformatter import FormulaOneFormatter
+from ..nhl.nhladvanced import NHLAdvanced
+from ..nhl.nhlextra import NHLExtra
+from ..nhl.nhlformatter import NHLFormatter
+from ..nhl.nhlplayoffs import NHLPlayoffs
+from ..other.imagesearch import ImageSearch
+from ..other.weathersearch import WeatherSearch
 
 
 logger = logging.getLogger(__name__)
-
-
-class ResponseType(Enum):
-    TEXT = 1
-    IMAGE = 2
-    TEXT_AND_IMAGE = 3
-
-
-class Response:
-    def __init__(self, text=None, image=None, type=ResponseType.TEXT):
-        self.text = text
-        self.image = image
-        self.type = type
 
 
 class Command:

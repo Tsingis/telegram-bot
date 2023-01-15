@@ -1,8 +1,8 @@
+import unicodedata
 from datetime import datetime
 from icalendar import Calendar
-import unicodedata
-from ..utils import get, datetime_to_text, text_to_datetime
-from ...logger import logging
+from ..common.logger import logging
+from ..common.utils import get, datetime_to_text, text_to_datetime
 
 
 logger = logging.getLogger(__name__)

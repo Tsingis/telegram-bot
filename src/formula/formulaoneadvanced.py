@@ -1,7 +1,7 @@
 from datetime import datetime
 from .formulaonebase import FormulaOneBase
-from ..utils import set_soup
-from ...logger import logging
+from ..common.logger import logging
+from ..common.utils import set_soup
 
 
 logger = logging.getLogger(__name__)

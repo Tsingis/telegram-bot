@@ -1,5 +1,5 @@
 from .nhlbase import NHLBase
-from ..utils import (
+from ..common.utils import (
     format_as_header,
     format_as_code,
     format_as_url,

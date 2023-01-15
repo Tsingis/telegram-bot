@@ -1,9 +1,9 @@
 import re
 import requests
-from datetime import datetime
 from bs4 import BeautifulSoup
+from datetime import datetime
 from dateutil import tz
-from ..logger import logging
+from .logger import logging
 
 
 logger = logging.getLogger(__name__)
