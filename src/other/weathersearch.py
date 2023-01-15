@@ -51,20 +51,22 @@ class WeatherSearch:
 
     def format_info(self, data, location):
         info = {
-            "Desc": data["description"].capitalize(),
-            "Temp": str(data["temperature"]) + " °C",
-            "Wind": str(data["wind"]) + " m/s",
-            "Hum": str(data["humidity"]) + " %",
-            "Pres": str(data["pressure"]) + " hPa",
-            "Clouds": str(data["clouds"]) + " %",
+            "desc": data["description"].capitalize(),
+            "temp": str(data["temperature"]) + " °C",
+            "wind": str(data["wind"]) + " m/s",
+            "hum": str(data["humidity"]) + " %",
+            "pres": str(data["pressure"]) + " hPa",
+            "clouds": str(data["clouds"]) + " %",
         }
 
         if "precipType" in data:
-            info["Precip"] = data["precipType"]
-            info["Amount"] = str(data["amount"]) + " mm/h"
+            info["precip"] = data["precipType"]
+            info["amount"] = str(data["amount"]) + " mm/h"
 
         header = f"Weather in {location.title()}:"
-        body = "\n".join([f"{key}: {value}" for (key, value) in info.items()])
+        body = "\n".join(
+            [f"{key.capitalize()}: {value}" for (key, value) in info.items()]
+        )
         return format_as_header(header) + "\n" + format_as_code(body)
 
     # Get icon for weather
