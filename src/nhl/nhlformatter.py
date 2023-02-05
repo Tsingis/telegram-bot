@@ -102,7 +102,7 @@ class NHLFormatter(NHLBase):
                 if value in item[type]
             )
 
-        adjust_value_west = 19
+        adjust_value_west = 15
         adjust_value_east = 0
 
         northwest = divisions[2]["name"]
