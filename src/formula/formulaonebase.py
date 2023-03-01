@@ -1,3 +1,4 @@
+import re
 import unicodedata
 from datetime import datetime
 from icalendar import Calendar
@@ -9,7 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class FormulaOneBase:
-    F1_CALENDAR_URL = "https://formula1.com/calendar/Formula_1_Official_Calendar.ics"
+    F1_CALENDAR_URL = (
+        "https://ics.ecal.com/ecal-sub/63ffa269e01772000d24b070/Formula%201.ics"
+    )
 
     def __init__(self, date=datetime.utcnow()):
         self.date = date
@@ -40,60 +43,55 @@ class FormulaOneBase:
         """
         Parse and combine scheduled events to race weekends
         """
-        events = sorted(
-            self._filter_cancelled_events(events),
-            key=lambda x: x["startTime"],
-        )
-        race_weekends = [
-            {
-                "id": event["id"],
-                "type": event["type"],
-                "name": event["summary"].split("-")[0].strip(),
-                "raceUrl": self._find_race_url(event["description"]),
-                "location": event["location"],
-                "sessions": {"race": self._format_date_utc(event["startTime"])},
-            }
-            for event in events
-            if event["type"] == "race"
-        ]
-
+        events = sorted(self._filter_events(events), key=lambda x: x["startTime"])
+        race_weekends = []
         for event in events:
-            for race_weekend in race_weekends:
-                if (
-                    race_weekend["id"] == event["id"]
-                    and race_weekend["type"] != event["type"]
-                ):
-                    race_weekend["sessions"][event["type"]] = self._format_date_utc(
-                        event["startTime"]
-                    )
-                    continue
+            if any(rw["name"] == event["name"] for rw in race_weekends):
+                for rw in race_weekends:
+                    if rw["name"] == event["name"]:
+                        rw["sessions"][event["session"]] = self._format_date_utc(
+                            event["startTime"]
+                        )
+            else:
+                race_weekend = {
+                    "name": event["name"],
+                    "raceUrl": self._find_race_url(event["description"]),
+                    "location": event["location"],
+                    "sessions": {
+                        event["session"]: self._format_date_utc(event["startTime"])
+                    },
+                }
+                race_weekends.append(race_weekend)
 
         for index, race_weekend in enumerate(race_weekends):
             race_weekend["round"] = index + 1
-
         return race_weekends
 
     def _event_to_dict(self, event):
-        uid = str(event["UID"])
+        summary = self._normalize_text_encoding(event["SUMMARY"])
         return {
-            "id": uid.split("@")[-1].strip(),
-            "status": str(event["STATUS"]).strip().lower(),
-            "type": uid.split("@")[0].strip().lower(),
             "startTime": event["DTSTART"].dt,
             "endTime": event["DTEND"].dt,
-            "summary": self._normalize_text_encoding(event["SUMMARY"]),
+            "name": summary.split("-")[0].strip(),
+            "session": summary.split("-")[-1].lower().replace(" ", ""),
+            "summary": summary,
             "description": str(event["DESCRIPTION"]).strip(),
             "location": str(event["LOCATION"]).strip(),
         }
 
-    def _filter_cancelled_events(self, events):
-        return [event for event in events if event["status"] != "cancelled"]
+    def _filter_events(self, events):
+        allowed_words = ["race", "sprint race", "qualifying", "practice"]
+        unallowed_words = ["testing", "pre-season"]
+        return [
+            event
+            for event in events
+            if any(word in event["summary"].lower() for word in allowed_words)
+            and not any(word in event["summary"].lower() for word in unallowed_words)
+        ]
 
     def _find_race_url(self, text):
-        pattern = "https://www.formula1.com/en/racing"
-        return next(
-            (word for word in text.split(" ") if word.startswith(pattern)), pattern
-        )
+        pattern = "Race Hub\\n(.*?)\\n"
+        return re.search(pattern, text).group(1)
 
     def _format_date_utc(self, date):
         datetime_adjusted = datetime_to_text(
