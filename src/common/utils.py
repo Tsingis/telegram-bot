@@ -6,13 +6,14 @@ from dateutil import tz
 
 
 def get(url, params=None):
-    if params:
-        res = requests.get(url, params)
-    else:
-        res = requests.get(url)
-    if res.status_code == 200:
-        return res
-    res.raise_for_status()
+    with requests.Session() as session:
+        if params:
+            res = session.get(url, params=params)
+        else:
+            res = session.get(url)
+        if res.status_code == 200:
+            return res
+        res.raise_for_status()
 
 
 def set_soup(url, target_encoding="latin-1"):
