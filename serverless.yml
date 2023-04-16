@@ -4,9 +4,12 @@ provider:
   name: aws
   stage: ${opt:stage, 'test'}
   runtime: python3.9
+  runtimeManagement: auto
+  architecture: arm64
   region: ${opt:region, 'eu-north-1'}
   memorySize: 256
   timeout: 15
+  logRetentionInDays: 30
   environment:
     TELEGRAM_TOKEN: ${env:${join('TELEGRAM_TOKEN', ${upper(${self:provider.stage})}, '_')}}
     GOOGLE_API: ${env:GOOGLE_API}
