@@ -1,0 +1,34 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "21:00"
+      timezone: "Europe/Helsinki"
+    target-branch: "test"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "21:00"
+      timezone: "Europe/Helsinki"
+    target-branch: "test"
+  - package-ecosystem: "pip"
+    directory: "/src"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "21:00"
+      timezone: "Europe/Helsinki"
+    target-branch: "test"
+  - package-ecosystem: "pip"
+    directory: "/tests"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "21:00"
+      timezone: "Europe/Helsinki"
+    target-branch: "test"
