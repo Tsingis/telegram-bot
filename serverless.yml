@@ -11,7 +11,7 @@ provider:
   timeout: 15
   logRetentionInDays: 30
   environment:
-    TELEGRAM_TOKEN: ${env:${join('TELEGRAM_TOKEN', ${upper(${self:provider.stage})}, '_')}}
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     GOOGLE_API: ${env:GOOGLE_API}
     OPENWEATHER_API: ${env:OPENWEATHER_API}
     CSE_ID: ${env:CSE_ID}
@@ -34,7 +34,6 @@ functions:
 
 plugins:
   - serverless-python-requirements
-  - serverless-plugin-utils
 
 custom:
   pythonRequirements:
