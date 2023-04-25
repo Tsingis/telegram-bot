@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: test
 jobs:
-  deploy:
+  test:
     runs-on: ${{ matrix.os }}
     env:
       CSE_ID: ${{ secrets.CSE_ID }}
