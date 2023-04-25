@@ -9,21 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.10"]
         node-version: ["18"]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: "x64"
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: Install setuptools
-        run: sudo apt-get install -y python3-setuptools
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
