@@ -37,7 +37,7 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: non-linux
+    dockerizePip: true
     fileName: src/requirements.txt
 
 package:
