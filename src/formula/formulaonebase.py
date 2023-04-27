@@ -80,7 +80,13 @@ class FormulaOneBase:
         }
 
     def _filter_events(self, events):
-        allowed_words = ["race", "sprint race", "qualifying", "practice"]
+        allowed_words = [
+            "race",
+            "sprint race",
+            "sprint shootout",
+            "qualifying",
+            "practice",
+        ]
         unallowed_words = ["testing", "pre-season"]
         return [
             event
