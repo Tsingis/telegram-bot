@@ -16,7 +16,7 @@ class FormulaOneBase:
 
     def __init__(self, date=datetime.utcnow()):
         self.date = date
-        self.source_timezone = "Europe/London"
+        self.source_timezone = "Etc/UTC"
         self.source_datetime_pattern = "%Y%m%dT%H%M%S"
         self.race_weekends = self._get_race_weekends()
         self.races_amount = 0 if self.race_weekends is None else len(self.race_weekends)
