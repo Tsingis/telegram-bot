@@ -3,7 +3,7 @@ service: telegram-bot
 provider:
   name: aws
   stage: ${opt:stage, 'test'}
-  runtime: python3.10
+  runtime: python3.11
   runtimeManagement: auto
   architecture: ${opt:architecture, 'x86_64'}
   region: ${opt:region, 'eu-north-1'}

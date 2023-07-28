@@ -30,7 +30,7 @@
 ## Requirements:
 
 - AWS Account
-- Python 3.10
+- Python 3.11
 - Node.js 18.x
 - Serverless Framework
 - Docker Desktop
