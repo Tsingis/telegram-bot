@@ -1,5 +1,4 @@
 import json
-import re
 from .nhlbase import NHLBase
 from ..common.utils import set_soup, get
 from ..common.logger import logging
@@ -19,10 +18,7 @@ class NHLExtra(NHLBase):
         url = f"https://www.capfriendly.com/players/{name}"
         try:
             soup = set_soup(url, target_encoding="utf-8")
-            table = soup.find(
-                "table",
-                {"class": re.compile("^cntrct fixed")},
-            )
+            table = soup.find_all("table")[0]
             if table is None:
                 logger.info(f"Contract table not found for player {name}")
                 return
