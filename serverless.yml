@@ -44,6 +44,8 @@ package:
   patterns:
     - "!node_modules/**"
     - "!.github/**"
+    - "!.vscode"
+    - "!cloudformation"
     - "!tests/**"
     - "!venv/**"
     - "!.env*"
