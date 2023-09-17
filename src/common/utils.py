@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from dateutil import tz
+from http import HTTPStatus
 
 
 def get(url, params=None):
@@ -11,7 +12,7 @@ def get(url, params=None):
             res = session.get(url, params=params)
         else:
             res = session.get(url)
-        if res.status_code == 200:
+        if res.status_code == HTTPStatus.OK:
             return res
         res.raise_for_status()
 
