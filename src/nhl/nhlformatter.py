@@ -44,7 +44,6 @@ class NHLFormatter(NHLBase):
     def format_upcoming(self, data):
         results = []
         for game in data:
-
             date = text_to_datetime(game["date"], "%Y-%m-%dT%H:%M:%SZ")
             time = datetime_to_text(date, "%H:%M", target_tz=self.timezone)
             if game["status"] == "Postponed":
