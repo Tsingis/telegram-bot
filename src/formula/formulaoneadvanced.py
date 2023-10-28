@@ -45,6 +45,7 @@ class FormulaOneAdvanced(FormulaOneBase):
                     "time": row[-3],
                 }
                 for row in driver_rows
+                if row[1].isnumeric()  # Skip disqualified DQ
             ]
             return {"results": results, "url": results_url}
         except Exception:
