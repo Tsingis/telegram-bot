@@ -1,3 +1,4 @@
+import re
 from .formulaoneadvanced import FormulaOneAdvanced
 from ..common.utils import (
     datetime_to_text,
@@ -41,10 +42,14 @@ class FormulaOneFormatter(FormulaOneAdvanced):
 
         for standing in data["teamStandings"]:
             team_name_parts = standing["team"].split(" ")
-            if len(team_name_parts) > 2:
-                standing["team"] = " ".join(team_name_parts[:2])
+            if len(team_name_parts) <= 2:
+                team = team_name_parts[0]
             else:
-                standing["team"] = team_name_parts[0]
+                team_name_parts_inner = re.sub(
+                    r"([A-Z])", r" \1", standing["team"]
+                ).split()
+                team = " ".join(team_name_parts_inner[:2])
+            standing["team"] = team
 
         driver_standings = [
             f"""{str(result["position"]).rjust(2)}. {result["driver"][-3:]} - {format_number(result["points"])}"""

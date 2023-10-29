@@ -63,19 +63,19 @@ class FormulaOneAdvanced(FormulaOneBase):
                     f"Driver standings table not found for year {self.date.year}"
                 )
                 return
-            rows = table.find_all("tr")[1 : amount + 1]
+            rows = table.find_all("tr")[1:]
             driver_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
             ]
             standings = [
                 {
                     "driver": row[2],
-                    "position": int(row[1]),
+                    "position": row[1],
                     "points": float(row[-2]),
                 }
                 for row in driver_rows
             ]
-            return {"driverStandings": standings, "driverUrl": url}
+            return {"driverStandings": standings[:amount], "driverUrl": url}
         except Exception:
             logger.exception(
                 f"Error getting driver standings for year {self.date.year}"
@@ -92,19 +92,19 @@ class FormulaOneAdvanced(FormulaOneBase):
             if table is None:
                 logger.info(f"Team standings table not found for year {self.date.year}")
                 return
-            rows = table.find_all("tr")[1 : amount + 1]
+            rows = table.find_all("tr")[1:]
             team_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
             ]
             standings = [
                 {
                     "team": row[2],
-                    "position": int(row[1]),
+                    "position": row[1],
                     "points": float(row[-2]),
                 }
                 for row in team_rows
             ]
-            return {"teamStandings": standings, "teamUrl": url}
+            return {"teamStandings": standings[:amount], "teamUrl": url}
         except Exception:
             logger.exception(f"Error getting team standings {self.date.year}")
 
