@@ -34,20 +34,19 @@ class FormulaOneAdvanced(FormulaOneBase):
             if table is None:
                 logger.info(f"Results table not found for year {self.date.year}")
                 return
-            rows = table.find_all("tr")[1 : amount + 1]
+            rows = table.find_all("tr")[1:]
             driver_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
             ]
             results = [
                 {
                     "name": row[3],
-                    "position": int(row[1]),
+                    "position": row[1],
                     "time": row[-3],
                 }
                 for row in driver_rows
-                if row[1].isnumeric()  # Skip disqualified DQ
             ]
-            return {"results": results, "url": results_url}
+            return {"results": results[:amount], "url": results_url}
         except Exception:
             logger.exception(f"Error getting race results for year {self.date.year}")
 
