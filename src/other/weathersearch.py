@@ -56,7 +56,7 @@ class WeatherSearch:
             "wind": str(data["wind"]) + " m/s",
             "hum": str(data["humidity"]) + " %",
             "pres": str(data["pressure"]) + " hPa",
-            "clouds": str(data["clouds"]) + " %",
+            "cloud": str(data["clouds"]) + " %",
         }
 
         if "precipType" in data:
@@ -65,7 +65,10 @@ class WeatherSearch:
 
         header = f"Weather in {location.title()}:"
         body = "\n".join(
-            [f"{key.capitalize()}: {value}" for (key, value) in info.items()]
+            [
+                f"{key.capitalize()}:".ljust(7) + f"{value}"
+                for (key, value) in info.items()
+            ]
         )
         return format_as_header(header) + "\n" + format_as_code(body)
 
