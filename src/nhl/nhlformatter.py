@@ -247,52 +247,56 @@ class NHLFormatter(NHLBase):
     def format_player_stats(self, data):
         url = f"""https://www.nhl.com/player/{data["name"].replace(" ", "-")}-{data["id"]}"""
         header = f"""#{data["number"]} {data["position"]} {data["name"]}"""
-        info = f"""Team:{data["team"]} From:{data["nationality"]} Age:{data["age"]}"""
+        info = {
+            "Team": data["team"],
+            "From": data["nationality"],
+            "Age": data["age"],
+        }
+        info_text = (3 * " ").join([f"{key}: {value}" for (key, value) in info.items()])
+
+        if data["stats"] is not None:
+            if data["position"] == "G":
+                stats = {
+                    "GP": data["stats"]["games"],
+                    "W": data["stats"]["wins"],
+                    "SO": data["stats"]["shutouts"],
+                    "Sv%": round(data["stats"]["savePercentage"] * 100, 2),
+                    "GAA": round(data["stats"]["goalAgainstAverage"], 2),
+                }
+            else:
+                stats = {
+                    "GP": data["stats"]["games"],
+                    "G": data["stats"]["goals"],
+                    "A": data["stats"]["assists"],
+                    "+/-": data["stats"]["plusMinus"],
+                    "TOI": data["stats"]["timeOnIcePerGame"],
+                }
+            stats_text = (3 * " ").join(
+                [f"{key}: {value}" for (key, value) in stats.items()]
+            )
+            info_text += "\n" + stats_text
         text = (
             format_as_header(escape_special_chars(header))
             + "\n"
-            + format_as_code(info)
+            + escape_special_chars(info_text)
             + "\n"
+            + format_as_url(url)
         )
-        if data["stats"] is not None:
-            if data["position"] == "G":
-                stats = (
-                    f"""GP:{data["stats"]["games"]} """
-                    f"""W:{data["stats"]["wins"]} """
-                    f"""L:{data["stats"]["losses"]} """
-                    f"""OT:{data["stats"]["ot"]}\n"""
-                    f"""Sv:{data["stats"]["saves"]} """
-                    f"""Sv%:{round(data["stats"]["savePercentage"] * 100, 2)} """
-                    f"""SO:{data["stats"]["shutouts"]}\n"""
-                    f"""GA:{data["stats"]["goalsAgainst"]} """
-                    f"""GAA:{round(data["stats"]["goalAgainstAverage"], 2)}"""
-                )
-            else:
-                stats = (
-                    f"""GP:{data["stats"]["games"]} """
-                    f"""G:{data["stats"]["goals"]} """
-                    f"""A:{data["stats"]["assists"]} """
-                    f"""P:{data["stats"]["points"]}\n"""
-                    f"""+/-:{data["stats"]["plusMinus"]} """
-                    f"""S:{data["stats"]["shots"]} """
-                    f"""S%:{round(data["stats"]["shotPct"], 2)}\n"""
-                    f"""PIM:{data["stats"]["pim"]} """
-                    f"""TOI/G:{data["stats"]["timeOnIcePerGame"]}"""
-                )
-            text += format_as_header("Stats:") + "\n" + format_as_code(stats)
-        text += format_as_url(url)
         return text
 
     def format_player_contract(self, data):
-        contract = (
-            f"""Year: {data["contract"]["yearStatus"]}\n"""
-            + f"""Cap hit: {data["contract"]["capHit"]}\n"""
-            + f"""Total: {data["contract"]["totalSalary"]}"""
+        contract = {
+            "Year": data["contract"]["yearStatus"],
+            "Cap": data["contract"]["capHit"],
+        }
+        contract_text = (3 * " ").join(
+            [f"{key}: {value}" for (key, value) in contract.items()]
         )
         text = (
-            format_as_header("Contract:")
+            format_as_header("Contract: ")
             + "\n"
-            + format_as_code(contract)
+            + escape_special_chars(contract_text)
+            + "\n"
             + format_as_url(data["url"])
         )
         return text
