@@ -13,7 +13,7 @@
 - Upcoming matches
 - Regular season standings
 - Latest match results
-- Regular season scoring leaders (with given amount and or nationality)
+- Regular season scoring leaders (with given amount and by nationality or team)
 - Players' basic stats from the latest matches (by nationality or team)
 - Player's regular season stats (by name)
 - Playoffs bracket
@@ -31,7 +31,7 @@
 
 - AWS Account
 - Python 3.11
-- Node.js 18.x
+- Node.js 20
 - Serverless Framework
 - Docker Desktop
 
