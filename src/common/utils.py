@@ -2,16 +2,13 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-from dateutil import tz
+from zoneinfo import ZoneInfo
 from http import HTTPStatus
 
 
 def get(url, params=None):
     with requests.Session() as session:
-        if params:
-            res = session.get(url, params=params)
-        else:
-            res = session.get(url)
+        res = session.get(url, params=params)
         if res.status_code == HTTPStatus.OK:
             return res
         res.raise_for_status()
@@ -36,16 +33,9 @@ def find_first_word(strings):
 
 
 def convert_timezone(date, source_tz=None, target_tz=None):
-    if source_tz is None:
-        source_tz = tz.tzutc()
-    else:
-        source_tz = tz.gettz(source_tz)
-    if target_tz is None:
-        target_tz = tz.tzutc()
-    else:
-        target_tz = tz.gettz(target_tz)
-    date = date.replace(tzinfo=source_tz)
-    return date.astimezone(target_tz)
+    source_tz = source_tz if source_tz is not None else "UTC"
+    target_tz = target_tz if target_tz is not None else "UTC"
+    return date.replace(tzinfo=ZoneInfo(source_tz)).astimezone(ZoneInfo(target_tz))
 
 
 def text_to_datetime(text, pattern):
