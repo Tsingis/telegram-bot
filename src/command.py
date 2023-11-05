@@ -117,7 +117,7 @@ class Command:
             text = self.weather_search.format_info(info, location)
             icon = self.weather_search.get_icon_url(info)
             if icon is not None:
-                return Response(text=text, image=icon, type=ResponseType.TEXT_AND_IMAGE)
+                return Response(text=text, image=icon, type=ResponseType.IMAGE)
         return Response(text=text)
 
     # F1 upcoming race
@@ -128,9 +128,7 @@ class Command:
             text = self.f1_formatter.format_upcoming(info)
             circuit_img = self.f1_advanced.find_circuit_image(info["raceUrl"])
             if circuit_img is not None:
-                return Response(
-                    text=text, image=circuit_img, type=ResponseType.TEXT_AND_IMAGE
-                )
+                return Response(text=text, image=circuit_img, type=ResponseType.IMAGE)
         return Response(text=text)
 
     # F1 standings
@@ -226,7 +224,6 @@ class Command:
 class ResponseType(Enum):
     TEXT = 1
     IMAGE = 2
-    TEXT_AND_IMAGE = 3
 
 
 class Response:

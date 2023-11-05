@@ -34,9 +34,7 @@ async def webhook_async(event, context):
                     logger.info(f"Command received: {text}")
                     if res.type == ResponseType.TEXT:
                         await bot.send_text(res.text)
-                    if res.type == ResponseType.IMAGE:
-                        await bot.send_image(res.image)
-                    if res.type == ResponseType.TEXT_AND_IMAGE:
+                    else:
                         await bot.send_image(res.image, res.text)
             logger.info("Event handled")
             return create_response(HTTPStatus.OK, "Event handled")
