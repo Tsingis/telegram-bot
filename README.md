@@ -8,15 +8,7 @@
 - Standings (both driver and team)
 - Latest race results
 
-**NHL**
-
-- Upcoming matches
-- Regular season standings
-- Latest match results
-- Regular season scoring leaders (with given amount and by nationality or team)
-- Players' basic stats from the latest matches (by nationality or team)
-- Player's regular season stats (by name)
-- Playoffs bracket
+**NHL** (disabled due to completely new API)
 
 **Other**
 

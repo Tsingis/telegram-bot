@@ -40,11 +40,11 @@ class Command:
             self.img_search = ImageSearch()
         if self.text.startswith(self.WEATHER_SEARCH_CMD):
             self.weather_search = WeatherSearch()
-        if self.text.startswith("/nhl"):
-            self.nhl_advanced = NHLAdvanced()
-            self.nhl_extra = NHLExtra()
-            self.nhl_playoffs = NHLPlayoffs()
-            self.nhl_formatter = NHLFormatter()
+        # if self.text.startswith("/nhl"):
+        #     # self.nhl_advanced = NHLAdvanced()
+        #     # self.nhl_extra = NHLExtra()
+        #     # self.nhl_playoffs = NHLPlayoffs()
+        #     # self.nhl_formatter = NHLFormatter()
         if self.text.startswith("/f1"):
             self.f1_advanced = FormulaOneAdvanced()
             self.f1_formatter = FormulaOneFormatter()
@@ -63,22 +63,23 @@ class Command:
             return self._f1_standings()
         if self.text.startswith(self.F1_RESULTS_CMD):
             return self._f1_results()
-        if self.text.startswith(self.NHL_SCORING_CMD):
-            return self._nhl_scoring()
-        if self.text.startswith(self.NHL_INFO_CMD):
-            return self._nhl_info()
-        if self.text.startswith(self.NHL_STANDINGS_CMD):
-            return self._nhl_standings()
-        if self.text.startswith(self.NHL_RESULTS_CMD):
-            return self._nhl_results()
-        if self.text.startswith(self.NHL_PLAYERS_STATS_CMD):
-            return self._nhl_players_stats()
-        if self.text.startswith(self.NHL_PLAYER_INFO_CMD):
-            return self._nhl_player_info()
-        if self.text.startswith(self.NHL_PLAYOFFS_CMD):
-            return self._nhl_playoffs_bracket()
+        # if self.text.startswith(self.NHL_SCORING_CMD):
+        #     return self._nhl_scoring()
+        # if self.text.startswith(self.NHL_INFO_CMD):
+        #     return self._nhl_info()
+        # if self.text.startswith(self.NHL_STANDINGS_CMD):
+        #     return self._nhl_standings()
+        # if self.text.startswith(self.NHL_RESULTS_CMD):
+        #     return self._nhl_results()
+        # if self.text.startswith(self.NHL_PLAYERS_STATS_CMD):
+        #     return self._nhl_players_stats()
+        # if self.text.startswith(self.NHL_PLAYER_INFO_CMD):
+        #     return self._nhl_player_info()
+        # if self.text.startswith(self.NHL_PLAYOFFS_CMD):
+        #     return self._nhl_playoffs_bracket()
         else:
-            logging.info(f"Invalid command received: {self.text}")
+            logger.info(f"Invalid command received: {self.text}")
+            return Response()
 
     # Available bot commands
     def _available_commands(self):
@@ -88,13 +89,13 @@ class Command:
             self.F1_INFO_CMD,
             self.F1_STANDINGS_CMD,
             self.F1_RESULTS_CMD,
-            self.NHL_INFO_CMD,
-            self.NHL_STANDINGS_CMD,
-            self.NHL_RESULTS_CMD,
-            self.NHL_SCORING_CMD + " <amount> and/or <nationality>",
-            self.NHL_PLAYERS_STATS_CMD + " <nationality or team>",
-            self.NHL_PLAYER_INFO_CMD + " <player name>",
-            self.NHL_PLAYOFFS_CMD,
+            # self.NHL_INFO_CMD,
+            # self.NHL_STANDINGS_CMD,
+            # self.NHL_RESULTS_CMD,
+            # self.NHL_SCORING_CMD + " <amount> and/or <nationality>",
+            # self.NHL_PLAYERS_STATS_CMD + " <nationality or team>",
+            # self.NHL_PLAYER_INFO_CMD + " <player name>",
+            # self.NHL_PLAYOFFS_CMD,
         ]
         header = format_as_header("Available commands:")
         text = header + "\n" + escape_special_chars("\n".join(cmds))
