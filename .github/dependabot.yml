@@ -10,6 +10,7 @@ updates:
     target-branch: "test"
   - package-ecosystem: "npm"
     directory: "/"
+    versioning-strategy: "increase"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -18,6 +19,7 @@ updates:
     target-branch: "test"
   - package-ecosystem: "pip"
     directory: "/src"
+    versioning-strategy: "increase"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -26,6 +28,7 @@ updates:
     target-branch: "test"
   - package-ecosystem: "pip"
     directory: "/tests"
+    versioning-strategy: "increase"
     schedule:
       interval: "weekly"
       day: "monday"
