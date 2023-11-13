@@ -22,7 +22,7 @@ class Command:
     NHL_CONTRACT_CMD = "/nhlcontract"
 
     def __init__(self, text):
-        self.text = text
+        self.text = text if text is not None else ""
         self.response = self._command_response()
 
     def _command_response(self):
@@ -44,7 +44,6 @@ class Command:
             return self._nhl_contract()
         else:
             logger.info(f"Invalid command received: {self.text}")
-            return Response()
 
     # Available bot commands
     def _available_commands(self):

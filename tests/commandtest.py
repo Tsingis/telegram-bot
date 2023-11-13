@@ -19,12 +19,12 @@ class CommandTest(unittest.TestCase):
         "/nhlcontract connor mcdavid",
         "/nhlcontract andrei vasilevskiy",
     )
-    def test_bot_command(self, command_text, print_response=True):
-        cmd = Command(command_text)
+    def test_valid_command(self, text, print_response=True):
+        cmd = Command(text)
         res = cmd.response
 
         if print_response:
-            self._print_response(res, command_text)
+            self._print_response(res, text)
 
         if res.text is not None:
             self.assertIsInstance(res.text, str)
@@ -35,6 +35,11 @@ class CommandTest(unittest.TestCase):
                 self.assertTrue(res.image.startswith("http"))
             else:
                 self.assertIsInstance(res.image, BytesIO)
+
+    @data("/notacommand", "notacommand", "", None)
+    def test_invalid_command(self, text):
+        cmd = Command(text)
+        self.assertIsNone(cmd.response)
 
     def _print_response(self, res, command_text):
         print(f"COMMAND: {command_text}\n")
