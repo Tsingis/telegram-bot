@@ -1,0 +1,130 @@
+[
+	{
+		"shortName": "ANA",
+		"fullName": "Anaheim Ducks"
+	},
+	{
+		"shortName": "ARI",
+		"fullName": "Arizona Coyotes"
+	},
+	{
+		"shortName": "BOS",
+		"fullName": "Boston Bruins"
+	},
+	{
+		"shortName": "BUF",
+		"fullName": "Buffalo Sabres"
+	},
+	{
+		"shortName": "CAR",
+		"fullName": "Carolina Hurricanes"
+	},
+	{
+		"shortName": "CBJ",
+		"fullName": "Columbus Blue Jackets"
+	},
+	{
+		"shortName": "CGY",
+		"fullName": "Calgary Flames"
+	},
+	{
+		"shortName": "CHI",
+		"fullName": "Chicago Blackhawks"
+	},
+	{
+		"shortName": "COL",
+		"fullName": "Colorado Avalanche"
+	},
+	{
+		"shortName": "DAL",
+		"fullName": "Dallas Stars"
+	},
+	{
+		"shortName": "DET",
+		"fullName": "Detroit Red Wings"
+	},
+	{
+		"shortName": "EDM",
+		"fullName": "Edmonton Oilers"
+	},
+	{
+		"shortName": "FLA",
+		"fullName": "Florida Panthers"
+	},
+	{
+		"shortName": "LAK",
+		"fullName": "Los Angeles Kings"
+	},
+	{
+		"shortName": "MIN",
+		"fullName": "Minnesota Wild"
+	},
+	{
+		"shortName": "MTL",
+		"fullName": "Montréal Canadiens"
+	},
+	{
+		"shortName": "NJD",
+		"fullName": "New Jersey Devils"
+	},
+	{
+		"shortName": "NSH",
+		"fullName": "Nashville Predators"
+	},
+	{
+		"shortName": "NYI",
+		"fullName": "New York Islanders"
+	},
+	{
+		"shortName": "NYR",
+		"fullName": "New York Rangers"
+	},
+	{
+		"shortName": "OTT",
+		"fullName": "Ottawa Senators"
+	},
+	{
+		"shortName": "PHI",
+		"fullName": "Philadelphia Flyers"
+	},
+	{
+		"shortName": "PIT",
+		"fullName": "Pittsburgh Penguins"
+	},
+	{
+		"shortName": "SEA",
+		"fullName": "Seattle Kraken"
+	},
+	{
+		"shortName": "SJS",
+		"fullName": "San Jose Sharks"
+	},
+	{
+		"shortName": "STL",
+		"fullName": "St. Louis Blues"
+	},
+	{
+		"shortName": "TBL",
+		"fullName": "Tampa Bay Lightning"
+	},
+	{
+		"shortName": "TOR",
+		"fullName": "Toronto Maple Leafs"
+	},
+	{
+		"shortName": "VAN",
+		"fullName": "Vancouver Canucks"
+	},
+	{
+		"shortName": "VGK",
+		"fullName": "Vegas Golden Knights"
+	},
+	{
+		"shortName": "WPG",
+		"fullName": "Winnipeg Jets"
+	},
+	{
+		"shortName": "WSH",
+		"fullName": "Washington Capitals"
+	}
+]

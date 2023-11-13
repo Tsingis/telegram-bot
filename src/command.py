@@ -1,6 +1,8 @@
 from enum import Enum
 from .common.logger import logging
 from .common.utils import (
+    find_first_integer,
+    find_first_word,
     format_as_header,
     escape_special_chars,
 )
@@ -16,6 +18,8 @@ class Command:
     F1_RACE_CMD = "/f1race"
     F1_STANDINGS_CMD = "/f1standings"
     F1_RESULTS_CMD = "/f1results"
+    NHL_SCORING_CMD = "/nhlscoring"
+    NHL_CONTRACT_CMD = "/nhlcontract"
 
     def __init__(self, text):
         self.text = text
@@ -34,6 +38,10 @@ class Command:
             return self._formula_standings()
         if self.text.startswith(self.F1_RESULTS_CMD):
             return self._formula_results()
+        if self.text.startswith(self.NHL_SCORING_CMD):
+            return self._nhl_scoring()
+        if self.text.startswith(self.NHL_CONTRACT_CMD):
+            return self._nhl_contract()
         else:
             logger.info(f"Invalid command received: {self.text}")
             return Response()
@@ -46,6 +54,8 @@ class Command:
             self.F1_RACE_CMD,
             self.F1_STANDINGS_CMD,
             self.F1_RESULTS_CMD,
+            self.NHL_SCORING_CMD + " <amount> and/or <nationality>",
+            self.NHL_CONTRACT_CMD + " <player name>",
         ]
         header = format_as_header("Available commands:")
         text = header + "\n" + escape_special_chars("\n".join(cmds))
@@ -112,6 +122,31 @@ class Command:
             text = formula_results.format(results)
             return Response(text=text)
         return Response(text="No results available")
+
+    def _nhl_scoring(self):
+        from .nhl.nhlscoring import NHLScoring
+
+        nhl_scoring = NHLScoring()
+        filters = self.text.split(self.NHL_SCORING_CMD)[-1].strip().split(" ")
+        team_or_nationality = find_first_word(filters)
+        amount = find_first_integer(filters)
+        amount = 10 if amount is None else amount
+        scoring = nhl_scoring.get_scoring_leaders(amount, team_or_nationality)
+        if scoring is not None:
+            text = nhl_scoring.format(scoring)
+            return Response(text=text)
+        return Response(text="No scoring leaders available")
+
+    def _nhl_contract(self):
+        from .nhl.nhlcontract import NHLContract
+
+        nhl_contract = NHLContract()
+        player_name = self.text.split(self.NHL_CONTRACT_CMD)[-1].strip().lower()
+        contract = nhl_contract.get(player_name)
+        if contract is not None:
+            text = nhl_contract.format(contract)
+            return Response(text=text)
+        return Response(text="No contract available")
 
 
 class ResponseType(Enum):

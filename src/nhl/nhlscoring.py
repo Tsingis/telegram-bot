@@ -1,57 +1,19 @@
 import json
+from src.common.utils import format_as_code, format_as_header, format_as_url, get
 from .nhlbase import NHLBase
-from ..common.utils import set_soup, get
 from ..common.logger import logging
 
 logger = logging.getLogger(__name__)
 
 
-class NHLExtra(NHLBase):
+class NHLScoring(NHLBase):
     def __init__(self):
         super().__init__()
-
-    def get_player_contract(self, name):
-        """
-        Player contract info for current season from Capfriendly
-        """
-        name = name.replace(" ", "-").replace("'", "").lower()
-        url = f"https://www.capfriendly.com/players/{name}"
-        try:
-            soup = set_soup(url, target_encoding="utf-8")
-            table = soup.find_all("table")[0]
-            if table is None:
-                logger.info(f"Contract table not found for player {name}")
-                return
-            rows = table.find_all("tr")
-            contract_rows = [
-                row.find_all("td") for row in rows[1:-1]
-            ]  # Skip header and total rows
-            data = [
-                {
-                    "season": cols[0].text.replace("-", "20"),
-                    "capHit": cols[2].text,
-                    "totalSalary": cols[7].text,
-                }
-                for cols in contract_rows
-            ]
-            contract = next(
-                {
-                    "yearStatus": f"{i+1}/{len(data)}",
-                    "capHit": item["capHit"],
-                    "totalSalary": item["totalSalary"],
-                }
-                for i, item in enumerate(data)
-                if item["season"] == self.season
-            )
-            return {"contract": contract, "url": url}
-        except Exception:
-            logger.exception(f"Error getting player contract for player {name}")
+        self.api_base_url = "https://api.nhle.com/stats/rest/en"
+        self.details_url = "https://www.nhl.com/stats/skaters"
 
     def get_scoring_leaders(self, amount=10, filter=None):
-        """
-        Scoring leaders for current season from NHL
-        """
-        url = "https://api.nhle.com/stats/rest/en/skater/summary"
+        url = f"{self.api_base_url}/skater/summary"
         sort = [
             {"property": "points", "direction": "DESC"},
             {"property": "goals", "direction": "DESC"},
@@ -101,12 +63,39 @@ class NHLExtra(NHLBase):
                 f"Error getting scoring leaders for season {self.season} with filter {filter.upper()}"
             )
 
+    def format(self, data):
+        highest_points = max(data, key=lambda x: x["points"])
+        highest_points_len = len(str(highest_points["points"]))
+        highest_goals = max(data, key=lambda x: x["goals"])
+        highest_goals_len = len(str(highest_goals["goals"]))
+        highest_assists = max(data, key=lambda x: x["assists"])
+        highest_assists_len = len(str(highest_assists["assists"]))
+
+        adjust = highest_goals_len + highest_assists_len + 1
+
+        leaders = [
+            (
+                f"""{str(player["rank"]).rjust(2)}. """
+                + f"""{(str(player["goals"]) + "+" + str(player["assists"])).rjust(adjust)}"""
+                + f"""={str(player["points"]).ljust(highest_points_len)} """
+                + f"""{player["name"].split(" ")[-1]} ({player["team"]})"""
+            )
+            for player in data
+        ]
+        text = (
+            format_as_header("Scoring leaders:")
+            + "\n"
+            + format_as_code("\n".join(leaders))
+            + format_as_url(self.details_url)
+        )
+        return text
+
     def _get_franchises(self):
-        url = "https://api.nhle.com/stats/rest/en/franchise"
+        url = f"{self.api_base_url}/franchise"
         res = get(url).json()
-        franchises = {
-            self.teams[team["fullName"]]["shortName"]: team["id"]
-            for team in res["data"]
-            if team["fullName"] in self.teams
-        }
+        franchises = {}
+        for team in res["data"]:
+            for key, value in self.teams.items():
+                if value == team["fullName"]:
+                    franchises[key] = team["id"]
         return franchises

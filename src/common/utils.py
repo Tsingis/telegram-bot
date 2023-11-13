@@ -20,7 +20,7 @@ def set_soup(url, target_encoding="latin-1"):
     return BeautifulSoup(text, "html.parser")
 
 
-def find_first_int(strings):
+def find_first_integer(strings):
     for string in strings:
         if string.strip().isdigit():
             return int(string)
