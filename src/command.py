@@ -78,10 +78,10 @@ class Command:
 
         weather_search = WeatherSearch()
         location = self.text.split(self.WEATHER_SEARCH_CMD)[-1].strip()
-        info = weather_search.get_info(location)
-        if info is not None:
-            text = weather_search.format_info(info, location)
-            icon = weather_search.get_icon_url(info)
+        data = weather_search.get_info(location)
+        if data is not None:
+            text = weather_search.format_info(data, location)
+            icon = weather_search.get_icon_url(data)
             if icon is not None:
                 return Response(text=text, image=icon, type=ResponseType.IMAGE)
         return Response(text="No weather data available")
@@ -91,10 +91,10 @@ class Command:
         from .formula.formularace import FormulaRace
 
         formula_race = FormulaRace()
-        info = formula_race.get_upcoming()
-        if info is not None:
-            text = formula_race.format(info)
-            circuit_img = formula_race.find_circuit_image(info["raceUrl"])
+        data = formula_race.get_upcoming()
+        if data is not None:
+            text = formula_race.format(data)
+            circuit_img = formula_race.find_circuit_image(data["raceUrl"])
             if circuit_img is not None:
                 return Response(text=text, image=circuit_img, type=ResponseType.IMAGE)
         return Response(text="No race info available")
@@ -104,11 +104,11 @@ class Command:
         from .formula.formulastandings import FormulaStandings
 
         formula_standings = FormulaStandings()
-        team_standings = formula_standings.get_team_standings(amount=10)
-        driver_standings = formula_standings.get_driver_standings(amount=10)
-        if team_standings is not None and driver_standings is not None:
-            standings = team_standings | driver_standings
-            text = formula_standings.format(standings)
+        team_data = formula_standings.get_team_standings(amount=10)
+        driver_data = formula_standings.get_driver_standings(amount=10)
+        if team_data is not None and driver_data is not None:
+            data = team_data | driver_data
+            text = formula_standings.format(data)
             return Response(text=text)
         return Response(text="No standings available")
 
@@ -117,9 +117,9 @@ class Command:
         from .formula.formularesults import FormulaResults
 
         formula_results = FormulaResults()
-        results = formula_results.get_results()
-        if results is not None:
-            text = formula_results.format(results)
+        data = formula_results.get_results()
+        if data is not None:
+            text = formula_results.format(data)
             return Response(text=text)
         return Response(text="No results available")
 
@@ -131,9 +131,9 @@ class Command:
         team_or_nationality = find_first_word(filters)
         amount = find_first_integer(filters)
         amount = 10 if amount is None else amount
-        scoring = nhl_scoring.get_scoring_leaders(amount, team_or_nationality)
-        if scoring is not None:
-            text = nhl_scoring.format(scoring)
+        data = nhl_scoring.get_scoring_leaders(amount, team_or_nationality)
+        if data is not None:
+            text = nhl_scoring.format(data)
             return Response(text=text)
         return Response(text="No scoring leaders available")
 
@@ -142,9 +142,9 @@ class Command:
 
         nhl_contract = NHLContract()
         player_name = self.text.split(self.NHL_CONTRACT_CMD)[-1].strip().lower()
-        contract = nhl_contract.get(player_name)
-        if contract is not None:
-            text = nhl_contract.format(contract)
+        data = nhl_contract.get(player_name)
+        if data is not None:
+            text = nhl_contract.format(player_name, data)
             return Response(text=text)
         return Response(text="No contract available")
 

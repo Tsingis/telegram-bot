@@ -16,8 +16,7 @@ class NHLContract(NHLBase):
         self.contract_base_url = "https://www.capfriendly.com/players"
 
     def get(self, name):
-        name = name.replace(" ", "-").replace("'", "").lower()
-        url = f"{self.contract_base_url}/{name}"
+        url = f"""{self.contract_base_url}/{name.replace(" ", "-").replace("'", "").lower()}"""
         try:
             soup = set_soup(url, target_encoding="utf-8")
             table = soup.find_all("table")[0]
@@ -49,16 +48,16 @@ class NHLContract(NHLBase):
         except Exception:
             logger.exception(f"Error getting player contract for player {name}")
 
-    def format(self, data):
+    def format(self, player_name, data):
         contract = {
-            "Year": data["contract"]["yearStatus"],
-            "Cap": data["contract"]["capHit"],
+            "year": data["contract"]["yearStatus"],
+            "cap": data["contract"]["capHit"],
         }
         contract_text = "\n".join(
-            [f"{key}: {value}" for (key, value) in contract.items()]
+            [f"{key.capitalize()}: {value}" for (key, value) in contract.items()]
         )
         text = (
-            format_as_header("Contract:")
+            format_as_header(f"Contract of {player_name.title()}")
             + "\n"
             + escape_special_chars(contract_text)
             + "\n"
