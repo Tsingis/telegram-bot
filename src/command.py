@@ -3,17 +3,7 @@ from .common.logger import logging
 from .common.utils import (
     format_as_header,
     escape_special_chars,
-    find_first_int,
-    find_first_word,
 )
-from .formula.formulaoneadvanced import FormulaOneAdvanced
-from .formula.formulaoneformatter import FormulaOneFormatter
-from .nhl.nhladvanced import NHLAdvanced
-from .nhl.nhlextra import NHLExtra
-from .nhl.nhlformatter import NHLFormatter
-from .nhl.nhlplayoffs import NHLPlayoffs
-from .other.imagesearch import ImageSearch
-from .other.weathersearch import WeatherSearch
 
 
 logger = logging.getLogger(__name__)
@@ -23,31 +13,12 @@ class Command:
     AVAILABLE_CMD = "/bot"
     IMAGE_SEARCH_CMD = "/search"
     WEATHER_SEARCH_CMD = "/weather"
-    F1_INFO_CMD = "/f1info"
+    F1_RACE_CMD = "/f1race"
     F1_STANDINGS_CMD = "/f1standings"
     F1_RESULTS_CMD = "/f1results"
-    NHL_INFO_CMD = "/nhlinfo"
-    NHL_STANDINGS_CMD = "/nhlstandings"
-    NHL_RESULTS_CMD = "/nhlresults"
-    NHL_SCORING_CMD = "/nhlscoring"
-    NHL_PLAYERS_STATS_CMD = "/nhlplayers"
-    NHL_PLAYER_INFO_CMD = "/nhlplayerinfo"
-    NHL_PLAYOFFS_CMD = "/nhlplayoffs"
 
     def __init__(self, text):
         self.text = text
-        if self.text.startswith(self.IMAGE_SEARCH_CMD):
-            self.img_search = ImageSearch()
-        if self.text.startswith(self.WEATHER_SEARCH_CMD):
-            self.weather_search = WeatherSearch()
-        # if self.text.startswith("/nhl"):
-        #     # self.nhl_advanced = NHLAdvanced()
-        #     # self.nhl_extra = NHLExtra()
-        #     # self.nhl_playoffs = NHLPlayoffs()
-        #     # self.nhl_formatter = NHLFormatter()
-        if self.text.startswith("/f1"):
-            self.f1_advanced = FormulaOneAdvanced()
-            self.f1_formatter = FormulaOneFormatter()
         self.response = self._command_response()
 
     def _command_response(self):
@@ -57,26 +28,12 @@ class Command:
             return self._search_img()
         if self.text.startswith(self.WEATHER_SEARCH_CMD):
             return self._search_weather()
-        if self.text.startswith(self.F1_INFO_CMD):
-            return self._f1_info()
+        if self.text.startswith(self.F1_RACE_CMD):
+            return self._formula_race()
         if self.text.startswith(self.F1_STANDINGS_CMD):
-            return self._f1_standings()
+            return self._formula_standings()
         if self.text.startswith(self.F1_RESULTS_CMD):
-            return self._f1_results()
-        # if self.text.startswith(self.NHL_SCORING_CMD):
-        #     return self._nhl_scoring()
-        # if self.text.startswith(self.NHL_INFO_CMD):
-        #     return self._nhl_info()
-        # if self.text.startswith(self.NHL_STANDINGS_CMD):
-        #     return self._nhl_standings()
-        # if self.text.startswith(self.NHL_RESULTS_CMD):
-        #     return self._nhl_results()
-        # if self.text.startswith(self.NHL_PLAYERS_STATS_CMD):
-        #     return self._nhl_players_stats()
-        # if self.text.startswith(self.NHL_PLAYER_INFO_CMD):
-        #     return self._nhl_player_info()
-        # if self.text.startswith(self.NHL_PLAYOFFS_CMD):
-        #     return self._nhl_playoffs_bracket()
+            return self._formula_results()
         else:
             logger.info(f"Invalid command received: {self.text}")
             return Response()
@@ -86,16 +43,9 @@ class Command:
         cmds = [
             self.IMAGE_SEARCH_CMD + " <keyword>",
             self.WEATHER_SEARCH_CMD + " <location>",
-            self.F1_INFO_CMD,
+            self.F1_RACE_CMD,
             self.F1_STANDINGS_CMD,
             self.F1_RESULTS_CMD,
-            # self.NHL_INFO_CMD,
-            # self.NHL_STANDINGS_CMD,
-            # self.NHL_RESULTS_CMD,
-            # self.NHL_SCORING_CMD + " <amount> and/or <nationality>",
-            # self.NHL_PLAYERS_STATS_CMD + " <nationality or team>",
-            # self.NHL_PLAYER_INFO_CMD + " <player name>",
-            # self.NHL_PLAYOFFS_CMD,
         ]
         header = format_as_header("Available commands:")
         text = header + "\n" + escape_special_chars("\n".join(cmds))
@@ -103,123 +53,65 @@ class Command:
 
     # Random Google search image by keyword
     def _search_img(self):
+        from .other.imagesearch import ImageSearch
+
+        img_search = ImageSearch()
         keyword = self.text.split(self.IMAGE_SEARCH_CMD)[-1].strip()
-        img = self.img_search.get_random_image(keyword)
+        img = img_search.get_random_image(keyword)
         if img is not None:
             return Response(image=img, type=ResponseType.IMAGE)
         return Response(text="No search results available")
 
     # Weather info by location
     def _search_weather(self):
-        text = "No weather data available"
+        from .other.weathersearch import WeatherSearch
+
+        weather_search = WeatherSearch()
         location = self.text.split(self.WEATHER_SEARCH_CMD)[-1].strip()
-        info = self.weather_search.get_info(location)
+        info = weather_search.get_info(location)
         if info is not None:
-            text = self.weather_search.format_info(info, location)
-            icon = self.weather_search.get_icon_url(info)
+            text = weather_search.format_info(info, location)
+            icon = weather_search.get_icon_url(info)
             if icon is not None:
                 return Response(text=text, image=icon, type=ResponseType.IMAGE)
-        return Response(text=text)
+        return Response(text="No weather data available")
 
     # F1 upcoming race
-    def _f1_info(self):
-        text = "No race info available"
-        info = self.f1_advanced.get_upcoming()
+    def _formula_race(self):
+        from .formula.formularace import FormulaRace
+
+        formula_race = FormulaRace()
+        info = formula_race.get_upcoming()
         if info is not None:
-            text = self.f1_formatter.format_upcoming(info)
-            circuit_img = self.f1_advanced.find_circuit_image(info["raceUrl"])
+            text = formula_race.format(info)
+            circuit_img = formula_race.find_circuit_image(info["raceUrl"])
             if circuit_img is not None:
                 return Response(text=text, image=circuit_img, type=ResponseType.IMAGE)
-        return Response(text=text)
+        return Response(text="No race info available")
 
     # F1 standings
-    def _f1_standings(self):
-        text = "No standings available"
-        team_standings = self.f1_advanced.get_team_standings(amount=10)
-        driver_standings = self.f1_advanced.get_driver_standings(amount=10)
+    def _formula_standings(self):
+        from .formula.formulastandings import FormulaStandings
+
+        formula_standings = FormulaStandings()
+        team_standings = formula_standings.get_team_standings(amount=10)
+        driver_standings = formula_standings.get_driver_standings(amount=10)
         if team_standings is not None and driver_standings is not None:
             standings = team_standings | driver_standings
-            text = self.f1_formatter.format_standings(standings)
-        return Response(text=text)
+            text = formula_standings.format(standings)
+            return Response(text=text)
+        return Response(text="No standings available")
 
     # F1 latest race results
-    def _f1_results(self):
-        text = "No results available"
-        results = self.f1_advanced.get_results()
+    def _formula_results(self):
+        from .formula.formularesults import FormulaResults
+
+        formula_results = FormulaResults()
+        results = formula_results.get_results()
         if results is not None:
-            text = self.f1_formatter.format_results(results)
-        return Response(text=text)
-
-    # NHL upcoming matches
-    def _nhl_info(self):
-        text = "No upcoming games available"
-        info = self.nhl_advanced.get_upcoming()
-        if info is not None:
-            text = self.nhl_formatter.format_upcoming(info)
-        return Response(text=text)
-
-    # NHL standings
-    def _nhl_standings(self):
-        text = "No standings available"
-        standings = self.nhl_advanced.get_standings()
-        if standings is not None:
-            text = self.nhl_formatter.format_standings(standings)
-        return Response(text=text)
-
-    # NHL latest match results
-    def _nhl_results(self):
-        text = "No games available"
-        results = self.nhl_advanced.get_results()
-        if results is not None:
-            text = self.nhl_formatter.format_results(results)
-        return Response(text=text)
-
-    # NHL scoring leaders
-    def _nhl_scoring(self):
-        text = "No scoring leaders available"
-        filters = self.text.split(self.NHL_SCORING_CMD)[-1].strip().split(" ")
-        team_or_nationality = find_first_word(filters)
-        amount = find_first_int(filters)
-        if amount is None:
-            amount = 10
-        info = self.nhl_extra.get_scoring_leaders(amount, team_or_nationality)
-        if info is not None:
-            text = self.nhl_formatter.format_scoring_leaders(info)
-        return Response(text=text)
-
-    # NHL stats for players of given nationality or team from latest round
-    def _nhl_players_stats(self):
-        text = "No players' stats available"
-        filter_word = self.text.split(self.NHL_PLAYERS_STATS_CMD)[-1].strip()
-        stats = self.nhl_advanced.get_players_stats()
-        if stats is not None:
-            if not filter_word:
-                text = self.nhl_formatter.format_players_stats(stats)
-            else:
-                text = self.nhl_formatter.format_players_stats(stats, filter_word)
-        return Response(text=text)
-
-    # NHL player stats by player name
-    def _nhl_player_info(self):
-        player_name = self.text.split(self.NHL_PLAYER_INFO_CMD)[-1].strip().lower()
-        stats = self.nhl_advanced.get_player_stats(player_name)
-        contract = self.nhl_extra.get_player_contract(player_name)
-        text = ""
-        if stats is not None:
-            text += self.nhl_formatter.format_player_stats(stats)
-            text += "\n\n"
-        if contract is not None:
-            text += self.nhl_formatter.format_player_contract(contract)
-        if not text:
-            text = "No player info available"
-        return Response(text=text)
-
-    # NHL playoff bracket
-    def _nhl_playoffs_bracket(self):
-        bracket_img = self.nhl_playoffs.get_bracket()
-        if bracket_img is not None:
-            return Response(image=bracket_img, type=ResponseType.IMAGE)
-        return Response(text="No playoffs bracket available")
+            text = formula_results.format(results)
+            return Response(text=text)
+        return Response(text="No results available")
 
 
 class ResponseType(Enum):

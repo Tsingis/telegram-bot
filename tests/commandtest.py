@@ -12,17 +12,7 @@ class CommandTest(unittest.TestCase):
         "/search icecream",
         "/f1results",
         "/f1standings",
-        "/f1info",
-        "/nhlresults",
-        "/nhlstandings",
-        "/nhlinfo",
-        "/nhlscoring",
-        "/nhlscoring TBL",
-        "/nhlscoring 10 FIN",
-        "/nhlplayers",
-        "/nhlplayerinfo connor mcdavid",
-        "/nhlplayerinfo andrei vasilevskiy",
-        "/nhlplayoffs",
+        "/f1race",
     )
     def test_bot_command(self, command_text, print_response=True):
         cmd = Command(command_text)

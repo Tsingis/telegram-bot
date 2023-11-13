@@ -2,28 +2,90 @@ import re
 import unicodedata
 from datetime import datetime
 from icalendar import Calendar
+from .formulabase import FormulaBase
 from ..common.logger import logging
-from ..common.utils import get, datetime_to_text, text_to_datetime
+from ..common.utils import (
+    format_as_code,
+    format_as_header,
+    format_as_url,
+    get,
+    datetime_to_text,
+    remove_texts,
+    set_soup,
+    text_to_datetime,
+)
 
 
 logger = logging.getLogger(__name__)
 
 
-class FormulaOneBase:
-    F1_CALENDAR_URL = (
-        "https://ics.ecal.com/ecal-sub/63ffa269e01772000d24b070/Formula%201.ics"
-    )
+class FormulaRace(FormulaBase):
+    def __init__(self):
+        super().__init__()
 
-    def __init__(self, date=datetime.utcnow()):
-        self.date = date
-        self.source_timezone = "Etc/UTC"
-        self.source_datetime_pattern = "%Y%m%dT%H%M%S"
-        self.race_weekends = self._get_race_weekends()
-        self.races_amount = 0 if self.race_weekends is None else len(self.race_weekends)
+    def get_upcoming(self):
+        """
+        Gets info for the upcoming race
+        """
+        try:
+            race_weekends = self._get_race_weekends()
+            race = next(
+                (
+                    race
+                    for race in race_weekends
+                    if race["sessions"]["race"] >= self.date
+                ),
+                race_weekends[-1],
+            )
+            return race
+        except Exception:
+            logger.exception(f"Error getting upcoming race for year {self.date.year}")
+
+    def format(self, data):
+        header = "Upcoming race:"
+        sessions = dict(sorted(data["sessions"].items(), key=lambda x: x[1]))
+        first_date, last_date = min(sessions.values()), max(sessions.values())
+        date_info = f"{datetime_to_text(first_date, self.target_date_pattern, target_tz=self.target_timezone)} to {datetime_to_text(last_date, self.target_date_pattern, target_tz=self.target_timezone)}"
+
+        name = remove_texts(data["name"], ["FORMULA 1", str(self.date.year)])
+        info = f"""{name}\n""" + f"""{data["location"]}\n""" + date_info
+
+        for session, date in sessions.items():
+            info += f"\n{datetime_to_text(date, self.target_day_and_time_pattern, target_tz=self.target_timezone)} - {session.title()}"
+
+        text = (
+            format_as_header(header)
+            + "\n"
+            + format_as_code(info)
+            + format_as_url(data["raceUrl"])
+        )
+        return text
+
+    def find_circuit_image(self, url):
+        """
+        Gets image for race circuit
+        """
+        try:
+            soup = set_soup(url)
+            img_url_container = soup.find(
+                "div", {"class": "f1-race-hub--schedule-circuit-map"}
+            )
+            img_url = img_url_container.find("a")["href"]
+            soup = set_soup(self.base_url + img_url)
+            img_container = soup.find("div", {"class": "f1-race-hub--map-container"})
+            img = img_container.find("img", {"class": "lazy"})["data-src"]
+            return self._add_timestamp_to_image(img)
+        except Exception:
+            logger.exception("Error getting circuit image")
+
+    def _add_timestamp_to_image(self, img):
+        if isinstance(img, str):
+            return f"{img}?a={datetime.utcnow().isoformat()}"
+        return img
 
     def _get_race_weekends(self):
         try:
-            res = get(self.F1_CALENDAR_URL)
+            res = get(self.calendar_url)
             calendar = Calendar.from_ical(res.content)
             events = [self._event_to_dict(event) for event in calendar.walk("VEVENT")]
             if not events:
@@ -36,7 +98,7 @@ class FormulaOneBase:
             return race_weekends
         except Exception:
             logger.exception(
-                f"Error getting calendar data with url {self.F1_CALENDAR_URL}"
+                f"Error getting calendar data with url {self.calendar_url}"
             )
 
     def _events_to_race_weekends(self, events):
