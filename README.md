@@ -8,7 +8,10 @@
 - Standings (both driver and team)
 - Latest race results
 
-**NHL** (disabled due to completely new API)
+**NHL** (partially lost features due to completely new API)
+
+- NHL regular season scoring leaders (by team or nationality)
+- NHL player contract (by name)
 
 **Other**
 
@@ -32,4 +35,4 @@
 1. Set environment variables
 2. Start Docker Desktop
 3. Run `npm install`
-4. Run `serverless deploy --aws-profile PROFILE`
+4. Run `serverless deploy --aws-profile <PROFILE>`
