@@ -3,9 +3,9 @@ service: telegram-bot
 provider:
   name: aws
   stage: ${opt:stage, 'test'}
-  runtime: python3.11
+  runtime: python3.12
   runtimeManagement: auto
-  architecture: ${opt:architecture, 'x86_64'}
+  architecture: x86_64
   region: ${opt:region, 'eu-north-1'}
   memorySize: 256
   timeout: 15

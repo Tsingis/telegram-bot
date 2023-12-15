@@ -25,7 +25,7 @@
 ## Requirements:
 
 - AWS Account
-- Python 3.11
+- Python 3.12
 - Node.js 20
 - Serverless Framework
 - Docker Desktop

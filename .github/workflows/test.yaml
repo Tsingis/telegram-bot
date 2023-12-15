@@ -10,12 +10,12 @@ jobs:
       CSE_ID: ${{ secrets.CSE_ID }}
       GOOGLE_API: ${{ secrets.GOOGLE_API }}
       OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
-      REGION: FI
+      REGION: FIW
       ENVIRONMENT: test
     strategy:
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
-        python-version: ["3.11"]
+        python-version: ["3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
