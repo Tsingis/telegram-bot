@@ -60,7 +60,7 @@ class NHLScoring(NHLBase):
             return data
         except Exception:
             logger.exception(
-                f"Error getting scoring leaders for season {self.season} with filter {filter.upper()}"
+                f"Error getting scoring leaders for season {self.season} with filter {filter}"
             )
 
     def format(self, data):
