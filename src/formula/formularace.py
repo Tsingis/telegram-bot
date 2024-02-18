@@ -1,6 +1,7 @@
 import re
 import unicodedata
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from icalendar import Calendar
 from .formulabase import FormulaBase
 from ..common.logger import logging
@@ -131,9 +132,13 @@ class FormulaRace(FormulaBase):
 
     def _event_to_dict(self, event):
         summary = self._normalize_text_encoding(event["SUMMARY"])
+        start_time = event["DTSTART"].dt
+        if not isinstance(start_time, datetime):
+            start_time = datetime.combine(
+                start_time, datetime.min.time(), tzinfo=ZoneInfo("UTC")
+            )
         return {
-            "startTime": event["DTSTART"].dt,
-            "endTime": event["DTEND"].dt,
+            "startTime": start_time,
             "name": summary.split("-")[0].strip(),
             "session": summary.split("-")[-1].lower().replace(" ", ""),
             "summary": summary,
