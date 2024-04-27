@@ -1,7 +1,8 @@
 name: test
 on:
   pull_request:
-    branches: test
+    branches:
+      - test
   workflow_dispatch:
 jobs:
   test:
@@ -10,7 +11,7 @@ jobs:
       CSE_ID: ${{ secrets.CSE_ID }}
       GOOGLE_API: ${{ secrets.GOOGLE_API }}
       OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
-      REGION: FIW
+      REGION: FI
       ENVIRONMENT: test
     strategy:
       matrix:
