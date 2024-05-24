@@ -4,6 +4,14 @@ on:
     branches:
       - test
       - prod
+    paths:
+      - "**"
+      - "!tests/**"
+      - "!cloudformation/**"
+      - "!README.md"
+      - "!.gitignore"
+      - "!.github/**"
+      - ".github/workflows/deploy.yaml"
   workflow_dispatch:
 jobs:
   deploy:
