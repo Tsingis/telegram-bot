@@ -67,15 +67,15 @@ class FormulaRace(FormulaBase):
         Gets image for race circuit
         """
         try:
-            soup = set_soup(url)
+            soup = set_soup(url, "utf8")
             img_url_container = soup.find(
-                "div", {"class": "f1-race-hub--schedule-circuit-map"}
+                "a", {"class": "py-xs"}
             )
-            img_url = img_url_container.find("a")["href"]
-            soup = set_soup(self.base_url + img_url)
-            img_container = soup.find("div", {"class": "f1-race-hub--map-container"})
-            img = img_container.find("img", {"class": "lazy"})["data-src"]
-            return self._add_timestamp_to_image(img)
+            img_url = img_url_container["href"]
+            soup = set_soup(img_url, "utf8")
+            img_urls = soup.find_all("img", {"class": "f1-c-image"})
+            img_url = next(url["src"] for url in img_urls if "circuit" in url["src"].lower())
+            return self._add_timestamp_to_image(img_url)
         except Exception:
             logger.exception("Error getting circuit image")
 
