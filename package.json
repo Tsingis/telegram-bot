@@ -7,6 +7,7 @@
     "serverless-python-requirements": "^6.1.0"
   },
   "scripts": {
+    "deploy": "serverless deploy",
     "deploy-test": "serverless deploy --stage test",
     "deploy-prod": "serverless deploy --stage prod"
   },
