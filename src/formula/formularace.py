@@ -81,7 +81,7 @@ class FormulaRace(FormulaBase):
 
     def _add_timestamp_to_image(self, img):
         if isinstance(img, str):
-            return f"{img}?a={datetime.utcnow().isoformat()}"
+            return f"{img}?a={datetime.now().isoformat()}"
         return img
 
     def _get_race_weekends(self):

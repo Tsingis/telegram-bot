@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class NHLBase:
-    def __init__(self, date=datetime.utcnow()):
+    def __init__(self, date=datetime.now()):
         self.date_format = "%Y-%m-%d"
         self.target_timezone = "Europe/Helsinki"
         self.date = convert_timezone(date=date, target_tz=self.target_timezone)

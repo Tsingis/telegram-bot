@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 class FormulaBase:
-    def __init__(self, date=datetime.utcnow()):
+    def __init__(self, date=datetime.now()):
         self.base_url = "https://www.formula1.com"
         self.calendar_url = (
             "https://ics.ecal.com/ecal-sub/63ffa269e01772000d24b070/Formula%201.ics"
