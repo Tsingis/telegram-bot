@@ -15,12 +15,6 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    env:
-      CSE_ID: ${{ secrets.CSE_ID }}
-      GOOGLE_API: ${{ secrets.GOOGLE_API }}
-      OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
-      REGION: FI
-      ENVIRONMENT: test
     strategy:
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
@@ -37,4 +31,10 @@ jobs:
           pip install -r tests/requirements.txt
           pip install -r src/requirements.txt
       - name: Run tests
-        run: python tests/runtests.py
+        run: python -m unittest
+        env:
+          CSE_ID: ${{ secrets.CSE_ID }}
+          GOOGLE_API: ${{ secrets.GOOGLE_API }}
+          OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
+          REGION: FI
+          ENVIRONMENT: test

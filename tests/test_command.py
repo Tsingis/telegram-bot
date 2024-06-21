@@ -5,7 +5,7 @@ from src.command import Command
 
 
 @ddt
-class CommandTest(unittest.TestCase):
+class TestCommand(unittest.TestCase):
     @data(
         "/bot",
         "/weather Tampere",
