@@ -4,13 +4,8 @@ on:
     branches:
       - test
     paths:
-      - "**"
-      - "!cloudformation/**"
-      - "!README.md"
-      - "!.gitignore"
-      - "!serverless.yaml"
-      - "!.github/**"
-      - ".github/workflows/test.yaml"
+      - "src/**"
+      - "tests/**"
   workflow_dispatch:
 jobs:
   test:
