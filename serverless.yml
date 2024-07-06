@@ -1,3 +1,5 @@
+org: tsingis
+app: telegram-bot
 service: telegram-bot
 
 provider:

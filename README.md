@@ -20,19 +20,20 @@
 
 ## How it works:
 
-![alt text](https://i.imgur.com/j4oKHUa.png)
+![alt text](https://i.imgur.com/KSxMkXk.png)
 
 ## Requirements:
 
 - AWS Account
+- Serverless Framework
+- Serverless account and organization
 - Python 3.12
 - Node.js 20
-- Serverless Framework
-- Docker Desktop
+- Docker
 
 ## Manual deployment
 
 1. Set environment variables
 2. Start Docker Desktop
 3. Run `npm install`
-4. Run `npm run deploy -- --aws-profile <PROFILE>`
+4. Run `npm run deploy`
