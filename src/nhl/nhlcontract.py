@@ -37,7 +37,7 @@ class NHLContract(NHLBase):
             ]
             contract = next(
                 {
-                    "yearStatus": f"{i+1}/{len(data)}",
+                    "yearStatus": f"{i + 1}/{len(data)}",
                     "capHit": item["capHit"],
                     "totalSalary": item["totalSalary"],
                 }

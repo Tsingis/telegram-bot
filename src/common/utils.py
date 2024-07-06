@@ -22,7 +22,7 @@ def set_soup(url, target_encoding="latin-1"):
 
 def find_first_integer(strings):
     for string in strings:
-        if string.strip().isdigit():
+        if string.strip().replace("-", "").isdigit():
             return int(string)
 
 
@@ -32,19 +32,19 @@ def find_first_word(strings):
             return string
 
 
-def convert_timezone(date, source_tz=None, target_tz=None):
+def convert_timezone(dt, source_tz=None, target_tz=None):
     source_tz = source_tz if source_tz is not None else "UTC"
     target_tz = target_tz if target_tz is not None else "UTC"
-    return date.replace(tzinfo=ZoneInfo(source_tz)).astimezone(ZoneInfo(target_tz))
+    return dt.replace(tzinfo=ZoneInfo(source_tz)).astimezone(ZoneInfo(target_tz))
 
 
 def text_to_datetime(text, pattern):
     return datetime.strptime(text, pattern)
 
 
-def datetime_to_text(date, pattern, source_tz=None, target_tz=None):
-    date = convert_timezone(date=date, source_tz=source_tz, target_tz=target_tz)
-    return datetime.strftime(date, pattern)
+def datetime_to_text(dt, pattern, source_tz=None, target_tz=None):
+    result = convert_timezone(dt=dt, source_tz=source_tz, target_tz=target_tz)
+    return datetime.strftime(result, pattern)
 
 
 def remove_texts(text, texts_to_remove):

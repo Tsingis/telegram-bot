@@ -42,8 +42,7 @@ class Command:
             return self._nhl_scoring()
         if self.text.startswith(self.NHL_CONTRACT_CMD):
             return self._nhl_contract()
-        else:
-            logger.info(f"Invalid command received: {self.text}")
+        return None
 
     # Available bot commands
     def _available_commands(self):

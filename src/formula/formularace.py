@@ -68,13 +68,13 @@ class FormulaRace(FormulaBase):
         """
         try:
             soup = set_soup(url, "utf8")
-            img_url_container = soup.find(
-                "a", {"class": "py-xs"}
-            )
+            img_url_container = soup.find("a", {"class": "py-xs"})
             img_url = img_url_container["href"]
             soup = set_soup(img_url, "utf8")
             img_urls = soup.find_all("img", {"class": "f1-c-image"})
-            img_url = next(url["src"] for url in img_urls if "circuit" in url["src"].lower())
+            img_url = next(
+                url["src"] for url in img_urls if "circuit" in url["src"].lower()
+            )
             return self._add_timestamp_to_image(img_url)
         except Exception:
             logger.exception("Error getting circuit image")
@@ -168,7 +168,7 @@ class FormulaRace(FormulaBase):
 
     def _format_date_utc(self, date):
         datetime_adjusted = datetime_to_text(
-            date=date,
+            dt=date,
             pattern=self.source_datetime_pattern,
             source_tz=self.source_timezone,
         )
