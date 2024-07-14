@@ -13,13 +13,15 @@ logger = logging.getLogger(__name__)
 class NHLContract(NHLBase):
     def __init__(self):
         super().__init__()
-        self.contract_base_url = "https://www.capfriendly.com/players"
+        self.contract_base_url = "https://capwages.com/players"
 
     def get(self, name):
         url = f"""{self.contract_base_url}/{name.replace(" ", "-").replace("'", "").lower()}"""
         try:
             soup = set_soup(url, target_encoding="utf-8")
-            table = soup.find_all("table")[0]
+            table = soup.find_all(
+                "table", {"class": ["min-w-full bg-white dark:bg-gray-800 border"]}
+            )[0]
             if table is None:
                 logger.info(f"Contract table not found for player {name}")
                 return
@@ -31,7 +33,6 @@ class NHLContract(NHLBase):
                 {
                     "season": cols[0].text.replace("-", "20"),
                     "capHit": cols[2].text,
-                    "totalSalary": cols[7].text,
                 }
                 for cols in contract_rows
             ]
@@ -39,7 +40,6 @@ class NHLContract(NHLBase):
                 {
                     "yearStatus": f"{i + 1}/{len(data)}",
                     "capHit": item["capHit"],
-                    "totalSalary": item["totalSalary"],
                 }
                 for i, item in enumerate(data)
                 if item["season"] == self.season

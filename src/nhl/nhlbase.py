@@ -14,7 +14,7 @@ class NHLBase:
         self.date = convert_timezone(dt=date, target_tz=self.target_timezone)
         year = self.date.year
         self.season = (
-            f"{year - 1}{year}" if self.date.month < 9 else f"{year}{year + 1}"
+            f"{year - 1}{year}" if self.date.month < 7 else f"{year}{year + 1}"
         )
         with open("static/teams.json", "r") as f:
             teams = json.load(f)
