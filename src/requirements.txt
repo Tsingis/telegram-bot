@@ -1,4 +1,4 @@
 beautifulsoup4==4.12.3
 icalendar==5.0.13
-python-telegram-bot==21.3
+python-telegram-bot==21.4
 requests==2.32.3
