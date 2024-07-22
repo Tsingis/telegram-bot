@@ -5,12 +5,9 @@ on:
       - test
       - prod
     paths:
-      - "**"
-      - "!tests/**"
-      - "!cloudformation/**"
-      - "!README.md"
-      - "!.gitignore"
-      - "!.github/**"
+      - "src/**"
+      - "package*.json"
+      - "serverless.yml"
       - ".github/workflows/deploy.yaml"
   workflow_dispatch:
 jobs:
