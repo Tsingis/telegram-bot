@@ -14,10 +14,10 @@ class FormulaResults(FormulaBase):
         """
         Gets top drivers from the latest race and url for more details
         """
-        url = f"{self.base_url}/en/results.html/{self.date.year}/races.html"
+        url = f"{self.base_url}/en/results/{self.date.year}/races"
         try:
-            soup = set_soup(url)
-            races_table = soup.find("table", {"class": "resultsarchive-table"})
+            soup = set_soup(url, "utf8")
+            races_table = soup.find("table", {"class": ["f1-table"]})
             if races_table is None:
                 logger.info(f"Races table not found for year {self.date.year}")
                 return
@@ -25,21 +25,21 @@ class FormulaResults(FormulaBase):
             if not race_results:
                 logger.info(f"No past races found for year {self.date.year}")
                 return
-            results_url = self.base_url + race_results[-1]["href"]
-            soup = set_soup(results_url)
-            table = soup.find("table", {"class": "resultsarchive-table"})
+            results_url = url.replace("races", "") + race_results[-1]["href"]
+            soup = set_soup(results_url, "utf8")
+            table = soup.find("table", {"class": ["f1-table"]})
             if table is None:
                 logger.info(f"Results table not found for year {self.date.year}")
                 return
-            rows = table.find_all("tr")[1:]
+            rows = table.find_all("tr")[1:-1]  # Exclude both header and notes
             driver_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
             ]
             results = [
                 {
-                    "name": row[3],
-                    "position": row[1],
-                    "time": row[-3],
+                    "name": row[2],
+                    "position": row[0],
+                    "time": row[-2],
                 }
                 for row in driver_rows
             ]

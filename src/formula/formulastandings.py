@@ -21,24 +21,24 @@ class FormulaStandings(FormulaBase):
         """
         Gets top drivers from overall standings and url for more details
         """
-        url = f"{self.base_url}/en/results.html/{self.date.year}/drivers.html"
+        url = f"{self.base_url}/en/results/{self.date.year}/drivers"
         try:
-            soup = set_soup(url)
-            table = soup.find("table", {"class": "resultsarchive-table"})
+            soup = set_soup(url, "utf8")
+            table = soup.find("table", {"class": ["f1-table"]})
             if table is None:
                 logger.info(
                     f"Driver standings table not found for year {self.date.year}"
                 )
                 return
-            rows = table.find_all("tr")[1:]
+            rows = table.find_all("tr")[1:]  # Exclude header
             driver_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
             ]
             standings = [
                 {
-                    "driver": row[2],
-                    "position": row[1],
-                    "points": float(row[-2]),
+                    "driver": row[1],
+                    "position": row[0],
+                    "points": float(row[-1]),
                 }
                 for row in driver_rows
             ]
@@ -52,22 +52,22 @@ class FormulaStandings(FormulaBase):
         """
         Gets top teams from overall standings and url for more details
         """
-        url = f"{self.base_url}/en/results.html/{self.date.year}/team.html"
+        url = f"{self.base_url}/en/results/{self.date.year}/team"
         try:
-            soup = set_soup(url)
-            table = soup.find("table", {"class": "resultsarchive-table"})
+            soup = set_soup(url, "utf8")
+            table = soup.find("table", {"class": ["f1-table"]})
             if table is None:
                 logger.info(f"Team standings table not found for year {self.date.year}")
                 return
-            rows = table.find_all("tr")[1:]
+            rows = table.find_all("tr")[1:]  # Exclude header and notes
             team_rows = [
                 [cell.text.strip() for cell in row.find_all("td")] for row in rows
             ]
             standings = [
                 {
-                    "team": row[2],
-                    "position": row[1],
-                    "points": float(row[-2]),
+                    "team": row[1],
+                    "position": row[0],
+                    "points": float(row[-1]),
                 }
                 for row in team_rows
             ]
