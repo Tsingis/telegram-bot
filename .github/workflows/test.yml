@@ -5,6 +5,7 @@ on:
       - test
     paths:
       - "src/**"
+      - "static/**"
       - "tests/**"
       - ".github/workflows/test.yml"
   workflow_dispatch:

@@ -45,14 +45,6 @@ custom:
 
 package:
   patterns:
-    - "!node_modules/**"
-    - "!.github/**"
-    - "!.vscode"
-    - "!cloudformation"
-    - "!tests/**"
-    - "!venv/**"
-    - "!.env*"
-    - "!src/requirements.txt"
-    - "!package.json"
-    - "!package-lock.json"
-    - "!README.md"
+    - "!**"
+    - src/**
+    - static/**

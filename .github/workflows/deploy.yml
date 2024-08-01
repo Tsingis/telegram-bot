@@ -6,6 +6,7 @@ on:
       - prod
     paths:
       - "src/**"
+      - "static/**"
       - "package*.json"
       - "serverless.yml"
       - ".github/workflows/deploy.yml"
@@ -26,7 +27,7 @@ jobs:
         run: npm ci -f
       - name: Deploy test
         if: ${{ github.ref == 'refs/heads/test'}}
-        run: npm run-script deploy-test
+        run: npm run deploy -- --stage test
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_TEST }}
@@ -35,7 +36,7 @@ jobs:
           OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
       - name: Deploy prod
         if: ${{ github.ref == 'refs/heads/prod'}}
-        run: npm run-script deploy-prod
+        run: npm run deploy -- --stage prod
         env:
           SERVERLESS_ACCESS_KEY: ${{ secrets.SERVERLESS_ACCESS_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_PROD }}

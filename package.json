@@ -2,15 +2,12 @@
   "name": "telegram-bot",
   "version": "1.0.0",
   "description": "Telegram bot",
+  "scripts": {
+    "deploy": "serverless deploy",
+    "package": "serverless package"
+  },
   "devDependencies": {
     "serverless": "^4.1.17",
     "serverless-python-requirements": "^6.1.0"
-  },
-  "scripts": {
-    "deploy": "serverless deploy",
-    "deploy-test": "serverless deploy --stage test",
-    "deploy-prod": "serverless deploy --stage prod"
-  },
-  "author": "",
-  "license": "ISC"
+  }
 }
