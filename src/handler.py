@@ -20,7 +20,6 @@ def set_webhook(event, context):
 
 
 async def webhook_async(event, context):
-    logger.info(f"Event: {event}")
     if event["requestContext"]["http"]["method"] == "POST" and event["body"]:
         try:
             logger.info("Message received")
@@ -48,7 +47,6 @@ async def webhook_async(event, context):
 
 
 async def set_webhook_async(event, context):
-    logger.info(f"Event: {event}")
     try:
         url = f"""https://{event["headers"]["host"]}"""
         bot = Bot()
