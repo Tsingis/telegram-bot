@@ -10,12 +10,12 @@ class Bot:
     TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 
     def __init__(self):
-        self.bot = telegram.Bot(self.TELEGRAM_TOKEN)
+        self.tg_bot = telegram.Bot(self.TELEGRAM_TOKEN)
         self.chat_id = None
 
     async def send_text(self, text):
         try:
-            await self.bot.sendMessage(
+            await self.tg_bot.sendMessage(
                 chat_id=self.chat_id,
                 text=text,
                 parse_mode="MarkdownV2",
@@ -27,7 +27,7 @@ class Bot:
 
     async def send_image(self, image, caption=""):
         try:
-            await self.bot.sendPhoto(
+            await self.tg_bot.sendPhoto(
                 chat_id=self.chat_id,
                 photo=image,
                 caption=caption,
@@ -39,7 +39,7 @@ class Bot:
 
     def get_message_text(self, data):
         try:
-            update = telegram.Update.de_json(data, self.bot)
+            update = telegram.Update.de_json(data, self.tg_bot)
             message = update.message
             self.chat_id = message.chat.id
             return message.text
@@ -47,4 +47,4 @@ class Bot:
             logger.exception("Error getting bot message")
 
     async def set_webhook(self, url):
-        return await self.bot.set_webhook(url)
+        return await self.tg_bot.set_webhook(url)
