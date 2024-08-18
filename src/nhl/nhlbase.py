@@ -16,6 +16,6 @@ class NHLBase:
         self.season = (
             f"{year - 1}{year}" if self.date.month < 7 else f"{year}{year + 1}"
         )
-        with open("static/teams.json", "r") as f:
+        with open("static/nhl_teams.json", "r") as f:
             teams = json.load(f)
             self.teams = {team["shortName"]: team["fullName"] for team in teams}
