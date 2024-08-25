@@ -24,18 +24,10 @@
 
 ![alt text](https://i.imgur.com/KSxMkXk.png)
 
-## Requirements:
+## Tools
 
 - AWS Account
-- Serverless Framework
-- Serverless account and organization
+- Serverless Framework and Account
 - Python 3.12
-- Node.js 20
+- Node.js 22
 - Docker
-
-## Manual deployment
-
-1. Set environment variables
-2. Start Docker Desktop
-3. Run `npm install`
-4. Run `npm run deploy`
