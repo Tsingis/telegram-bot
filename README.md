@@ -1,4 +1,4 @@
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Tsingis_telegram-bot&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Tsingis_telegram-bot) [![Deploy Status](https://github.com/tsingis/telegram-bot/actions/workflows/deploy.yml/badge.svg)](https://github.com/tsingis/telegram-bot/actions/workflows/deploy.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Tsingis_telegram-bot&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Tsingis_telegram-bot) [![Deploy Status](https://github.com/tsingis/telegram-bot/actions/workflows/lambda.yml/badge.svg)](https://github.com/tsingis/telegram-bot/actions/workflows/lambda.yml)
 
 # Telegram bot running on AWS Lambda that uses APIs or scraped data
 
@@ -28,6 +28,6 @@
 
 - AWS Account
 - Serverless Framework and Account
-- Python 3.12
-- Node.js 22
+- Python
+- Node.js
 - Docker
