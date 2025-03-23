@@ -2,7 +2,7 @@ name: codeql
 on:
   push:
     branches:
-      - test
+      - main
     paths:
       - "src/**"
       - "tests/**"

@@ -7,7 +7,7 @@ updates:
       day: "wednesday"
       time: "21:00"
       timezone: "Europe/Helsinki"
-    target-branch: "test"
+    target-branch: "main"
   - package-ecosystem: "npm"
     directory: "/"
     versioning-strategy: "increase"
@@ -16,7 +16,7 @@ updates:
       day: "wednesday"
       time: "21:00"
       timezone: "Europe/Helsinki"
-    target-branch: "test"
+    target-branch: "main"
   - package-ecosystem: "pip"
     directories:
       - "/src"
@@ -27,4 +27,4 @@ updates:
       day: "wednesday"
       time: "21:00"
       timezone: "Europe/Helsinki"
-    target-branch: "test"
+    target-branch: "main"

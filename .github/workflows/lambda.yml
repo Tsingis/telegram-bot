@@ -2,8 +2,7 @@ name: lambda
 on:
   push:
     branches:
-      - test
-      - prod
+      - main
     paths:
       - "src/**"
       - "static/**"
@@ -12,7 +11,7 @@ on:
       - ".github/workflows/lambda.yml"
   pull_request:
     branches:
-      - test
+      - main
     paths:
       - "src/**"
       - "static/**"
@@ -20,8 +19,17 @@ on:
       - "serverless.yml"
       - ".github/workflows/lambda.yml"
   workflow_dispatch:
+    inputs:
+      stage:
+        description: "Deployment stage"
+        required: false
+        default: "test"
+        type: choice
+        options:
+          - test
+          - prod
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.stage }}
   cancel-in-progress: true
 jobs:
   lambda:
@@ -42,23 +50,20 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: npm ci
-      - name: Package test
-        if: ${{ github.event.pull_request.base.ref == 'test' || github.ref == 'refs/heads/test' }}
-        run: npm run package -- --stage test
+      - name: Determine token
+        id: determine-token
+        run: |
+          if [ "${{ github.event.inputs.stage || 'test' }}" == 'prod' ]; then
+            echo "TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN_PROD }}" >> $GITHUB_ENV
+          else
+            echo "TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN_TEST }}" >> $GITHUB_ENV
+          fi
+      - name: Package
+        run: npm run package -- --stage ${{ github.event.inputs.stage || 'test' }}
         env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_TEST }}
-      - name: Package prod
-        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/prod'}}
-        run: npm run package -- --stage prod
+          TELEGRAM_TOKEN: ${{ env.TELEGRAM_TOKEN }}
+      - name: Deploy ${{ github.event.inputs.stage || 'test' }}
+        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch')}}
+        run: npm run deploy -- --package .serverless --stage ${{ github.event.inputs.stage || 'test' }}
         env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_PROD }}
-      - name: Deploy test
-        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/test'}}
-        run: npm run deploy -- --package .serverless --stage test
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_TEST }}
-      - name: Deploy prod
-        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/prod'}}
-        run: npm run deploy -- --package .serverless --stage prod
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN_PROD }}
+          TELEGRAM_TOKEN: ${{ env.TELEGRAM_TOKEN }}
