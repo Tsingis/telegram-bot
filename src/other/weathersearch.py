@@ -1,6 +1,6 @@
 import os
 from ..common.logger import logging
-from ..common.utils import get, format_as_header, format_as_code
+from ..common.utils import get, format_as_header, format_as_monospace
 
 
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ class WeatherSearch:
                 for (key, value) in info.items()
             ]
         )
-        return format_as_header(header) + "\n" + format_as_code(body)
+        return format_as_header(header) + "\n" + format_as_monospace(body)
 
     # Get icon for weather
     def get_icon_url(self, data):

@@ -6,7 +6,7 @@ from icalendar import Calendar
 from .formulabase import FormulaBase
 from ..common.logger import logging
 from ..common.utils import (
-    format_as_code,
+    format_as_monospace,
     format_as_header,
     format_as_url,
     get,
@@ -57,7 +57,8 @@ class FormulaRace(FormulaBase):
         text = (
             format_as_header(header)
             + "\n"
-            + format_as_code(info)
+            + format_as_monospace(info)
+            + "\n"
             + format_as_url(data["raceUrl"])
         )
         return text

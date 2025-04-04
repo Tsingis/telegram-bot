@@ -1,6 +1,11 @@
 from .formulabase import FormulaBase
 from ..common.logger import logging
-from ..common.utils import format_as_code, format_as_header, format_as_url, set_soup
+from ..common.utils import (
+    format_as_monospace,
+    format_as_header,
+    format_as_url,
+    set_soup,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -59,7 +64,8 @@ class FormulaResults(FormulaBase):
         text = (
             format_as_header(header)
             + "\n"
-            + format_as_code("\n".join(formatted_results))
+            + format_as_monospace("\n".join(formatted_results))
+            + "\n"
             + format_as_url(url)
         )
         return text

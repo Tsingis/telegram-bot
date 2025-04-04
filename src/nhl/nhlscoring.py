@@ -1,5 +1,5 @@
 import json
-from src.common.utils import format_as_code, format_as_header, format_as_url, get
+from src.common.utils import format_as_monospace, format_as_header, format_as_url, get
 from .nhlbase import NHLBase
 from ..common.logger import logging
 
@@ -85,7 +85,8 @@ class NHLScoring(NHLBase):
         text = (
             format_as_header("Scoring leaders:")
             + "\n"
-            + format_as_code("\n".join(leaders))
+            + format_as_monospace("\n".join(leaders))
+            + "\n"
             + format_as_url(self.details_url)
         )
         return text

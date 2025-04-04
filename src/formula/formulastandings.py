@@ -2,7 +2,7 @@ import re
 from .formulabase import FormulaBase
 from ..common.logger import logging
 from ..common.utils import (
-    format_as_code,
+    format_as_monospace,
     format_as_header,
     format_as_url,
     format_number,
@@ -106,12 +106,14 @@ class FormulaStandings(FormulaBase):
             + "\n"
             + format_as_header("Drivers:")
             + "\n"
-            + format_as_code("\n".join(driver_standings))
+            + format_as_monospace("\n".join(driver_standings))
+            + "\n"
             + format_as_url(data["driverUrl"])
             + "\n\n"
             + format_as_header("Teams:")
             + "\n"
-            + format_as_code("\n".join(team_standings))
+            + format_as_monospace("\n".join(team_standings))
+            + "\n"
             + format_as_url(data["teamUrl"])
         )
         return text

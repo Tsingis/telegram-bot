@@ -72,5 +72,5 @@ def format_as_header(text):
     return f"*{text}*"
 
 
-def format_as_code(text):
-    return f"```\n{text}\n```"
+def format_as_monospace(text):
+    return f"`{text}`"
