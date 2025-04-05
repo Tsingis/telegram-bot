@@ -1,6 +1,5 @@
 /node_modules
 /.serverless
-/.vscode
 /venv
 *__pycache__
 .env*
