@@ -5,7 +5,7 @@ class FormulaBase:
     def __init__(self, date=datetime.now()):
         self.base_url = "https://www.formula1.com"
         self.calendar_url = (
-            "https://ics.ecal.com/ecal-sub/63ffa269e01772000d24b070/Formula%201.ics"
+            "https://ics.ecal.com/ecal-sub/680b4ed61a719e0008fd42b7/Formula%201.ics"
         )
         self.date = date
         self.source_timezone = "Etc/UTC"

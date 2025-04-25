@@ -45,6 +45,7 @@ class FormulaRace(FormulaBase):
     def format(self, data):
         header = "Upcoming race:"
         sessions = dict(sorted(data["sessions"].items(), key=lambda x: x[1]))
+        sessions = {k[:12]: v for k, v in sessions.items()}
         first_date, last_date = min(sessions.values()), max(sessions.values())
         date_info = f"{datetime_to_text(first_date, self.target_date_pattern, target_tz=self.target_timezone)} to {datetime_to_text(last_date, self.target_date_pattern, target_tz=self.target_timezone)}"
 
@@ -140,9 +141,8 @@ class FormulaRace(FormulaBase):
             )
         return {
             "startTime": start_time,
-            "name": summary.split("-")[0].strip(),
-            "session": summary.split("-")[-1].lower().replace(" ", ""),
-            "summary": summary,
+            "name": summary.split(" - ")[0].strip(),
+            "session": summary.split(" - ")[-1].lower(),
             "description": str(event["DESCRIPTION"]).strip(),
             "location": str(event["LOCATION"]).strip(),
         }
@@ -151,7 +151,7 @@ class FormulaRace(FormulaBase):
         allowed_words = [
             "race",
             "sprint race",
-            "sprint shootout",
+            "sprint qualification",
             "qualifying",
             "practice",
         ]
@@ -159,8 +159,8 @@ class FormulaRace(FormulaBase):
         return [
             event
             for event in events
-            if any(word in event["summary"].lower() for word in allowed_words)
-            and not any(word in event["summary"].lower() for word in unallowed_words)
+            if any(word in event["session"].lower() for word in allowed_words)
+            and not any(word in event["session"].lower() for word in unallowed_words)
         ]
 
     def _find_race_url(self, text):
