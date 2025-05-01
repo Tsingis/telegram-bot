@@ -31,6 +31,8 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.inputs.stage }}
   cancel-in-progress: true
+env:
+  NO_UPDATE_NOTIFIER: true
 jobs:
   lambda:
     runs-on: ubuntu-latest
