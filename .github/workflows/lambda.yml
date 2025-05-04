@@ -6,9 +6,7 @@ on:
     paths:
       - "src/**"
       - "static/**"
-      - "package*.json"
       - "serverless.yml"
-      - ".github/workflows/lambda.yml"
   pull_request:
     branches:
       - main
