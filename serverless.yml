@@ -2,6 +2,8 @@ org: tsingis
 app: telegram-bot
 service: telegram-bot
 
+useDotenv: true
+
 provider:
   name: aws
   stage: ${opt:stage, 'test'}
@@ -13,6 +15,11 @@ provider:
   memorySize: 256
   timeout: 15
   logRetentionInDays: 90
+  deploymentBucket:
+    serverSideEncryption: AES256
+    blockPublicAccess: true
+    versioning: false
+    maxPreviousDeploymentArtifacts: 3
   environment:
     TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     GOOGLE_API: ${env:GOOGLE_API}
