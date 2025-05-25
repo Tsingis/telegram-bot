@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Telegram bot",
   "scripts": {
+    "deps": "pipenv requirements > requirements.txt",
     "deploy": "serverless deploy",
     "package": "serverless package"
   },

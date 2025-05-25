@@ -7,6 +7,7 @@ on:
       - "src/**"
       - "static/**"
       - "tests/**"
+      - "Pipfile*"
       - ".github/workflows/test.yml"
   workflow_dispatch:
 env:
@@ -17,18 +18,20 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
-        python-version: ["3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
           architecture: "x64"
+          cache: "pipenv"
+          cache-dependency-path: Pipfile.lock
       - name: Install python dependencies
         run: |
-          pip install --prefer-binary -r tests/requirements.txt -r src/requirements.txt
+          pip install --prefer-binary pipenv
+          pipenv install --dev
       - name: Run tests
-        run: python -m unittest
+        run: pipenv run python -m unittest
         env:
           CSE_ID: ${{ secrets.CSE_ID }}
           GOOGLE_API: ${{ secrets.GOOGLE_API }}

@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[pipenv]
+venv_in_project = true
+
+[requires]
+python_version = "3.13"
+
+[packages]
+beautifulsoup4 = "==4.13.4"
+icalendar = "==6.3.1"
+python-telegram-bot = "==22.1"
+requests = "==2.32.3"
+
+[dev-packages]
+ddt = "==1.7.2"
+tzdata = "==2025.2"
