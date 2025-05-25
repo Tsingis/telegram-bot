@@ -18,9 +18,7 @@ updates:
       timezone: "Europe/Helsinki"
     target-branch: "main"
   - package-ecosystem: "pip"
-    directories:
-      - "/src"
-      - "/tests"
+    directory: "/"
     versioning-strategy: "increase"
     schedule:
       interval: "weekly"
