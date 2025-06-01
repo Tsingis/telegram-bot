@@ -26,9 +26,7 @@ class NHLContract(NHLBase):
                 logger.info(f"Contract table not found for player {name}")
                 return
             rows = table.find_all("tr")
-            contract_rows = [
-                row.find_all("td") for row in rows[1:-1]
-            ]  # Skip header and total rows
+            contract_rows = [row.find_all("td") for row in rows[1:-1]]  # Skip header and total rows
             data = [
                 {
                     "season": cols[0].text.replace("-", "20"),

@@ -20,9 +20,7 @@ class NHLScoring(NHLBase):
             {"property": "assists", "direction": "DESC"},
             {"property": "playerId", "direction": "ASC"},
         ]
-        exp = (
-            f"""gameTypeId=2 and seasonId<={self.season} and seasonId>={self.season}"""
-        )
+        exp = f"""gameTypeId=2 and seasonId<={self.season} and seasonId>={self.season}"""
         if filter is not None:
             franchises = self._get_franchises()
             if filter.upper() in franchises:
@@ -41,9 +39,7 @@ class NHLScoring(NHLBase):
         try:
             res = get(url, params).json()
             if not res["data"]:
-                logger.info(
-                    f"No scoring info found for season {self.season} with filter {filter}"
-                )
+                logger.info(f"No scoring info found for season {self.season} with filter {filter}")
                 return
             data = [
                 {

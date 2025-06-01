@@ -26,14 +26,10 @@ class FormulaStandings(FormulaBase):
             soup = set_soup(url, "utf8")
             table = soup.find("table", {"class": ["f1-table"]})
             if table is None:
-                logger.info(
-                    f"Driver standings table not found for year {self.date.year}"
-                )
+                logger.info(f"Driver standings table not found for year {self.date.year}")
                 return
             rows = table.find_all("tr")[1:]  # Exclude header
-            driver_rows = [
-                [cell.text.strip() for cell in row.find_all("td")] for row in rows
-            ]
+            driver_rows = [[cell.text.strip() for cell in row.find_all("td")] for row in rows]
             standings = [
                 {
                     "driver": row[1],
@@ -44,9 +40,7 @@ class FormulaStandings(FormulaBase):
             ]
             return {"driverStandings": standings[:amount], "driverUrl": url}
         except Exception:
-            logger.exception(
-                f"Error getting driver standings for year {self.date.year}"
-            )
+            logger.exception(f"Error getting driver standings for year {self.date.year}")
 
     def get_team_standings(self, amount=5):
         """
@@ -60,9 +54,7 @@ class FormulaStandings(FormulaBase):
                 logger.info(f"Team standings table not found for year {self.date.year}")
                 return
             rows = table.find_all("tr")[1:]  # Exclude header and notes
-            team_rows = [
-                [cell.text.strip() for cell in row.find_all("td")] for row in rows
-            ]
+            team_rows = [[cell.text.strip() for cell in row.find_all("td")] for row in rows]
             standings = [
                 {
                     "team": row[1],
@@ -81,9 +73,7 @@ class FormulaStandings(FormulaBase):
             if len(team_name_parts) <= 2:
                 team = team_name_parts[0]
             else:
-                team_name_parts_inner = re.sub(
-                    r"([A-Z])", r" \1", standing["team"]
-                ).split()
+                team_name_parts_inner = re.sub(r"([A-Z])", r" \1", standing["team"]).split()
                 team = " ".join(team_name_parts_inner[:2])
             standing["team"] = team
 
@@ -92,9 +82,7 @@ class FormulaStandings(FormulaBase):
             for result in data["driverStandings"]
         ]
 
-        longest_team_name = max(
-            [len(result["team"]) for result in data["teamStandings"]]
-        )
+        longest_team_name = max([len(result["team"]) for result in data["teamStandings"]])
         team_standings = [
             f"""{str(result["position"]).rjust(2)}. {result["team"].ljust(longest_team_name)} - {format_number(result["points"])}"""
             for result in data["teamStandings"]

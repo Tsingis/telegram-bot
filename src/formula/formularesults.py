@@ -37,9 +37,7 @@ class FormulaResults(FormulaBase):
                 logger.info(f"Results table not found for year {self.date.year}")
                 return
             rows = table.find_all("tr")[1:-1]  # Exclude both header and notes
-            driver_rows = [
-                [cell.text.strip() for cell in row.find_all("td")] for row in rows
-            ]
+            driver_rows = [[cell.text.strip() for cell in row.find_all("td")] for row in rows]
             results = [
                 {
                     "name": row[2],

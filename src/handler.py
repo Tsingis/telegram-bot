@@ -39,9 +39,7 @@ async def webhook_async(event, context):
             return create_response(HTTPStatus.OK, "Event handled")
         except Exception:
             logger.exception("Error handling event")
-            return create_response(
-                HTTPStatus.INTERNAL_SERVER_ERROR, "Error handling event"
-            )
+            return create_response(HTTPStatus.INTERNAL_SERVER_ERROR, "Error handling event")
     logger.info("No event to handle")
     return create_response(HTTPStatus.OK, "No event to handle")
 
@@ -56,9 +54,7 @@ async def set_webhook_async(event, context):
             return create_response(HTTPStatus.OK, "Webhook set")
     except Exception:
         logger.exception("Error setting webhook")
-        return create_response(
-            HTTPStatus.INTERNAL_SERVER_ERROR, "Error setting webhook"
-        )
+        return create_response(HTTPStatus.INTERNAL_SERVER_ERROR, "Error setting webhook")
 
 
 def create_response(status_code, message):
