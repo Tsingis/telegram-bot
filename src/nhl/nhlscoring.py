@@ -13,6 +13,7 @@ class NHLScoring(NHLBase):
         self.details_url = "https://www.nhl.com/stats/skaters"
 
     def get_scoring_leaders(self, amount=10, filter=None):
+        sanitized_filter = self._sanitize_filter(filter)
         url = f"{self.api_base_url}/skater/summary"
         sort = [
             {"property": "points", "direction": "DESC"},
@@ -20,13 +21,10 @@ class NHLScoring(NHLBase):
             {"property": "assists", "direction": "DESC"},
             {"property": "playerId", "direction": "ASC"},
         ]
-        exp = f"""gameTypeId=2 and seasonId<={self.season} and seasonId>={self.season}"""
-        if filter is not None:
-            franchises = self._get_franchises()
-            if filter.upper() in franchises:
-                exp += f"""and franchiseId=\"{franchises[filter.upper()]}\""""
-            else:
-                exp += f"""and nationalityCode=\"{filter.upper()}\""""
+        exp = (
+            f"""gameTypeId=2 and seasonId<={self.season} and seasonId>={self.season}"""
+        )
+        exp += self._create_filter(sanitized_filter) or ""
         params = {
             "isAggregate": "false",
             "isGame": "false",
@@ -39,7 +37,9 @@ class NHLScoring(NHLBase):
         try:
             res = get(url, params).json()
             if not res["data"]:
-                logger.info(f"No scoring info found for season {self.season} with filter {filter}")
+                logger.info(
+                    f"No scoring info found for season {self.season} with filter {sanitized_filter}"
+                )
                 return
             data = [
                 {
@@ -56,7 +56,7 @@ class NHLScoring(NHLBase):
             return data
         except Exception:
             logger.exception(
-                f"Error getting scoring leaders for season {self.season} with filter {filter}"
+                f"Error getting scoring leaders for season {self.season} with filter {sanitized_filter}"
             )
 
     def format(self, data):
@@ -86,6 +86,21 @@ class NHLScoring(NHLBase):
             + format_as_url(self.details_url)
         )
         return text
+
+    def _sanitize_filter(self, filter):
+        if filter is None:
+            return None
+        if len(str(filter)) != 3 or not str(filter).isalpha():
+            return None
+        return filter
+
+    def _create_filter(self, filter):
+        if filter is not None:
+            franchises = self._get_franchises()
+            if filter.upper() in franchises:
+                return f"""and franchiseId=\"{franchises[filter.upper()]}\""""
+            else:
+                return f"""and nationalityCode=\"{filter.upper()}\""""
 
     def _get_franchises(self):
         url = f"{self.api_base_url}/franchise"
