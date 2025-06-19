@@ -6,7 +6,7 @@ on:
     paths:
       - "src/**"
       - "static/**"
-      - "Pipfile"
+      - "Pipfile*"
       - "serverless.yml"
   pull_request:
     branches:
