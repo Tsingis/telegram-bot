@@ -31,7 +31,11 @@ class FormulaRace(FormulaBase):
         try:
             race_weekends = self._get_race_weekends()
             race = next(
-                (race for race in race_weekends if race["sessions"]["race"] >= self.date),
+                (
+                    race
+                    for race in race_weekends
+                    if race["sessions"]["race"] >= self.date
+                ),
                 race_weekends[-1],
             )
             return race
@@ -66,11 +70,12 @@ class FormulaRace(FormulaBase):
         """
         try:
             soup = set_soup(url, "utf8")
-            img_url_container = soup.find("a", {"class": "py-xs"})
-            img_url = img_url_container["href"]
-            soup = set_soup(img_url, "utf8")
-            img_urls = soup.find_all("img", {"class": "f1-c-image"})
-            img_url = next(url["src"] for url in img_urls if "circuit" in url["src"].lower())
+            img_urls = soup.find_all(
+                "img", {"alt": lambda x: "circuit" and ".png" in x.lower()}
+            )
+            img_url = next(
+                url["src"] for url in img_urls if "circuit" in url["src"].lower()
+            )
             return self._add_timestamp_to_image(img_url)
         except Exception:
             logger.exception("Error getting circuit image")
@@ -94,7 +99,9 @@ class FormulaRace(FormulaBase):
                 return
             return race_weekends
         except Exception:
-            logger.exception(f"Error getting calendar data with url {self.calendar_url}")
+            logger.exception(
+                f"Error getting calendar data with url {self.calendar_url}"
+            )
 
     def _events_to_race_weekends(self, events):
         """
@@ -106,13 +113,17 @@ class FormulaRace(FormulaBase):
             if any(rw["name"] == event["name"] for rw in race_weekends):
                 for rw in race_weekends:
                     if rw["name"] == event["name"]:
-                        rw["sessions"][event["session"]] = self._format_date_utc(event["startTime"])
+                        rw["sessions"][event["session"]] = self._format_date_utc(
+                            event["startTime"]
+                        )
             else:
                 race_weekend = {
                     "name": event["name"],
                     "raceUrl": self._find_race_url(event["description"]),
                     "location": event["location"],
-                    "sessions": {event["session"]: self._format_date_utc(event["startTime"])},
+                    "sessions": {
+                        event["session"]: self._format_date_utc(event["startTime"])
+                    },
                 }
                 race_weekends.append(race_weekend)
 
@@ -124,7 +135,9 @@ class FormulaRace(FormulaBase):
         summary = self._normalize_text_encoding(event["SUMMARY"])
         start_time = event["DTSTART"].dt
         if not isinstance(start_time, datetime):
-            start_time = datetime.combine(start_time, datetime.min.time(), tzinfo=ZoneInfo("UTC"))
+            start_time = datetime.combine(
+                start_time, datetime.min.time(), tzinfo=ZoneInfo("UTC")
+            )
         return {
             "startTime": start_time,
             "name": summary.split(" - ")[0].strip(),
