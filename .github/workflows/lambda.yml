@@ -57,14 +57,13 @@ jobs:
         run: |
           pip install --prefer-binary pipenv
           pipenv install
+          pipenv requirements > requirements.txt
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
-        run: |
-          npm ci
-          npm run deps
+        run: npm ci
       - name: Determine token
         id: determine-token
         run: |
