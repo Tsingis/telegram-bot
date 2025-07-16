@@ -16,7 +16,8 @@ python-telegram-bot = "==22.2"
 requests = "==2.32.4"
 
 [dev-packages]
-ddt = "==1.7.2"
-tzdata = "==2025.2"
 black = "==25.1.0"
+ddt = "==1.7.2"
 flake8 = "==7.3.0"
+pip-audit = "==2.9.0"
+tzdata = "==2025.2"
