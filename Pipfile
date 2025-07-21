@@ -12,7 +12,7 @@ python_version = "3.13"
 [packages]
 beautifulsoup4 = "==4.13.4"
 icalendar = "==6.3.1"
-python-telegram-bot = "==22.2"
+python-telegram-bot = "==22.3"
 requests = "==2.32.4"
 
 [dev-packages]
