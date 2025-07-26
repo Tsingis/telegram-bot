@@ -1,0 +1,11 @@
+name: telegram-bot
+description: Telegram bot IaC
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+config:
+  aws:region: eu-north-1
+  pulumi:tags:
+    value:
+      pulumi:template: aws-typescript

@@ -28,6 +28,7 @@
 
 - AWS Account
 - Serverless Framework and Account
+- Pulumi
 - Python
 - Node.js
 - Docker
