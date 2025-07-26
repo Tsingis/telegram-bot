@@ -50,4 +50,3 @@ package:
   patterns:
     - "!**"
     - src/**
-    - static/**

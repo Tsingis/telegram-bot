@@ -5,7 +5,6 @@ on:
       - main
     paths:
       - "src/**"
-      - "static/**"
       - "tests/**"
       - "Pipfile*"
       - ".github/workflows/test.yml"
