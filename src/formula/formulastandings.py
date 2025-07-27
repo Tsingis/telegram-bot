@@ -71,7 +71,7 @@ class FormulaStandings(FormulaBase):
         for standing in data["teamStandings"]:
             team_name_parts = standing["team"].split(" ")
             if len(team_name_parts) <= 2:
-                team = team_name_parts[0]
+                team = standing["team"]
             else:
                 team_name_parts_inner = re.sub(r"([A-Z])", r" \1", standing["team"]).split()
                 team = " ".join(team_name_parts_inner[:2])
