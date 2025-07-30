@@ -15,7 +15,7 @@ provider:
   logRetentionInDays: 90
   deploymentBucket:
     name: ${env:SERVERLESS_BUCKET}
-    maxPreviousDeploymentArtifacts: 3
+    maxPreviousDeploymentArtifacts: 1
   environment:
     TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     GOOGLE_API: ${env:GOOGLE_API}
