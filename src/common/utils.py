@@ -1,5 +1,5 @@
+import httpx
 import re
-import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -7,8 +7,8 @@ from http import HTTPStatus
 
 
 def get(url, params=None):
-    with requests.Session() as session:
-        res = session.get(url, params=params)
+    with httpx.Client() as client:
+        res = client.get(url, params=params, follow_redirects=True)
         if res.status_code == HTTPStatus.OK:
             return res
         res.raise_for_status()

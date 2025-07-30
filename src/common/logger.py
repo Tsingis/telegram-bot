@@ -8,3 +8,5 @@ if logger.handlers:
 
 logFormat = "%(asctime)s %(name)s %(levelname)s: %(message)s"
 logging.basicConfig(level=logging.INFO, format=logFormat)
+
+logging.getLogger("httpx").setLevel(logging.WARNING)
