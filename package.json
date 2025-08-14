@@ -10,7 +10,7 @@
     "prettier:fix": "prettier --write 'pulumi/*.{js,ts}'"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.3.1",
+    "@pulumi/aws": "^7.4.0",
     "@pulumi/pulumi": "^3.189.0"
   },
   "devDependencies": {
