@@ -7,7 +7,11 @@
     "deploy": "serverless deploy",
     "package": "serverless package",
     "prettier": "prettier --check 'pulumi/*.{js,ts}'",
-    "prettier:fix": "prettier --write 'pulumi/*.{js,ts}'"
+    "prettier:fix": "prettier --write 'pulumi/*.{js,ts}'",
+    "stack": "pulumi stack select ",
+    "refresh": "pulumi refresh",
+    "preview": "pulumi preview",
+    "up": "pulumi up"
   },
   "dependencies": {
     "@pulumi/aws": "^7.4.0",
