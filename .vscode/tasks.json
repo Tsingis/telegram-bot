@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "install",
+            "type": "shell",
+            "command": "pipenv install --ignore-pipfile --dev",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "sync",
+            "type": "shell",
+            "command": "pipenv sync --dev",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "update",
+            "type": "shell",
+            "command": "pipenv lock",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "outdated",
+            "type": "shell",
+            "command": "pipenv update --outdated",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "vulnerable",
+            "type": "shell",
+            "command": "pipenv scan",
+            "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+    ]
+}
