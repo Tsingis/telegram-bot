@@ -26,9 +26,31 @@
 
 ## Tools
 
-- AWS Account
-- Serverless Framework and Account
-- Pulumi
 - Python
-- Node.js
 - Docker
+- AWS
+- Node.js
+- Serverless Framework
+- Pulumi
+
+## Dev environment setup
+
+- Install pipenv globally `pip install -r requirements.txt`
+- Set up environment `pipenv install --ignore-pipfile --dev`
+- Activate virtual environment `pipenv shell`
+
+## Manual deployment
+
+- Install deps `npm install`
+
+- Deploy lambda with Serverless
+  1. Start Docker
+  2. Activate virtual environment if not active `pipenv shell`
+  3. Create deps `pipenv requirements > src/requirements.txt`
+  4. Deploy `npm run deploy`
+
+- Deploy other resources with Pulumi
+  1. Setup stacks `Pulumi.{stack-name}.yml`
+  2. Select stack `pulumi stack select {stack-name}`
+  3. Refresh `pulumi refresh`
+  4. Deploy `pulumi up`
