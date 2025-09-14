@@ -18,7 +18,7 @@
         {
             "label": "update",
             "type": "shell",
-            "command": "pipenv lock",
+            "command": "pipenv lock --dev",
             "problemMatcher": "$msCompile",
             "group": "build"
         },
@@ -32,7 +32,7 @@
         {
             "label": "vulnerable",
             "type": "shell",
-            "command": "pipenv scan",
+            "command": "pipenv run pip-audit",
             "problemMatcher": "$msCompile",
             "group": "build"
         },
