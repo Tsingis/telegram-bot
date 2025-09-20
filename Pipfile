@@ -16,7 +16,7 @@ icalendar = "==6.3.1"
 python-telegram-bot = "==22.4"
 
 [dev-packages]
-black = "==25.1.0"
+black = "==25.9.0"
 ddt = "==1.7.2"
 flake8 = "==7.3.0"
 pip-audit = "==2.9.0"
