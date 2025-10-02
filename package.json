@@ -21,6 +21,6 @@
     "prettier": "^3.6.2",
     "serverless": "^4.19.1",
     "serverless-python-requirements": "^6.1.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }
