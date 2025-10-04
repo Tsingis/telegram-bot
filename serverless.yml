@@ -5,7 +5,7 @@ useDotenv: true
 provider:
   name: aws
   stage: ${opt:stage, 'test'}
-  runtime: python3.13
+  runtime: python3.14
   runtimeManagement: auto
   versionFunctions: false
   architecture: x86_64
