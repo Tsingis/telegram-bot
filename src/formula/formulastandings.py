@@ -24,7 +24,8 @@ class FormulaStandings(FormulaBase):
         url = f"{self.base_url}/en/results/{self.date.year}/drivers"
         try:
             soup = set_soup(url, "utf8")
-            table = soup.find("table", {"class": ["f1-table"]})
+            table_section = soup.find("div", {"id": ["results-table"]})
+            table = table_section.find("table")
             if table is None:
                 logger.info(f"Driver standings table not found for year {self.date.year}")
                 return
@@ -49,7 +50,8 @@ class FormulaStandings(FormulaBase):
         url = f"{self.base_url}/en/results/{self.date.year}/team"
         try:
             soup = set_soup(url, "utf8")
-            table = soup.find("table", {"class": ["f1-table"]})
+            table_section = soup.find("div", {"id": ["results-table"]})
+            table = table_section.find("table")
             if table is None:
                 logger.info(f"Team standings table not found for year {self.date.year}")
                 return
