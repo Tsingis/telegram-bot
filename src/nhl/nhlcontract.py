@@ -19,30 +19,39 @@ class NHLContract(NHLBase):
         url = f"""{self.contract_base_url}/{name.replace(" ", "-").replace("'", "").lower()}"""
         try:
             soup = set_soup(url, target_encoding="utf-8")
-            table = soup.find_all(
+            tables = soup.find_all(
                 "table", {"class": ["min-w-full bg-white dark:bg-gray-800 border"]}
-            )[0]
-            if table is None:
+            )
+            if tables is None:
                 logger.info(f"Contract table not found for player {name}")
                 return
-            rows = table.find_all("tr")
-            contract_rows = [row.find_all("td") for row in rows[1:-1]]  # Skip header and total rows
-            data = [
-                {
-                    "season": cols[0].text.replace("-", "20"),
-                    "capHit": cols[2].text,
-                }
-                for cols in contract_rows
-            ]
-            contract = next(
-                {
-                    "yearStatus": f"{i + 1}/{len(data)}",
-                    "capHit": item["capHit"],
-                }
-                for i, item in enumerate(data)
-                if item["season"] == self.season
-            )
-            return {"contract": contract, "url": url}
+            for table in tables:
+                rows = table.find_all("tr")
+                contract_rows = [
+                    row.find_all("td") for row in rows[1:-1]
+                ]  # Skip header and total rows
+                data = [
+                    {
+                        "season": cols[0].text.replace("-", "20"),
+                        "capHit": cols[2].text,
+                    }
+                    for cols in contract_rows
+                ]
+                contract = next(
+                    (
+                        {
+                            "yearStatus": f"{i + 1}/{len(data)}",
+                            "capHit": item["capHit"],
+                        }
+                        for i, item in enumerate(data)
+                        if item["season"] == self.season
+                    ),
+                    None,
+                )
+                if contract is None:
+                    continue
+
+                return {"contract": contract, "url": url}
         except Exception:
             logger.exception(f"Error getting player contract for player {name}")
 
