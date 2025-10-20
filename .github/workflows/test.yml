@@ -28,10 +28,10 @@ jobs:
           architecture: "x64"
           cache: "pipenv"
           cache-dependency-path: Pipfile.lock
-      - name: Install python dependencies
-        run: |
-          pip install --prefer-binary -r requirements.txt
-          pipenv install --dev
+      - name: Install pipenv
+        run: pip install --prefer-binary -r requirements.txt
+      - name: Install environment dependencies
+        run: pipenv sync --dev
       - name: Run tests
         run: pipenv run python -m unittest
         env:
