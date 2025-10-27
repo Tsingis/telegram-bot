@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Telegram bot",
   "main": "pulumi/index.ts",
+  "engineStrict": false,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "deploy": "serverless deploy",
     "package": "serverless package",
