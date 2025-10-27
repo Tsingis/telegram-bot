@@ -1,29 +1,15 @@
 {
   "name": "telegram-bot",
-  "version": "1.0.0",
   "description": "Telegram bot",
-  "main": "pulumi/index.ts",
   "engineStrict": false,
   "engines": {
     "node": ">=22"
   },
   "scripts": {
     "deploy": "serverless deploy",
-    "package": "serverless package",
-    "prettier": "prettier --check 'pulumi/*.{js,ts}'",
-    "prettier:fix": "prettier --write 'pulumi/*.{js,ts}'",
-    "stack": "pulumi stack select ",
-    "refresh": "pulumi refresh",
-    "preview": "pulumi preview",
-    "up": "pulumi up"
-  },
-  "dependencies": {
-    "@pulumi/aws": "^7.8.0",
-    "@pulumi/pulumi": "^3.203.0"
+    "package": "serverless package"
   },
   "devDependencies": {
-    "prettier": "^3.6.2",
-    "serverless": "^4.22.0",
-    "typescript": "^5.9.3"
+    "serverless": "^4.22.0"
   }
 }

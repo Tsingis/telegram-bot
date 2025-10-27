@@ -9,7 +9,9 @@ updates:
       timezone: "Europe/Helsinki"
     target-branch: "main"
   - package-ecosystem: "npm"
-    directory: "/"
+    directories:
+      - "/"
+      - "/pulumi"
     versioning-strategy: "increase"
     schedule:
       interval: "monthly"

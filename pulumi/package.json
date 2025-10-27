@@ -1,0 +1,25 @@
+{
+  "name": "telegram-bot-iac",
+  "description": "Telegram bot IaC",
+  "main": "resources/index.ts",
+  "engineStrict": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "prettier": "prettier --check '**/*.{js,ts,json,yml}'",
+    "prettier:fix": "prettier --write '**/*.{js,ts,json,yml}'",
+    "stack": "pulumi stack select ",
+    "refresh": "pulumi refresh",
+    "preview": "pulumi preview",
+    "up": "pulumi up"
+  },
+  "dependencies": {
+    "@pulumi/aws": "^7.8.0",
+    "@pulumi/pulumi": "^3.203.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  }
+}
