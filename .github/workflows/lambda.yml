@@ -45,7 +45,7 @@ jobs:
       GOOGLE_API: ${{ secrets.GOOGLE_API }}
       OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: "3.14"
