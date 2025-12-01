@@ -19,7 +19,7 @@
     "@pulumi/pulumi": "^3.208.0"
   },
   "devDependencies": {
-    "prettier": "^3.6.2",
+    "prettier": "^3.7.3",
     "typescript": "^5.9.3"
   }
 }
