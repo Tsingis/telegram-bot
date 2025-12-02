@@ -10,7 +10,7 @@ venv_in_project = true
 python_version = "3.14"
 
 [packages]
-beautifulsoup4 = "==4.14.2"
+beautifulsoup4 = "==4.14.3"
 httpx = "==0.28.1"
 icalendar = "==6.3.2"
 python-telegram-bot = "==22.5"
