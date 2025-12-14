@@ -20,6 +20,10 @@ updates:
       timezone: "Europe/Helsinki"
     cooldown:
       default-days: 1
+    groups:
+      pulumi:
+        patterns:
+          - "@pulumi/*"
     target-branch: "main"
   - package-ecosystem: "pip"
     directory: "/"
