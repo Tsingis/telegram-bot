@@ -22,7 +22,6 @@ provider:
     OPENWEATHER_API: ${env:OPENWEATHER_API, 'test-api-key'}
     CSE_ID: ${env:CSE_ID, 'test-id'}
     REGION: FI
-    ENVIRONMENT: ${self:provider.stage}
 functions:
   webhook:
     handler: src/handler.webhook

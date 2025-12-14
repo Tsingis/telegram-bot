@@ -39,4 +39,3 @@ jobs:
           GOOGLE_API: ${{ secrets.GOOGLE_API }}
           OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
           REGION: FI
-          ENVIRONMENT: test
