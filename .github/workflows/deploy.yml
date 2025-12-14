@@ -1,4 +1,4 @@
-name: lambda
+name: deploy
 on:
   push:
     branches:
@@ -7,16 +7,6 @@ on:
       - "src/**"
       - "Pipfile*"
       - "serverless.yml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "src/**"
-      - "Pipfile*"
-      - "requirements.txt"
-      - "package*.json"
-      - "serverless.yml"
-      - ".github/workflows/lambda.yml"
   workflow_dispatch:
     inputs:
       stage:
@@ -33,17 +23,12 @@ concurrency:
 env:
   NO_UPDATE_NOTIFIER: true
 jobs:
-  lambda:
+  deploy:
     runs-on: ubuntu-latest
+    environment: AWS-${{ github.event.inputs.stage || 'test' }}
     permissions:
       id-token: write
       contents: read
-    env:
-      SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY }}
-      SERVERLESS_BUCKET: ${{ secrets.SERVERLESS_BUCKET }}
-      CSE_ID: ${{ secrets.CSE_ID }}
-      GOOGLE_API: ${{ secrets.GOOGLE_API }}
-      OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
@@ -67,20 +52,12 @@ jobs:
         with:
           aws-region: ${{ vars.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_ROLE }}
-      - name: Determine token
-        id: determine-token
-        run: |
-          if [ "${{ github.event.inputs.stage || 'test' }}" == 'prod' ]; then
-            echo "TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN_PROD }}" >> $GITHUB_ENV
-          else
-            echo "TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN_TEST }}" >> $GITHUB_ENV
-          fi
-      - name: Package
-        run: npm run package -- --stage ${{ github.event.inputs.stage || 'test' }}
-        env:
-          TELEGRAM_TOKEN: ${{ env.TELEGRAM_TOKEN }}
       - name: Deploy ${{ github.event.inputs.stage || 'test' }}
-        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch')}}
-        run: npm run deploy -- --package .serverless --stage ${{ github.event.inputs.stage || 'test' }}
+        run: npm run deploy -- --stage ${{ github.event.inputs.stage || 'test' }}
         env:
-          TELEGRAM_TOKEN: ${{ env.TELEGRAM_TOKEN }}
+          SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY }}
+          SERVERLESS_BUCKET: ${{ secrets.SERVERLESS_BUCKET }}
+          CSE_ID: ${{ secrets.CSE_ID }}
+          GOOGLE_API: ${{ secrets.GOOGLE_API }}
+          OPENWEATHER_API: ${{ secrets.OPENWEATHER_API }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}

@@ -1,4 +1,4 @@
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Tsingis_telegram-bot&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Tsingis_telegram-bot) [![Deploy Status](https://github.com/tsingis/telegram-bot/actions/workflows/lambda.yml/badge.svg)](https://github.com/tsingis/telegram-bot/actions/workflows/lambda.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Tsingis_telegram-bot&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Tsingis_telegram-bot)
 
 # Telegram bot running on AWS Lambda that uses APIs or scraped data
 
@@ -44,6 +44,7 @@
 - Install deps `npm install`
 
 - Deploy lambda with Serverless
+
   1. Start Docker
   2. Activate virtual environment if not active `pipenv shell`
   3. Deploy `npm run deploy`

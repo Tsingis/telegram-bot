@@ -14,13 +14,13 @@ provider:
   timeout: 15
   logRetentionInDays: 90
   deploymentBucket:
-    name: ${env:SERVERLESS_BUCKET}
+    name: ${env:SERVERLESS_BUCKET, 'test-bucket'}
     maxPreviousDeploymentArtifacts: 1
   environment:
-    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
-    GOOGLE_API: ${env:GOOGLE_API}
-    OPENWEATHER_API: ${env:OPENWEATHER_API}
-    CSE_ID: ${env:CSE_ID}
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN, 'test-token'}
+    GOOGLE_API: ${env:GOOGLE_API, 'test-api-key'}
+    OPENWEATHER_API: ${env:OPENWEATHER_API, 'test-api-key'}
+    CSE_ID: ${env:CSE_ID, 'test-id'}
     REGION: FI
     ENVIRONMENT: ${self:provider.stage}
 functions:
