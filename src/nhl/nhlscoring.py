@@ -21,9 +21,7 @@ class NHLScoring(NHLBase):
             {"property": "assists", "direction": "DESC"},
             {"property": "playerId", "direction": "ASC"},
         ]
-        exp = (
-            f"""gameTypeId=2 and seasonId<={self.season} and seasonId>={self.season}"""
-        )
+        exp = f"""gameTypeId=2 and seasonId<={self.season} and seasonId>={self.season}"""
         exp += self._create_filter(sanitized_filter) or ""
         params = {
             "isAggregate": "false",

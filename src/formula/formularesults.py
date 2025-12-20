@@ -4,7 +4,7 @@ from ..common.utils import (
     format_as_monospace,
     format_as_header,
     format_as_url,
-    set_soup,
+    set_selector,
 )
 
 
@@ -21,34 +21,48 @@ class FormulaResults(FormulaBase):
         """
         url = f"{self.base_url}/en/results/{self.date.year}/races"
         try:
-            soup = set_soup(url, "utf8")
-            races_table_section = soup.find("div", {"id": ["results-table"]})
-            races_table = races_table_section.find("table")
-            if races_table is None:
+            selector = set_selector(url, "utf8")
+            races_table = selector.xpath("//div[@id='results-table']//table")
+
+            if not races_table:
                 logger.info(f"Races table not found for year {self.date.year}")
                 return
-            race_results = races_table.find_all("a")
-            if not race_results:
+
+            race_links = races_table.xpath(".//a[@href]/@href").getall()
+
+            if not race_links:
                 logger.info(f"No past races found for year {self.date.year}")
                 return
-            results_url = self.base_url + race_results[-1]["href"]
-            soup = set_soup(results_url, "utf8")
-            table_section = soup.find("div", {"id": ["results-table"]})
-            table = table_section.find("table")
-            if table is None:
+
+            results_url = self.base_url + race_links[-1]
+            selector = set_selector(results_url, "utf8")
+
+            table = selector.xpath("//div[@id='results-table']//table")
+
+            if not table:
                 logger.info(f"Results table not found for year {self.date.year}")
                 return
-            rows = table.find_all("tr")[1:-1]  # Exclude both header and notes
-            driver_rows = [[cell.text.strip() for cell in row.find_all("td")] for row in rows]
-            results = [
-                {
-                    "name": row[2],
-                    "position": row[0],
-                    "time": row[-2],
-                }
-                for row in driver_rows
-            ]
-            return {"results": results[:amount], "url": results_url}
+
+            rows = table.xpath(".//tr[position() > 1 and position() < last()]")
+            results = []
+            for row in rows:
+                cells = [td.xpath("string()").get().strip() for td in row.xpath(".//td")]
+
+                if len(cells) < 4:
+                    continue
+
+                results.append(
+                    {
+                        "name": cells[2],
+                        "position": cells[0],
+                        "time": cells[-2],
+                    }
+                )
+            return {
+                "results": results[:amount],
+                "url": results_url,
+            }
+
         except Exception:
             logger.exception(f"Error getting race results for year {self.date.year}")
 

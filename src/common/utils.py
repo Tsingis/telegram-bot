@@ -1,9 +1,9 @@
 import httpx
 import re
-from bs4 import BeautifulSoup
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from http import HTTPStatus
+from parsel import Selector
 
 
 def get(url, params=None):
@@ -14,10 +14,10 @@ def get(url, params=None):
         res.raise_for_status()
 
 
-def set_soup(url, target_encoding="latin-1"):
+def set_selector(url, target_encoding="latin-1"):
     res = get(url)
-    text = res.text.encode(target_encoding)
-    return BeautifulSoup(text, "html.parser")
+    res.encoding = target_encoding
+    return Selector(text=res.text)
 
 
 def find_first_integer(strings):

@@ -6,7 +6,7 @@ from ..common.utils import (
     format_as_header,
     format_as_url,
     format_number,
-    set_soup,
+    set_selector,
 )
 
 
@@ -23,23 +23,32 @@ class FormulaStandings(FormulaBase):
         """
         url = f"{self.base_url}/en/results/{self.date.year}/drivers"
         try:
-            soup = set_soup(url, "utf8")
-            table_section = soup.find("div", {"id": ["results-table"]})
-            table = table_section.find("table")
-            if table is None:
+            selector = set_selector(url, "utf8")
+            table = selector.xpath("//div[@id='results-table']//table")
+
+            if not table:
                 logger.info(f"Driver standings table not found for year {self.date.year}")
                 return
-            rows = table.find_all("tr")[1:]  # Exclude header
-            driver_rows = [[cell.text.strip() for cell in row.find_all("td")] for row in rows]
-            standings = [
-                {
-                    "driver": row[1],
-                    "position": row[0],
-                    "points": float(row[-1]),
-                }
-                for row in driver_rows
-            ]
-            return {"driverStandings": standings[:amount], "driverUrl": url}
+
+            rows = table.xpath(".//tr[position() > 1]")  # exclude header
+            standings = []
+            for row in rows:
+                cells = [td.xpath("string()").get().strip() for td in row.xpath(".//td")]
+
+                if len(cells) < 3:
+                    continue
+
+                standings.append(
+                    {
+                        "driver": cells[1],
+                        "position": cells[0],
+                        "points": float(cells[-1]),
+                    }
+                )
+            return {
+                "driverStandings": standings[:amount],
+                "driverUrl": url,
+            }
         except Exception:
             logger.exception(f"Error getting driver standings for year {self.date.year}")
 
@@ -49,23 +58,33 @@ class FormulaStandings(FormulaBase):
         """
         url = f"{self.base_url}/en/results/{self.date.year}/team"
         try:
-            soup = set_soup(url, "utf8")
-            table_section = soup.find("div", {"id": ["results-table"]})
-            table = table_section.find("table")
-            if table is None:
+            selector = set_selector(url, "utf8")
+            table = selector.xpath("//div[@id='results-table']//table")
+
+            if not table:
                 logger.info(f"Team standings table not found for year {self.date.year}")
                 return
-            rows = table.find_all("tr")[1:]  # Exclude header and notes
-            team_rows = [[cell.text.strip() for cell in row.find_all("td")] for row in rows]
-            standings = [
-                {
-                    "team": row[1],
-                    "position": row[0],
-                    "points": float(row[-1]),
-                }
-                for row in team_rows
-            ]
-            return {"teamStandings": standings[:amount], "teamUrl": url}
+
+            rows = table.xpath(".//tr[position() > 1]")  # exclude header
+            standings = []
+            for row in rows:
+                cells = row.xpath(".//td/text()").getall()
+                cells = [td.xpath("string()").get().strip() for td in row.xpath(".//td")]
+
+                if len(cells) < 3:
+                    continue
+
+                standings.append(
+                    {
+                        "team": cells[1],
+                        "position": cells[0],
+                        "points": float(cells[-1]),
+                    }
+                )
+            return {
+                "teamStandings": standings[:amount],
+                "teamUrl": url,
+            }
         except Exception:
             logger.exception(f"Error getting team standings {self.date.year}")
 
