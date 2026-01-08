@@ -104,7 +104,12 @@ class Command:
         formula_standings = FormulaStandings()
         team_data = formula_standings.get_team_standings(amount=10)
         driver_data = formula_standings.get_driver_standings(amount=10)
-        if team_data is not None and driver_data is not None:
+        if (
+            team_data is not None
+            and team_data["teamStandings"]
+            and driver_data is not None
+            and driver_data["driverStandings"]
+        ):
             data = team_data | driver_data
             text = formula_standings.format(data)
             return Response(text=text)
@@ -116,7 +121,7 @@ class Command:
 
         formula_results = FormulaResults()
         data = formula_results.get_results()
-        if data is not None:
+        if data is not None and data["results"]:
             text = formula_results.format(data)
             return Response(text=text)
         return Response(text="No results available")

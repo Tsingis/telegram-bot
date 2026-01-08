@@ -31,7 +31,11 @@ class FormulaRace(FormulaBase):
         try:
             race_weekends = self._get_race_weekends()
             race = next(
-                (race for race in race_weekends if race["sessions"]["race"] >= self.date),
+                (
+                    race
+                    for race in race_weekends
+                    if "race" in race and race["sessions"]["race"] >= self.date
+                ),
                 race_weekends[-1],
             )
             return race

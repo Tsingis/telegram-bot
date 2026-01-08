@@ -45,6 +45,7 @@ class FormulaStandings(FormulaBase):
                         "points": float(cells[-1]),
                     }
                 )
+            amount = max(len(standings), amount)
             return {
                 "driverStandings": standings[:amount],
                 "driverUrl": url,
@@ -81,6 +82,7 @@ class FormulaStandings(FormulaBase):
                         "points": float(cells[-1]),
                     }
                 )
+            amount = max(len(standings), amount)
             return {
                 "teamStandings": standings[:amount],
                 "teamUrl": url,
