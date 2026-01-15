@@ -42,6 +42,10 @@ custom:
     dockerizePip: true
     usePipenv: true
     slim: true
+  prune:
+    automatic: true
+    number: 1
+    includeLayers: true
 
 package:
   patterns:
