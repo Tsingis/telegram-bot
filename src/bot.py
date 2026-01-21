@@ -2,7 +2,6 @@ import os
 import telegram
 from .common.logger import logging
 
-
 logger = logging.getLogger(__name__)
 
 

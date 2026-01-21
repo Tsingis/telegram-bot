@@ -2,7 +2,6 @@ import os
 from ..common.logger import logging
 from ..common.utils import get, format_as_header, format_as_monospace
 
-
 logger = logging.getLogger(__name__)
 
 

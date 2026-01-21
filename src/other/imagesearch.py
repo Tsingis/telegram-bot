@@ -3,7 +3,6 @@ import random
 from ..common.logger import logging
 from ..common.utils import get
 
-
 logger = logging.getLogger(__name__)
 
 

@@ -16,7 +16,6 @@ from ..common.utils import (
     text_to_datetime,
 )
 
-
 logger = logging.getLogger(__name__)
 
 

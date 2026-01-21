@@ -5,7 +5,6 @@ from pathlib import Path
 from ..common.utils import convert_timezone
 from ..common.logger import logging
 
-
 logger = logging.getLogger(__name__)
 
 
