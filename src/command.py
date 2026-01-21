@@ -7,7 +7,6 @@ from .common.utils import (
     escape_special_chars,
 )
 
-
 logger = logging.getLogger(__name__)
 
 

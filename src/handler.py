@@ -5,7 +5,6 @@ from .bot import Bot
 from .command import Command, ResponseType
 from .common.logger import logging
 
-
 logger = logging.getLogger(__name__)
 
 
