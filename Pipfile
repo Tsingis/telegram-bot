@@ -13,7 +13,7 @@ python_version = "3.14"
 httpx = "==0.28.1"
 icalendar = "==6.3.2"
 parsel = "==1.10.0"
-python-telegram-bot = "==22.5"
+python-telegram-bot = "==22.6"
 
 [dev-packages]
 black = "==26.1.0"
