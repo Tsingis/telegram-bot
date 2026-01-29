@@ -39,7 +39,7 @@ functions:
 custom:
   pythonRequirements:
     dockerizePip: true
-    usePipenv: true
+    usePipenv: false
     slim: true
     useDownloadCache: true
     useStaticCache: true
@@ -53,4 +53,4 @@ package:
   excludeDevDependencies: true
   patterns:
     - "!**"
-    - "src/**"
+    - "../src/**"
