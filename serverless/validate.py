@@ -3,10 +3,10 @@ import sys
 import zipfile
 
 def print_error(msg: str) -> None:
-    print(f"\033[31m❌ {msg}\033[0m")
+    print(f"\033[31m {msg}\033[0m")
 
 def print_success(msg: str) -> None:
-    print(f"\033[32m✅ {msg}\033[0m")
+    print(f"\033[32m {msg}\033[0m")
 
 def main() -> int:
     parser = argparse.ArgumentParser(
