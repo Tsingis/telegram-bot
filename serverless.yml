@@ -22,6 +22,7 @@ provider:
     OPENWEATHER_API_KEY: ${env:OPENWEATHER_API_KEY, 'test-api-key'}
     CSE_ID_SECRET: ${env:CSE_ID_SECRET, 'test-id'}
     REGION: FI
+
 functions:
   webhook:
     handler: src/handler.webhook
@@ -42,12 +43,16 @@ custom:
     dockerizePip: true
     usePipenv: true
     slim: true
+    useDownloadCache: true
+    useStaticCache: true
   prune:
     automatic: true
     number: 1
     includeLayers: true
 
 package:
+  individually: false
+  excludeDevDependencies: true
   patterns:
     - "!**"
     - "src/**"
