@@ -21,21 +21,6 @@ provider:
     CSE_ID_SECRET: ${env:CSE_ID_SECRET, 'test-id'}
     REGION: FI
 
-functions:
-  webhook:
-    handler: src/handler.webhook
-    events:
-      - httpApi:
-          method: POST
-          path: /
-
-  set_webhook:
-    handler: src/handler.set_webhook
-    events:
-      - httpApi:
-          method: POST
-          path: /set_webhook
-
 custom:
   pythonRequirements:
     dockerizePip: ${strToBool(${env:DOCKERIZE, 'true'})}
@@ -43,10 +28,32 @@ custom:
     slim: true
     useDownloadCache: true
     useStaticCache: true
+    layer:
+      name: ${self:provider.stage}-${self:service}-layer
+      description: Python requirements
   prune:
     automatic: true
     number: 1
     includeLayers: true
+
+functions:
+  webhook:
+    handler: src/handler.webhook
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - httpApi:
+          method: POST
+          path: /
+
+  set_webhook:
+    handler: src/handler.set_webhook
+    layers:
+      - Ref: PythonRequirementsLambdaLayer
+    events:
+      - httpApi:
+          method: POST
+          path: /set_webhook
 
 package:
   individually: false
