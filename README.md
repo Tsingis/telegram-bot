@@ -41,13 +41,13 @@
 
 ## Manual deployment
 
-- Install deps `npm install`
+- Install deps `npm install` in respective folder
 
 - Deploy lambda with Serverless
-
-  1. Start Docker
-  2. Activate virtual environment if not active `pipenv shell`
-  3. Deploy `npm run deploy`
+  1. Set .env file / environment variables
+  2. Start Docker
+  3. Create requirements to deploy `pipenv requirements > serverless/requirements.txt`
+  4. Deploy `npm run deploy`
 
 - Deploy other resources with Pulumi
   1. Setup stacks `Pulumi.{stack-name}.yml`

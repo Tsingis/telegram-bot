@@ -10,7 +10,7 @@ updates:
     target-branch: "main"
   - package-ecosystem: "npm"
     directories:
-      - "/"
+      - "/serverless"
       - "/pulumi"
     versioning-strategy: "increase"
     schedule:

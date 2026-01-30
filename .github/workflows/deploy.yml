@@ -6,7 +6,7 @@ on:
     paths:
       - "src/**"
       - "Pipfile*"
-      - "serverless.yml"
+      - "serverless/serverless.yml"
   workflow_dispatch:
     inputs:
       stage:
@@ -39,13 +39,16 @@ jobs:
           cache-dependency-path: Pipfile.lock
       - name: Install pipenv
         run: pip install --prefer-binary -r requirements.txt
+      - name: Create requirements
+        run: pipenv requirements > ${{ github.workspace }}/serverless/requirements.txt
       - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: 24
           cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: serverless/package-lock.json
       - name: Install dependencies
         run: npm ci
+        working-directory: ./serverless
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # v5.1.1
         with:
@@ -53,6 +56,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE }}
       - name: Deploy ${{ github.event.inputs.stage || 'test' }}
         run: npm run deploy -- --stage ${{ github.event.inputs.stage || 'test' }}
+        working-directory: ./serverless
         env:
           SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY }}
           SERVERLESS_BUCKET: ${{ secrets.SERVERLESS_BUCKET }}
