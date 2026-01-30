@@ -1,7 +1,5 @@
 service: telegram-bot
 
-useDotenv: true
-
 provider:
   name: aws
   stage: ${opt:stage, 'test'}
