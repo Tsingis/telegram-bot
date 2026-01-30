@@ -2,16 +2,17 @@ import argparse
 import sys
 import zipfile
 
+
 def print_error(msg: str) -> None:
-    print(f"\033[31m❌ {msg}\033[0m")
+    print(f"\033[31m {msg}\033[0m")
+
 
 def print_success(msg: str) -> None:
-    print(f"\033[32m✅ {msg}\033[0m")
+    print(f"\033[32m {msg}\033[0m")
+
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Validate serverless package ZIP contents"
-    )
+    parser = argparse.ArgumentParser(description="Validate serverless package ZIP contents")
     parser.add_argument(
         "zip_path",
         nargs="?",
@@ -52,11 +53,9 @@ def main() -> int:
     ]
 
     if not package_dirs:
-        print_error(
-            f"No directory containing '{args.dependency_package_dir}' found"
-        )
+        print_error(f"No directory containing '{args.dependency_package_dir}' found")
         return 1
-    
+
     print_success("No issues")
     return 0
 

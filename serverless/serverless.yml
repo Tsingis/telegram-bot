@@ -38,7 +38,7 @@ functions:
 
 custom:
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: ${strToBool(${env:DOCKERIZE, 'true'})}
     usePipenv: false
     slim: true
     useDownloadCache: true
