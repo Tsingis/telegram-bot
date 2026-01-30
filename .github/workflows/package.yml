@@ -41,11 +41,16 @@ jobs:
         run: npm ci
         working-directory: ./serverless
       - name: Package
+        id: package
         run: npm run package -- --package ${{ runner.temp }}
         working-directory: ./serverless
         env:
           SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY }}
+      - name: Validate package contents
+        run: python validate.py ${{ runner.temp }}/telegram-bot.zip
+        working-directory: ./serverless
       - name: Review package
+        if: steps.package.outcome == 'success'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: package
