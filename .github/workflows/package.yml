@@ -17,7 +17,11 @@ env:
   NO_UPDATE_NOTIFIER: true
 jobs:
   package:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "windows-latest"]
+      fail-fast: false
     permissions:
       contents: read
     steps:
@@ -46,6 +50,7 @@ jobs:
         working-directory: ./serverless
         env:
           SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY }}
+          DOCKERIZE: ${{ matrix.os != 'windows-latest' && 'true' || 'false' }}
       - name: Validate package contents
         run: python validate.py ${{ runner.temp }}/telegram-bot.zip
         working-directory: ./serverless
@@ -53,7 +58,7 @@ jobs:
         if: steps.package.outcome == 'success'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: package
+          name: ${{ matrix.os }}-package
           path: ${{ runner.temp }}/telegram-bot.zip
           overwrite: true
           retention-days: 1
