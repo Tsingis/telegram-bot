@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 class WeatherSearch:
-    GOOGLE_API_KEY = os.environ["GOOGLE_API"]
-    OPENWEATHER_API_KEY = os.environ["OPENWEATHER_API"]
+    GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
+    OPENWEATHER_API_KEY = os.environ["OPENWEATHER_API_KEY"]
     REGION = os.getenv("REGION", "FI")
 
     def __init__(self):

@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 class ImageSearch:
-    GOOGLE_API_KEY = os.environ["GOOGLE_API"]
-    CSE_ID = os.environ["CSE_ID"]
+    GOOGLE_API_KEY = os.environ["GOOGLE_API_KEY"]
+    CSE_ID = os.environ["CSE_ID_SECRET"]
     REGION = os.getenv("REGION", "FI")
 
     def __init__(self):

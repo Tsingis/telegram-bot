@@ -18,9 +18,9 @@ provider:
     maxPreviousDeploymentArtifacts: 1
   environment:
     TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN, 'test-token'}
-    GOOGLE_API: ${env:GOOGLE_API, 'test-api-key'}
-    OPENWEATHER_API: ${env:OPENWEATHER_API, 'test-api-key'}
-    CSE_ID: ${env:CSE_ID, 'test-id'}
+    GOOGLE_API_KEY: ${env:GOOGLE_API_KEY, 'test-api-key'}
+    OPENWEATHER_API_KEY: ${env:OPENWEATHER_API_KEY, 'test-api-key'}
+    CSE_ID_SECRET: ${env:CSE_ID_SECRET, 'test-id'}
     REGION: FI
 functions:
   webhook:
@@ -50,4 +50,4 @@ custom:
 package:
   patterns:
     - "!**"
-    - src/**
+    - "src/**"
