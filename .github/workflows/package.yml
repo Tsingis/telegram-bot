@@ -30,9 +30,7 @@ jobs:
           cache: "pipenv"
           cache-dependency-path: Pipfile.lock
       - name: Install pipenv
-        run: |
-          pip install --prefer-binary -r requirements.txt
-          pipenv sync
+        run: pip install --prefer-binary -r requirements.txt
       - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: 24
@@ -44,3 +42,10 @@ jobs:
         run: npm run package
         env:
           SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY }}
+      - name: Review package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: package
+          path: ${{ github.workspace }}/.serverless/telegram-bot.zip
+          overwrite: true
+          retention-days: 1
