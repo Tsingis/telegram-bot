@@ -3,11 +3,10 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
       day: "wednesday"
       time: "21:00"
       timezone: "Europe/Helsinki"
-    target-branch: "main"
   - package-ecosystem: "npm"
     directories:
       - "/serverless"
@@ -24,7 +23,6 @@ updates:
       pulumi:
         patterns:
           - "@pulumi/*"
-    target-branch: "main"
   - package-ecosystem: "pip"
     directory: "/"
     versioning-strategy: "increase"
@@ -37,4 +35,3 @@ updates:
       default-days: 1
       exclude:
         - "pipenv"
-    target-branch: "main"
