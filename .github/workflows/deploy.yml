@@ -47,7 +47,7 @@ jobs:
           cache: "npm"
           cache-dependency-path: serverless/package-lock.json
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
         working-directory: ./serverless
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6.0.0
