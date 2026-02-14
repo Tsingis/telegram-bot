@@ -43,3 +43,4 @@ jobs:
           CSE_ID_SECRET: ${{ secrets.CSE_ID_SECRET }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+          F1_CALENDAR_URL: ${{ vars.F1_CALENDAR_URL }}

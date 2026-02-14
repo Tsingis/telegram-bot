@@ -33,7 +33,7 @@ class FormulaRace(FormulaBase):
                 (
                     race
                     for race in race_weekends
-                    if "race" in race and race["sessions"]["race"] >= self.date
+                    if "race" in race["sessions"] and race["sessions"]["race"] >= self.date
                 ),
                 race_weekends[-1],
             )
@@ -84,7 +84,7 @@ class FormulaRace(FormulaBase):
 
     def _get_race_weekends(self):
         try:
-            res = get(self.calendar_url)
+            res = get(self.calendar)
             calendar = Calendar.from_ical(res.content)
             events = [self._event_to_dict(event) for event in calendar.walk("VEVENT")]
             if not events:
@@ -96,7 +96,7 @@ class FormulaRace(FormulaBase):
                 return
             return race_weekends
         except Exception:
-            logger.exception(f"Error getting calendar data with url {self.calendar_url}")
+            logger.exception(f"Error getting calendar data with url {self.calendar}")
 
     def _events_to_race_weekends(self, events):
         """
