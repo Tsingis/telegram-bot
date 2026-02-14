@@ -94,6 +94,7 @@ class Command:
             circuit_img = formula_race.find_circuit_image(data["raceUrl"])
             if circuit_img is not None:
                 return Response(text=text, image=circuit_img, type=ResponseType.IMAGE)
+            return Response(text=text)
         return Response(text="No race info available")
 
     # F1 standings
