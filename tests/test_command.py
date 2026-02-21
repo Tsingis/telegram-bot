@@ -9,7 +9,6 @@ class TestCommand(unittest.TestCase):
     @data(
         "/bot",
         "/weather Tampere",
-        "/search icecream",
         "/f1results",
         "/f1standings",
         "/f1race",

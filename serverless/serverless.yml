@@ -19,7 +19,6 @@ provider:
     GOOGLE_API_KEY: ${env:GOOGLE_API_KEY, 'test-api-key'}
     OPENWEATHER_API_KEY: ${env:OPENWEATHER_API_KEY, 'test-api-key'}
     F1_CALENDAR_URL: ${env:F1_CALENDAR_URL, 'test-calendar-url'}
-    CSE_ID_SECRET: ${env:CSE_ID_SECRET, 'test-id'}
     REGION: FI
 
 functions:

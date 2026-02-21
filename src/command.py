@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Command:
     AVAILABLE_CMD = "/bot"
-    IMAGE_SEARCH_CMD = "/search"
+    # IMAGE_SEARCH_CMD = "/search"
     WEATHER_SEARCH_CMD = "/weather"
     F1_RACE_CMD = "/f1race"
     F1_STANDINGS_CMD = "/f1standings"
@@ -27,8 +27,8 @@ class Command:
     def _command_response(self):
         if self.text.startswith(self.AVAILABLE_CMD):
             return self._available_commands()
-        if self.text.startswith(self.IMAGE_SEARCH_CMD):
-            return self._search_img()
+        # if self.text.startswith(self.IMAGE_SEARCH_CMD):
+        #     return self._search_img()
         if self.text.startswith(self.WEATHER_SEARCH_CMD):
             return self._search_weather()
         if self.text.startswith(self.F1_RACE_CMD):
@@ -46,7 +46,7 @@ class Command:
     # Available bot commands
     def _available_commands(self):
         cmds = [
-            self.IMAGE_SEARCH_CMD + " <keyword>",
+            # self.IMAGE_SEARCH_CMD + " <keyword>",
             self.WEATHER_SEARCH_CMD + " <location>",
             self.F1_RACE_CMD,
             self.F1_STANDINGS_CMD,

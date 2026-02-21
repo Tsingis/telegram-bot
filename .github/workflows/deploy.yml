@@ -61,7 +61,6 @@ jobs:
           SLS_AWS_SDK: ${{ vars.SLS_AWS_SDK_VERSION }}
           SERVERLESS_LICENSE_KEY: ${{ secrets.SERVERLESS_LICENSE_KEY }}
           SERVERLESS_BUCKET: ${{ secrets.SERVERLESS_BUCKET }}
-          CSE_ID_SECRET: ${{ secrets.CSE_ID_SECRET }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}

@@ -18,7 +18,6 @@
 **Other**
 
 - Weather info (by location)
-- Random picture (by keyword)
 
 ## How it works:
 
