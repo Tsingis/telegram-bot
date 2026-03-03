@@ -63,19 +63,19 @@ class FormulaRace(FormulaBase):
         )
         return text
 
-    def find_circuit_image(self, url):
+    def find_track_image(self, url):
         """
-        Gets image for race circuit
+        Gets image for race track
         """
         try:
             selector = set_selector(url, "utf8")
             img_urls = selector.xpath(
                 "//img[contains(translate(@alt, 'PNG', 'png'), '.png')]/@src"
             ).getall()
-            img_url = next(src for src in img_urls if "circuit" in src.lower())
+            img_url = next(src for src in img_urls if "track" in src.lower())
             return self._add_timestamp_to_image(img_url)
         except Exception:
-            logger.exception("Error getting circuit image")
+            logger.exception("Error getting track image")
 
     def _add_timestamp_to_image(self, img):
         if isinstance(img, str):

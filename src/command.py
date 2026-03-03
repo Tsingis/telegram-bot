@@ -91,9 +91,9 @@ class Command:
         data = formula_race.get_upcoming()
         if data is not None:
             text = formula_race.format(data)
-            circuit_img = formula_race.find_circuit_image(data["raceUrl"])
-            if circuit_img is not None:
-                return Response(text=text, image=circuit_img, type=ResponseType.IMAGE)
+            track_img = formula_race.find_track_image(data["raceUrl"])
+            if track_img is not None:
+                return Response(text=text, image=track_img, type=ResponseType.IMAGE)
             return Response(text=text)
         return Response(text="No race info available")
 
