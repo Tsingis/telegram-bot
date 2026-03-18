@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6a238cc86d792cf6290ea33c59843cca07ba4922c502b80fa26e047479012e5b"
+            "sha256": "b564b4166a25f746a28bb9c4ae645f37c24fc4012c1210a15490c9a184ff6f89"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -263,12 +263,12 @@
         },
         "python-telegram-bot": {
             "hashes": [
-                "sha256:50ae8cc10f8dff01445628687951020721f37956966b92a91df4c1bf2d113742",
-                "sha256:e598fe171c3dde2dfd0f001619ee9110eece66761a677b34719fb18934935ce0"
+                "sha256:784b59ea3852fe4616ad63b4a0264c755637f5d725e87755ecdee28300febf61",
+                "sha256:d72eed532cf763758cd9331b57a6d790aff0bb4d37d8f4e92149436fe21c6475"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==22.6"
+            "version": "==22.7"
         },
         "six": {
             "hashes": [
