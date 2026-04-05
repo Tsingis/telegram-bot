@@ -12,25 +12,28 @@ if (stack === "common") {
     forceDestroy: false,
   });
 
-  new aws.s3.BucketVersioning(bucketName, {
+  new aws.s3.BucketVersioning("serverlessBucketVersioning", {
     bucket: bucket.id,
     versioningConfiguration: {
       status: "Suspended",
     },
   });
 
-  new aws.s3.BucketServerSideEncryptionConfiguration(bucketName, {
-    bucket: bucket.id,
-    rules: [
-      {
-        applyServerSideEncryptionByDefault: {
-          sseAlgorithm: "AES256",
+  new aws.s3.BucketServerSideEncryptionConfiguration(
+    "serverlessBucketServerSideEncryption",
+    {
+      bucket: bucket.id,
+      rules: [
+        {
+          applyServerSideEncryptionByDefault: {
+            sseAlgorithm: "AES256",
+          },
         },
-      },
-    ],
-  });
+      ],
+    }
+  );
 
-  new aws.s3.BucketPublicAccessBlock(bucketName, {
+  new aws.s3.BucketPublicAccessBlock("serverlessBucketPublicAccessBlock", {
     bucket: bucket.id,
     blockPublicAcls: true,
     blockPublicPolicy: true,
@@ -38,7 +41,7 @@ if (stack === "common") {
     restrictPublicBuckets: true,
   });
 
-  new aws.s3.BucketOwnershipControls(bucketName, {
+  new aws.s3.BucketOwnershipControls("serverlessBucketOwnershipControls", {
     bucket: bucket.id,
     rule: {
       objectOwnership: "BucketOwnerPreferred",
