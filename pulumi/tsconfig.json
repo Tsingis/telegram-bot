@@ -1,16 +1,20 @@
 {
   "compilerOptions": {
+    "target": "ESNext",
+    "module": "nodenext",
+    "outDir": "dist",
+    "moduleResolution": "nodenext",
     "strict": true,
-    "rootDir": ".",
-    "target": "es2020",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
     "sourceMap": true,
-    "experimentalDecorators": true,
     "pretty": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true
   },
-  "files": ["./resources/index.ts"]
+  "include": ["resources/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
