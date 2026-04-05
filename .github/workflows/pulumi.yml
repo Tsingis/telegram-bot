@@ -9,10 +9,21 @@ on:
       - "pulumi/tsconfig.json"
       - ".github/workflows/pulumi.yml"
   workflow_dispatch:
+    inputs:
+      stage:
+        description: "Deployment stage"
+        required: false
+        default: "test"
+        type: choice
+        options:
+          - common
+          - test
+          - prod
 jobs:
   test:
     runs-on: "ubuntu-latest"
     permissions:
+      id-token: write
       contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -28,4 +39,24 @@ jobs:
         run: |
           npm run format
           npm run typecheck
+        working-directory: ./pulumi
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6.0.0
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
+      - name: Setup
+        run: pulumi login ${{ env.PULUMI_BACKEND }}
+        env:
+          PULUMI_BACKEND: ${{ secrets.PULUMI_BACKEND }}
+        working-directory: ./pulumi
+      - name: Select stack
+        run: pulumi stack select ${{ env.STAGE }}
+        env:
+          STAGE: ${{ github.event.inputs.stage || 'test' }}
+        working-directory: ./pulumi
+      - name: Preview
+        run: pulumi refresh --preview-only
+        env:
+          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
         working-directory: ./pulumi
