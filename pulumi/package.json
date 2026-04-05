@@ -7,8 +7,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "prettier": "prettier --check '**/*.{js,ts,json,yml}'",
-    "prettier:fix": "prettier --write '**/*.{js,ts,json,yml}'",
+    "format": "prettier --check 'resources/*.{js,ts,json,yml}'",
+    "format:fix": "prettier --write 'resources/*.{js,ts,json,yml}'",
+    "typecheck": "tsc --noEmit",
     "stack": "pulumi stack select ",
     "refresh": "pulumi refresh",
     "preview": "pulumi preview",
