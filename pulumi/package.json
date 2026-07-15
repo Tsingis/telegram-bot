@@ -20,7 +20,7 @@
     "@pulumi/pulumi": "^3.250.0"
   },
   "devDependencies": {
-    "prettier": "^3.9.4",
+    "prettier": "^3.9.5",
     "typescript": "^6.0.3"
   },
   "overrides": {
