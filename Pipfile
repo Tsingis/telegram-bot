@@ -18,6 +18,6 @@ python-telegram-bot = "==22.8"
 [dev-packages]
 black = "==26.5.1"
 ddt = "==1.7.2"
-flake8 = "==7.3.0"
+flake8 = "==7.4.1"
 pip-audit = "==2.10.1"
 tzdata = "==2026.4"
