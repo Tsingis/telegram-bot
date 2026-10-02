@@ -69,10 +69,20 @@ class FormulaRace(FormulaBase):
         """
         try:
             selector = set_selector(url, "utf8")
-            img_urls = selector.xpath(
-                "//img[contains(translate(@alt, 'PNG', 'png'), '.png')]/@src"
-            ).getall()
-            img_url = next(src for src in img_urls if "track" in src.lower())
+            img_sources = selector.xpath("//img/@src | //img/@data-src | //img/@srcset").getall()
+            img_urls = (
+                candidate.strip().split()[0]
+                for source in img_sources
+                for candidate in re.split(r",\s*(?=(?:https?:)?//|/)", source)
+                if candidate.strip()
+            )
+            img_url = next(
+                (src for src in img_urls if "/track/" in src.lower()),
+                None,
+            )
+            if img_url is None:
+                logger.info("No track image found for %s", url)
+                return
             return self._add_timestamp_to_image(img_url)
         except Exception:
             logger.exception("Error getting track image")
