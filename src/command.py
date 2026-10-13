@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class Command:
     AVAILABLE_CMD = "/bot"
-    # IMAGE_SEARCH_CMD = "/search"
     WEATHER_SEARCH_CMD = "/weather"
     F1_RACE_CMD = "/f1race"
     F1_STANDINGS_CMD = "/f1standings"
@@ -27,8 +26,6 @@ class Command:
     def _command_response(self):
         if self.text.startswith(self.AVAILABLE_CMD):
             return self._available_commands()
-        # if self.text.startswith(self.IMAGE_SEARCH_CMD):
-        #     return self._search_img()
         if self.text.startswith(self.WEATHER_SEARCH_CMD):
             return self._search_weather()
         if self.text.startswith(self.F1_RACE_CMD):
@@ -57,17 +54,6 @@ class Command:
         header = format_as_header("Available commands:")
         text = header + "\n" + escape_special_chars("\n".join(cmds))
         return Response(text=text)
-
-    # Random Google search image by keyword
-    def _search_img(self):
-        from .other.imagesearch import ImageSearch
-
-        img_search = ImageSearch()
-        keyword = self.text.split(self.IMAGE_SEARCH_CMD)[-1].strip()
-        img = img_search.get_random_image(keyword)
-        if img is not None:
-            return Response(image=img, type=ResponseType.IMAGE)
-        return Response(text="No search results available")
 
     # Weather info by location
     def _search_weather(self):
