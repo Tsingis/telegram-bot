@@ -24,6 +24,16 @@ provider:
     F1_CALENDAR_URL: ${env:F1_CALENDAR_URL, 'test-calendar-url'}
     REGION: FI
 
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:TagResource
+          Resource:
+            - arn:aws:logs:${self:provider.region}:${aws:accountId}:log-group:/aws/lambda/${self:service}-${self:provider.stage}*
+
 functions:
   webhook:
     handler: src/handler.webhook
