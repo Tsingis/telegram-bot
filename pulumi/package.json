@@ -16,8 +16,8 @@
     "up": "pulumi up"
   },
   "dependencies": {
-    "@pulumi/aws": "^7.54.0",
-    "@pulumi/pulumi": "^3.274.1"
+    "@pulumi/aws": "^7.55.0",
+    "@pulumi/pulumi": "^3.276.0"
   },
   "devDependencies": {
     "prettier": "^3.10.1",
