@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "50a93610b2faf2f527ce91a862712dc0e785757acbac4b7c964e6dbdf81924f0"
+            "sha256": "56507b1a3c4d06171b2e91d64d098baff7f803f9f151eb846b9ae43ba5ccb3b5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -90,12 +90,12 @@
         },
         "icalendar": {
             "hashes": [
-                "sha256:7bd001c8e648205e1bde5c6a5b77096598e8d0893dcf57755c6c597635620132",
-                "sha256:8355acfe17be81b368f0b1e3740817cea9b56ea889931f8f1a87c62f2d28db0b"
+                "sha256:f15380927aed4318860e001c03b543c48578c73aec46e2d384c5d0802082b808",
+                "sha256:f95ce4ff8f41d8ad9ca253a676ef40c672abd3774458d197c215055a0d805cc4"
             ],
             "index": "pypi",
             "markers": "python_version >= '3.10'",
-            "version": "==7.3.0"
+            "version": "==7.3.2"
         },
         "idna": {
             "hashes": [
